@@ -31,6 +31,7 @@ const userSchema = new mongoose.Schema({
                 throw new Error("Password must be greater than 7 characters!")
             } else if (value.toLowerCase().includes(['password', 'pass', '12345', '1234', '123', 'qwerty'])){
                 throw new Error("Password can not contain certain common values")
+                
             }
         }
     },  
@@ -58,7 +59,7 @@ const userSchema = new mongoose.Schema({
 
 userSchema.virtual('games', {
     ref: 'Game',
-    localField: _id,
+    localField: '_id',
     foreignField: 'owner'
 })
 
