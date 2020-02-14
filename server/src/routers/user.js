@@ -56,7 +56,28 @@ router.post('/api/user/logout-all', auth, async (req, res) => {
     res.send(user)
 })
 // UPDATE USER WITH AUTH
-
+router.patch('/api/user/me', auth, async (req, res) => {
+    const user = req.user;
+    const updates = Object.keys(req.body);
+    const allowedUpdates = [
+        "level", "name", "password"
+    ]
+    const isValidUpdate = updates.every((update) => {
+        return allowedUpdates.includes(update)
+    })
+    if(!isValidUpdate){
+        return res.status(418).send({error: "Invalid Update!"})
+    }
+    try {
+        updates.forEach((update) => {
+            user[update] = req.body[update]
+        })
+        await user.save()
+        res.send(user)
+    } catch (error) {
+        res.status(500).send(error)
+    }
+})
 // UPDATE USER PASS -- FORGOT PASS -- USE USER EMAIL
 
 
