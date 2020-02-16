@@ -8,7 +8,8 @@ router.post('/api/game', auth, async (req, res) => {
     const game = new Game({
         ...req.body,
         owner: req.user._id,
-        status: "normal"
+        status: "normal",
+        paid: false
     })
     try {
         await game.save()
@@ -77,8 +78,18 @@ router.delete('/api/game/:id', auth, async (req, res) => {
 })
 
 // GET ALL GAMES WITH SORTING FEATURES
-// router.get(`/api/game/all-games`, auth, async (req, res) => {
-
-// })
+router.get('/api/all-games', auth, async (req, res) => {
+    const user = req.user
+    try {
+        const games = await Game.find({ owner: user._id })
+        if(!games){
+            games = []
+            return res.send(games)
+        }
+        res.send(games)
+    } catch (error) {
+        res.status(500).send(error)
+    }
+})
 
 module.exports = router

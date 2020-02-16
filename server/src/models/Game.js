@@ -13,16 +13,19 @@ const gameSchema = new mongoose.Schema({
         type: String
     },
     status: {
-        type: String,
+        type: String
     },
     platform: {
-        type: String,
+        type: String
     },
     level: {
-        type: String,
+        type: String
     },
     fees: {
         type: Number
+    },
+    paid: {
+        type: Boolean
     },
     gameCode: {
         type: Number
