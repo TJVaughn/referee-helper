@@ -1,6 +1,6 @@
 {
   "name": "referee-helper",
-  "version": "1.22.0",
+  "version": "0.1.0",
   "description": "Referee Schedule Management Software",
   "main": "index.js",
   "scripts": {
