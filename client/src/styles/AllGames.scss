@@ -1,4 +1,22 @@
-.All-games-map {
+.All-games-game {
     display: grid;
-    grid-template-columns: repeat(4, 10%);
+    grid-template-columns: repeat(8, 12.5%);
+    border-bottom: 2px outset #000;
+    text-align: center;
+    color: #000;
+    
+    p {
+        margin: 0;
+        padding: 5px 0;
+    }
+    margin: 0;
+}
+.All-games-game:hover {
+    background: linear-gradient(0deg, rgb(35, 215, 247), #fff);
+}
+
+.All-games-container {
+    a {
+        text-decoration: none;
+    }
 }

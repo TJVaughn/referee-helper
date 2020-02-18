@@ -4,6 +4,7 @@ import Schedule from '../paths/Schedule'
 import Login from '../paths/Login'
 import Signup from '../paths/Signup'
 import Profile from '../paths/Profile'
+import SingleGame from '../paths/SingleGame'
 
 function IndexRouter(){
     return (
@@ -37,6 +38,13 @@ function SignupRouter(){
     )
 }
 
+function SingleGameRouter(props){
+    return (
+        <div>
+            <SingleGame id={props.match.params.id} />
+        </div>
+    )
+}
 class AppRouter extends Component {
 
     navbarMenu(){
@@ -69,6 +77,7 @@ class AppRouter extends Component {
                         <Route path={'/profile'} component={ProfileRouter} />
                         <Route path={'/login'} component={LoginRouter} />
                         <Route path={'/signup'} component={SignupRouter} />
+                        <Route path={'/game/:id'} component={SingleGameRouter} />
                     </Switch>
                 </Router>
     		</div>
