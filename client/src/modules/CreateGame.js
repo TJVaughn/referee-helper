@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import postRequest from '../utils/postRequest'
-import { toDateObj } from '../utils/toDateObj'
 
 class CreateGame extends Component {
     constructor(props){
@@ -63,7 +62,7 @@ class CreateGame extends Component {
         if(res._message){
             return this.setState({error: res._message})
         }
-        //On Failure
+        window.location.reload()
         
     }
     handleSubmit (evt) {
@@ -77,7 +76,7 @@ class CreateGame extends Component {
                     <input placeholder="Date" type="date" onChange={this.handleDate} value={this.state.date} />
                     <input placeholder="Time" type="time" onChange={this.handleTime} value={this.state.time} />
                     <input placeholder="Location" type="text" onChange={this.handleLocation} value={this.state.location} />
-                    <input placeholder="Milage" type="text" onChange={this.handleMilage} value={this.state.milage} />
+                    <input placeholder="Mileage" type="text" onChange={this.handleMilage} value={this.state.milage} />
                     <input placeholder="Fees" type="text" onChange={this.handleFees} value={this.state.fees} />
                     <input placeholder="Level" type="text" onChange={this.handleLevel} value={this.state.level} />
                     <input placeholder="Ref Group" type="text" onChange={this.handleGroup} value={this.state.group} />

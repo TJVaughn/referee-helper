@@ -1,0 +1,17 @@
+.Single-game {
+    display: grid;
+    grid-template-columns: repeat(3, 15%) 8% 8% repeat(3, 13%);
+    p {
+        margin: 3px 0;
+    }
+    input {
+        margin: 3px 0;
+    }
+}
+.Single-game-container {
+    background: linear-gradient(0deg, blue, purple);
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+}

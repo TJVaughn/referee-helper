@@ -35,6 +35,26 @@ const userSchema = new mongoose.Schema({
             }
         }
     },  
+    street: {
+        type: String,
+        trim: true
+    },
+    city: {
+        type: String,
+        trim: true
+    },
+    state: {
+        type: String,
+        trim: true
+    },
+    zipCode: {
+        type: Number,
+        trim: true
+    },
+    country: {
+        type: String,
+        trim: true
+    },
     level: {
         type: Number,
         default: 1,

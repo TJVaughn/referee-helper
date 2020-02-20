@@ -40,7 +40,7 @@ router.patch('/api/game/:id', auth, async (req, res) => {
     const _id = req.params.id
     const updates = Object.keys(req.body)
     const allowedUpdates = [
-        "dateTime", "completed", "fees", "status", "refereeGroup", "location", "platform", "level"
+        "dateTime", "completed", "fees", "status", "refereeGroup", "location", "platform", "level", "milage"
     ]
     const isValidUpdate = updates.every((update) => {
         return allowedUpdates.includes(update)
@@ -86,6 +86,9 @@ router.get('/api/all-games', auth, async (req, res) => {
             games = []
             return res.send(games)
         }
+        games.sort((a, b) => {
+            return a.dateTime - b.dateTime
+        })
         res.send(games)
     } catch (error) {
         res.status(500).send(error)

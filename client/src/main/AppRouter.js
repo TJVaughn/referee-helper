@@ -5,10 +5,12 @@ import Login from '../paths/Login'
 import Signup from '../paths/Signup'
 import Profile from '../paths/Profile'
 import SingleGame from '../paths/SingleGame'
+import AddArena from '../modules/AddArena'
 
 function IndexRouter(){
     return (
         <div>
+            <AddArena />
             <Schedule />
         </div>
     )
@@ -72,6 +74,7 @@ class AppRouter extends Component {
     		<div>
                 <Router>
                 {this.navbarMenu()}
+                <hr />
                     <Switch>
                         <Route path={'/'} exact component={IndexRouter} />
                         <Route path={'/profile'} component={ProfileRouter} />
@@ -80,6 +83,7 @@ class AppRouter extends Component {
                         <Route path={'/game/:id'} component={SingleGameRouter} />
                     </Switch>
                 </Router>
+
     		</div>
     	);
     }
