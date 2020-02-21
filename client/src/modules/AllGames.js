@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import fetchRequest from '../utils/fetchRequest'
 import { toDateObj } from '../utils/toDateObj'
-import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
+import { BrowserRouter as Switch, Link} from "react-router-dom";
 
 class AllGames extends Component {
     constructor(props){
