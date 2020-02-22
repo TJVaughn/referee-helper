@@ -40,19 +40,43 @@ router.get('/api/arbiter/schedule', async (req, res) => {
     const userPass = req.body.password
     let htmlSchedule = await getArbiterSchedule(userEmail, userPass)
     htmlSchedule = htmlSchedule.toString()
-    htmlSchedule = htmlSchedule.toLowerCase().split('>').join('').split('<').join('').split(' ')
-    // htmlSchedule = htmlSchedule
-    // for(let i = 0; i < htmlSchedule.length; i++){
-    //     if(i === '<'){
-    //         htmlSchedule = htmlSchedule.splice(i, 2)
-    //     }
-    // }
-    // res.send(htmlSchedule)
+    htmlSchedule = htmlSchedule.toLowerCase().split('<tbody>')
+    let unimportant = htmlSchedule.splice(0, 6)
+    unimportant = htmlSchedule.splice(1, 3)
+    // Now we just have the schedule table in HTML
+    // We need to remove all of the html elements from this
+    htmlSchedule = htmlSchedule.toString().split('')
     let filteredSchedule = htmlSchedule.filter((item) => {
         return item
     })
-    res.send(filteredSchedule)
-    // res.send(htmlSchedule)
+    filteredSchedule = filteredSchedule.join('').split('<tr')
+    unimportant = filteredSchedule.splice(0, 1)
+    unimportant = filteredSchedule.pop()
+    unimportant = filteredSchedule.shift()
+    filteredSchedule = filteredSchedule.join('').split('<br>').join('').split('</td>').join('').split('</span>').join('').split(`>`)
+    unimportant = filteredSchedule.splice(0, 3)
+    unimportant = filteredSchedule.splice(1, 10)
+    unimportant = filteredSchedule.splice(2, 2)
+    unimportant = filteredSchedule.splice(3, 1)
+    unimportant = filteredSchedule.splice(4, 1)
+    unimportant = filteredSchedule.splice(5, 1)
+    unimportant = filteredSchedule.splice(6, 2)
+    unimportant = filteredSchedule.splice(7, 2)
+    unimportant = filteredSchedule.splice(8, 1)
+    unimportant = filteredSchedule.splice(9, 9)
+    let game = filteredSchedule.splice(0, 9)
+
+    // game = game.toString()
+    console.log(game)
+    let trimmedGame = []
+    let newGame = game.forEach((item) => {
+        item = item.toString().split('</a')
+        trimmedGame = item.unshift(item[0])
+        console.log(trimmedGame)
+    })
+    // game = game.filter((item) => {return item})
+    // game = game.join('').split('<').join('').split(',').join('').trim().split('').join('').trim().split('')
+    res.send(trimmedGame)
 })
 
 module.exports = router
