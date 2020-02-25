@@ -31,7 +31,7 @@ const gameSchema = new mongoose.Schema({
         type: Boolean
     },
     gameCode: {
-        type: Number
+        type: String
     },
     position: {
         type: String

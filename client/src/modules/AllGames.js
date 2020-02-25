@@ -16,7 +16,7 @@ class AllGames extends Component {
         const res = await fetchRequest('all-games', 'GET')
         this.setState({schedule: res})
         console.log(res)
-        this.sumEarned()
+        // this.sumEarned()
     }
     componentDidMount(){
         this.callGetAllGames()

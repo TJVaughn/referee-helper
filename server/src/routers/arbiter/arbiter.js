@@ -1,78 +1,62 @@
 const express = require('express')
 const router = new express.Router()
 const puppeteer = require('puppeteer')
-const path = require('path')
-const fs = require('fs')
+const Game = require('../../models/Game')
+const auth = require('../../middleware/auth')
 
 const parseGame = (html) => {
-    let game = {
-        id: html[0],
-        group: html[1],
-        position: html[2],
-        date: html[3],
-        level: html[4],
-        location: html[5],
-        home: html[6],
-        away: html[7],
-        fee: html[8]
+    if(!html[0].includes("</a>")){
+        html = html.splice(1)
     }
-    game.id = game.id.split('<').shift()
-    game.group = game.group.replace(/(\n|\t)/, "***").split('***').shift()
-    game.position = game.position.replace(/(\n|\t)/, "***").split('***').shift()
-    game.date = game.date.replace(/(\n|\t)/, "***").split('***').shift()
-    game.level = game.level.replace(/(\n|\t)/, "***").split('***').shift()
-    game.location = game.location.split('<').shift()
-    game.home = game.home.split('<').shift()
-    game.away = game.away.replace(/(\n|\t)/, "***").split('***').shift()
-    game.fee = game.fee.replace(/(\n|\t)/, "***").split('***').shift()
+    let game = {
+        gameId: html[0],
+        group: html[2],
+        position: html[3],
+        date: html[4],
+        level: html[5],
+        location: html[6],
+        home: html[7],
+        away: html[8],
+        fees: html[9]
+    }
+    game.gameId = game.gameId.split('</a').shift()
+    game.gameId = game.gameId.split('').reverse().splice(0, 8)
+    game.gameId = game.gameId.reverse().join('').split('>').pop()
+
+    game.group = game.group.split('</span>').shift()
+    game.group = game.group.split('').reverse().join('').split('>').shift()
+    game.group = game.group.split('').reverse().join('')
+
+    game.position = game.position.split('</span>').shift()
+    game.position = game.position.split('').reverse().join('').split('>').shift()
+    game.position = game.position.split('').reverse().join('')
+
+    game.date = game.date.split('</span').shift()
+    game.date = game.date.replace('<br>', '')
+    game.date = game.date.split('').reverse().join('').split('>').shift()
+    game.date = game.date.split('').reverse().join('').toLowerCase().replace(/sat|sun|mon|tue|wed|thu|fri/, '')
+
+    game.level = game.level.split('evel').pop()
+    game.level = game.level.split('</span').shift()
+    game.level = game.level.split('>').pop()
+    
+    game.location = game.location.split('</a>').shift()
+    game.location = game.location.split('').reverse().join('').split('>').shift()
+    game.location = game.location.split('').reverse().join('')
+    
+    game.home = game.home.split('</a>').shift()
+    game.home = game.home.split('').reverse().join('').split('>').shift()
+    game.home = game.home.split('').reverse().join('')
+
+    game.away = game.away.split('</span>').shift()
+    game.away = game.away.split('').reverse().join('').split('>').shift()
+    game.away = game.away.split('').reverse().join('')
+    
+    game.fees = game.fees.split('</span>').shift()
+    game.fees = game.fees.split('').reverse().join('').split('>').shift()
+    game.fees = game.fees.split('').reverse().join('').replace('$', '').replace('.', '')
+
     return game
-}
-
-const removeUnnecessary = (array) => {
-    let unimportant = []
-    unimportant = array.splice(1, 10)
-    unimportant = array.splice(2, 2)
-    unimportant = array.splice(3, 1)
-    unimportant = array.splice(4, 1)
-    unimportant = array.splice(5, 1)
-    unimportant = array.splice(6, 2)
-    unimportant = array.splice(7, 2)
-    unimportant = array.splice(8, 1)
-    unimportant = array.splice(9, 9)
-    delete unimportant;
-    let gameToBeParsed = array.splice(0, 9)
-    return gameToBeParsed
-}
-const removeUnnecessaryTwo = (array) => {
-    let unimportant = []
-    unimportant = array.splice(1, 9)
-    unimportant = array.splice(2, 2)
-    unimportant = array.splice(3, 1)
-    unimportant = array.splice(4, 1)
-    unimportant = array.splice(5, 1)
-    unimportant = array.splice(6, 2)
-    unimportant = array.splice(7, 2)
-    unimportant = array.splice(8, 1)
-    unimportant = array.splice(9, 9)
-    delete unimportant;
-    let gameToBeParsed = array.splice(0, 9)
-    return gameToBeParsed
-}
-
-const removeUnnecessaryLast = (array) => {
-    let unimportant = []
-    unimportant = array.splice(1, 9)
-    unimportant = array.splice(2, 2)
-    unimportant = array.splice(3, 1)
-    unimportant = array.splice(4, 1)
-    unimportant = array.splice(5, 1)
-    unimportant = array.splice(6, 2)
-    unimportant = array.splice(7, 2)
-    unimportant = array.splice(8, 1)
-    unimportant = array.splice(9, 5)
-    delete unimportant;
-    let gameToBeParsed = array.splice(0, 9)
-    return gameToBeParsed
 }
 
 const getArbiterSchedule = async (email, pass, getAll = false) => {
@@ -123,21 +107,54 @@ const getArbiterSchedule = async (email, pass, getAll = false) => {
     return response
 }
 
-router.get('/api/arbiter/schedule', async (req, res) => {
+const htmlItemToJson = (item) => {
+    item = item.split('<td')
+    item = parseGame(item)
+    return item
+}
+
+router.get('/api/arbiter/schedule', auth, async (req, res) => {
     const userEmail = req.body.email
     const userPass = req.body.password
-    let htmlSchedule = await getArbiterSchedule(userEmail, userPass)
-    //at this point, we have the beginning to the end of all the schedule data
-    //next we need to figure out how to single out all of the elements
-    // EACH game is it's own TR
-    htmlSchedule = htmlSchedule.join('').split('<tr')
-    // EACH element starts with TD
-    res.send(htmlSchedule)
-
-})
-
-router.get('/api/html-all', async (req, res) => {
-    res.sendFile(path.join(__dirname + '/schedule.html'))
+    const getAll = req.body.getAll
+    const owner = req.user._id
+    try {
+        let htmlSchedule = await getArbiterSchedule(userEmail, userPass, getAll)
+        //at this point, we have the beginning to the end of all the schedule data
+        //next we need to figure out how to single out all of the elements
+        // EACH game is it's own TR
+        let allGamesHtmlArray = htmlSchedule.join('').split('<tr')
+        // res.send(allGamesHtmlArray)
+        // EACH element starts with TD
+        let userSchedule = []
+        allGamesHtmlArray.map((item) => {
+            item = htmlItemToJson(item)
+            userSchedule.push(item)
+        })
+        userSchedule.map(async (item) => {
+            let game = new Game({
+                dateTime: item.date,
+                refereeGroup: item.group,
+                level: item.level,
+                fees: item.fees,
+                gameCode: item.gameId,
+                location: item.location,
+                position: item.position,
+                home: item.home,
+                away: item.away,
+                platform: "Arbiter Sports",
+                owner,
+                status: "normal",
+                paid: false
+            })
+            game.save()
+    
+        })
+        res.send(userSchedule)
+    } catch (error) {
+        res.status(500).send(error)
+    }
+    
 })
 
 module.exports = router
