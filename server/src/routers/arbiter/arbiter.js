@@ -35,6 +35,7 @@ const parseGame = (html) => {
     game.date = game.date.replace('<br>', '')
     game.date = game.date.split('').reverse().join('').split('>').shift()
     game.date = game.date.split('').reverse().join('').toLowerCase().replace(/sat|sun|mon|tue|wed|thu|fri/, '')
+    game.date = new Date(game.date)
 
     game.level = game.level.split('evel').pop()
     game.level = game.level.split('</span').shift()
@@ -118,39 +119,69 @@ router.get('/api/arbiter/schedule', auth, async (req, res) => {
     const userPass = req.body.password
     const getAll = req.body.getAll
     const owner = req.user._id
+    
     try {
+        const currentSchedule = await Game.find({owner})
         let htmlSchedule = await getArbiterSchedule(userEmail, userPass, getAll)
         //at this point, we have the beginning to the end of all the schedule data
         //next we need to figure out how to single out all of the elements
         // EACH game is it's own TR
         let allGamesHtmlArray = htmlSchedule.join('').split('<tr')
-        // res.send(allGamesHtmlArray)
         // EACH element starts with TD
-        let userSchedule = []
+        let arbiterSchedule = []
         allGamesHtmlArray.map((item) => {
             item = htmlItemToJson(item)
-            userSchedule.push(item)
+            arbiterSchedule.push(item)
         })
-        userSchedule.map(async (item) => {
-            let game = new Game({
-                dateTime: item.date,
-                refereeGroup: item.group,
-                level: item.level,
-                fees: item.fees,
-                gameCode: item.gameId,
-                location: item.location,
-                position: item.position,
-                home: item.home,
-                away: item.away,
-                platform: "Arbiter Sports",
-                owner,
-                status: "normal",
-                paid: false
-            })
-            game.save()
-    
+        //CHECK FOR DUPLICATES
+        // ARBITER SCHEDULE ARRAY OF OBJECTS
+        // DATABASE SCHEDULE ARRAY OF OBJECTS
+
+        // FOR EVERY ITEM/OBJECT IN THE ARBITER ARRAY CHECK IF THERE IS A MATCH IN THE DATABASE
+        // IF THERE IS A MATCH, DON'T ADD IT TO THE NEW ARRAY
+
+        // arbiterSchedule = arbiterSchedule.splice(0, 5)
+        let newGamesToBeAdded = []
+
+        const findMatchInDb = (object) => {
+            for(let num = 0; num < currentSchedule.length; num++){
+                if(object.date.toString() === currentSchedule[num].dateTime.toString()){
+                    return true
+                }
+            }
+            return false
+        }
+
+        arbiterSchedule.map((item) => {
+            let isMatch = findMatchInDb(item)
+            if(!isMatch){
+                // console.log("NEW GAME ", item.gameId)
+                return newGamesToBeAdded.push(item)
+            }
+            // console.log("Duplicate Game: ", item.gameId)
         })
-        res.send(userSchedule)
+
+        newGamesToBeAdded.map((item) => {
+                        
+                let game = new Game({
+                    dateTime: item.date,
+                    refereeGroup: item.group,
+                    level: item.level,
+                    fees: item.fees,
+                    gameCode: item.gameId,
+                    location: item.location,
+                    position: item.position,
+                    home: item.home,
+                    away: item.away,
+                    platform: "Arbiter Sports",
+                    owner,
+                    status: "normal",
+                    paid: false
+                })
+
+                game.save()
+        })
+        res.send(newGamesToBeAdded)
     } catch (error) {
         res.status(500).send(error)
     }

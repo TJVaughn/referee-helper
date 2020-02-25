@@ -12,6 +12,16 @@ router.post('/api/game', auth, async (req, res) => {
         paid: false
     })
     try {
+        const owner = req.user._id
+        const currentSchedule = await Game.find({owner})
+        currentSchedule.filter((current) => {
+            console.log("New Game: ", game)
+            console.log("Current: ", current)
+            if(game.dateTime.toString().toLowerCase().splice(0, 15) == current.dateTime.toString().toLowerCase().splice(0, 15) 
+            && game.location.toLowerCase() === current.location.toLowerCase()) {
+                return res.send("Game already exists")
+            }
+        })
         await game.save()
         res.send(game)
     } catch (error) {
@@ -87,7 +97,7 @@ router.get('/api/all-games', auth, async (req, res) => {
             return res.send(games)
         }
         games.sort((a, b) => {
-            return a.dateTime - b.dateTime
+            return b.dateTime - a.dateTime
         })
         res.send(games)
     } catch (error) {
