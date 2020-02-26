@@ -16,22 +16,27 @@ class AllGames extends Component {
         const res = await fetchRequest('all-games', 'GET')
         this.setState({schedule: res})
         console.log(res)
-        // this.sumEarned()
+        this.sumEarned()
     }
     componentDidMount(){
         this.callGetAllGames()
-    }
-    // componentDidUpdate(){
-    //     this.callGetAllGames()
-    // }
-    sumEarned(){
-        this.state.schedule.forEach(item => {
-            this.setState({earned: this.state.earned + item.fees})
-        })
-        // for(let i = 0; i < this.state.schedule.length; i++){
-        //     this.setState({earned: this.state.earned + (this.state.schedule[i].fees / 100)})
-        // }
         
+    }
+    sumEarned(){
+        let sum = 0
+        for(let i = 0; i < this.state.schedule.length; i++){
+            sum += this.state.schedule[i].fees
+        }
+        sum = Math.round(sum)
+        console.log(typeof sum)
+        if(sum > 999){
+            // sum = sum.split('').reverse().splice(4, 0, ',').reverse().join('')
+            
+            sum = Math.round(sum)
+            console.log(sum)
+        }
+        console.log(typeof sum)
+        this.setState({earned: sum})
     }
     render(){
         const allGamesMap = this.state.schedule.map(item =>
@@ -73,7 +78,10 @@ class AllGames extends Component {
     	return(
     		<div className="All-games-container">
                 {console.log(this.state.earned)}
-                <h4>Total Earned: <span className="number">${(Math.round(this.state.earned) / 100).toFixed(2)}</span></h4>
+                <h4>Total Earned: 
+                    <span className="number">
+                        ${`${Math.floor(this.state.earned / 100000)},${((this.state.earned - (Math.floor(this.state.earned / 100000) * 100000)) / 100).toFixed(2)}`}
+                    </span></h4>
                 
     			{allGamesMap}
     		</div>

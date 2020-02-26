@@ -76,7 +76,7 @@ class AppRouter extends Component {
                 {this.navbarMenu()}
                 <hr />
                     <Switch>
-                        <Route path={'/'} exact component={IndexRouter} />
+                        <Route exact path={'/'} component={IndexRouter} />
                         <Route path={'/profile'} component={ProfileRouter} />
                         <Route path={'/login'} component={LoginRouter} />
                         <Route path={'/signup'} component={SignupRouter} />

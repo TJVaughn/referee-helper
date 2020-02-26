@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Link, Redirect } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import fetchRequest from '../utils/fetchRequest'
 import { toDateObj } from '../utils/toDateObj'
 import postRequest from '../utils/postRequest'
@@ -215,7 +215,11 @@ class SingleGame extends Component {
         </div>
     	return(
     		<div>
+                {/* <Route> */}
                 <Link to={'/'}>← Back</Link>
+                {/* <Switch />
+                </Route> */}
+                
                 <button onClick={this.handleClick}>Edit Game</button>
                 <button onClick={this.handleSettings}>Settings</button>
                 {

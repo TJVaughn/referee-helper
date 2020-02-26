@@ -76,6 +76,9 @@ const getArbiterSchedule = async (email, pass, getAll = false) => {
     await page.keyboard.type(pass)
     await page.click('#ctl00_ContentHolder_pgeSignIn_conSignIn_btnSignIn')
     await page.content()
+    if(page.url() === 'https://www1.arbitersports.com/shared/signin/signin.aspx') {
+        return { error: "Invalid Login"}
+    }
     await page.click('#mobileAlertStayLink')
     await page.goto('https://www1.arbitersports.com/Official/GameScheduleEdit.aspx')
     await page.content()
@@ -114,7 +117,7 @@ const htmlItemToJson = (item) => {
     return item
 }
 
-router.get('/api/arbiter/schedule', auth, async (req, res) => {
+router.post('/api/arbiter/schedule', auth, async (req, res) => {
     const userEmail = req.body.email
     const userPass = req.body.password
     const getAll = req.body.getAll
@@ -123,6 +126,9 @@ router.get('/api/arbiter/schedule', auth, async (req, res) => {
     try {
         const currentSchedule = await Game.find({owner})
         let htmlSchedule = await getArbiterSchedule(userEmail, userPass, getAll)
+        if(htmlSchedule.error){
+            return res.send({error: "Invalid Login"})
+        }
         //at this point, we have the beginning to the end of all the schedule data
         //next we need to figure out how to single out all of the elements
         // EACH game is it's own TR
