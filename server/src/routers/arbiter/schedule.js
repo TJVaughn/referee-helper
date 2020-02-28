@@ -17,7 +17,8 @@ const parseGame = (html) => {
         location: html[6],
         home: html[7],
         away: html[8],
-        fees: html[9]
+        fees: html[9],
+        status: html[10]
     }
     game.gameId = game.gameId.split('</a').shift()
     game.gameId = game.gameId.split('').reverse().splice(0, 8)
@@ -57,6 +58,14 @@ const parseGame = (html) => {
     game.fees = game.fees.split('').reverse().join('').split('>').shift()
     game.fees = game.fees.split('').reverse().join('').replace('$', '').replace('.', '')
 
+    if(game.status){
+        game.status = game.status.split('</span>').shift()
+        game.status = game.status.split('').reverse().join('').split('>').shift()
+        game.status = game.status.split('').reverse().join('')
+    }
+    if(!game.status){
+        game.status = "normal"
+    }
     return game
 }
 
@@ -91,16 +100,6 @@ const getArbiterSchedule = async (email, pass, getAll = false) => {
         await page.select('#ddlDateFilter', '9')
         await page.click('#btnApplyFilter')
         await page.waitFor(5000)
-        // await page.content()
-        response = await page.content()
-        response = response.toString()
-        response = response.split('ctl00_ContentHolder_pgeGameScheduleEdit_conGameScheduleEdit_dgGames')
-        response = response.splice(2)
-        response = response.join('').split('ctl00_ContentHolder_pgeGameScheduleEdit_conGameScheduleEdit_lnkTrigger')
-        response = response.splice(0, 1)
-        //at this point, we have the beginning to the end of all the schedule data
-        //next we need to figure out how to single out all of the elements
-        return response
     }
     response = await page.content()
     response = response.toString()
@@ -181,12 +180,13 @@ router.post('/api/arbiter/schedule', auth, async (req, res) => {
                     away: item.away,
                     platform: "Arbiter Sports",
                     owner,
-                    status: "normal",
+                    status: item.status,
                     paid: false
                 })
 
                 game.save()
         })
+
         res.send(newGamesToBeAdded)
     } catch (error) {
         res.status(500).send(error)

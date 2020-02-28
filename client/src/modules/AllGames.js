@@ -8,14 +8,15 @@ class AllGames extends Component {
         super(props);
         this.state = {
             schedule: [],
-            earned: 0.00
+            earned: 0.00,
+            cancelled: ''
         }
     }
 
     async callGetAllGames(){
         const res = await fetchRequest('all-games', 'GET')
         this.setState({schedule: res})
-        console.log(res)
+        // console.log(res)
         this.sumEarned()
     }
     componentDidMount(){
@@ -43,7 +44,7 @@ class AllGames extends Component {
             <div key={item._id}>
                 <Switch />
                 <Link to={`/game/${item._id}`}>
-                    <div className="All-games-game" >
+                    <div className={`All-games-game ${item.status.toLowerCase().includes('canceled') ? 'canceled' : ''}`} >
                         <p>
                             {toDateObj(item.dateTime).toDateString()}
                         </p>
@@ -68,6 +69,7 @@ class AllGames extends Component {
                         <p>
                             {item.status}
                         </p>
+                        
                         {/* <p>
                             <input value={this.state.paid} type="checkbox" />
                         </p> */}

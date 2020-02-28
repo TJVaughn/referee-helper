@@ -6,8 +6,8 @@ const app = require('./server/src/app')
 const userRouter = require('./server/src/routers/user')
 const gameRouter = require('./server/src/routers/game')
 const arenaRouter = require('./server/src/routers/arena')
-const arbiterRouter = require('./server/src/routers/arbiter/arbiter')
-
+const arbiterScheduleRouter = require('./server/src/routers/arbiter/schedule')
+const arbiterProfileRouter = require('./server/src/routers/arbiter/profile')
 //  ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
 app.use(express.json())
@@ -16,7 +16,8 @@ app.use(express.json())
 app.use(userRouter)
 app.use(gameRouter)
 app.use(arenaRouter)
-app.use(arbiterRouter)
+app.use(arbiterScheduleRouter)
+app.use(arbiterProfileRouter)
 //   ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
 app.listen(port, () => {

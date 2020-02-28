@@ -12,11 +12,17 @@
     margin: 0;
 }
 .All-games-game:hover {
-    background: linear-gradient(0deg, rgb(35, 215, 247), #fff);
+    background: linear-gradient(5deg, rgb(35, 215, 247), #fff);
 }
 
 .All-games-container {
     a {
         text-decoration: none;
     }
+}
+.canceled {
+    background: linear-gradient(185deg, rgba(255, 9, 9, 0.842), rgba(255, 166, 0, 0.808));
+}
+.All-games-game:hover.canceled {
+    background: linear-gradient(5deg, rgba(255, 9, 9, 0.842), rgba(255, 166, 0, 0.808));
 }
