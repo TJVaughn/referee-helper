@@ -60,7 +60,7 @@ router.patch('/api/user/me', auth, async (req, res) => {
     const user = req.user;
     const updates = Object.keys(req.body);
     const allowedUpdates = [
-        "level", "name", "password"
+        "level", "name", "password", "street", "city", "state", "zipCode"
     ]
     const isValidUpdate = updates.every((update) => {
         return allowedUpdates.includes(update)

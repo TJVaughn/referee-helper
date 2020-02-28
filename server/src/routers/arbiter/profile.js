@@ -2,6 +2,7 @@ const express = require('express')
 const router = new express.Router()
 const puppeteer = require('puppeteer')
 // const Game = require('../../models/Game')
+
 const auth = require('../../middleware/auth')
 
 const getProfile = async (email, password) => {
@@ -34,45 +35,70 @@ const getProfile = async (email, password) => {
     return response
 }
 
-const parseHtml = (data) => {
-    data = data.toString().split('ctl00_ContentHolder_pgeOfficialEdit_conOfficialEdit_pnlSideBar').pop()
-    data = data.toString().split('<tbody').splice(2)
-    data = data.toString().split('<tr').splice(3)
-    data = {
-        fName: data[0],
-        lName: data[2],
-        email: data[6],
-        phone: data[9],
-        street: data[14],
-        city: data[16],
-        country: data[17],
-        state: data[18],
-        postalCode: data[19]
+const parseSingle = (single) => {
+    try {
+        single = single.split('text').pop()
+        single = single.split('').splice(9)
+        single = single.join('').replace(/\"/, "*").split("*").shift()
+        return single
+    } catch (error) {
+        return {error}
     }
-    data.fName = data.fName.split('text').pop()
-    data.fName = data.fName.split('').splice(9)
-    data.fName = data.fName.join('')
+}
 
-    return data
+const parseHtml = (data) => {
+    try {
+        data = data.toString().split('ctl00_ContentHolder_pgeOfficialEdit_conOfficialEdit_pnlSideBar').pop()
+        data = data.toString().split('<tbody').splice(2)
+        data = data.toString().split('<tr').splice(3)
+
+        data = {
+            fName: parseSingle(data[0]),
+            lName: parseSingle(data[2]),
+            asEmail: parseSingle(data[6]),
+            phone: (data[9]),
+            street: parseSingle(data[14]),
+            city: parseSingle(data[16]),
+            state: (data[18]),
+            postalCode: (data[19])
+        }
+        data.phone = data.phone.split('text').splice(1, 1)
+        data.phone = data.phone.toString().split('').splice(9, 12)
+        data.phone = data.phone.join('')
+        
+        data.state = data.state.split('selected').splice(2)
+        data.state = data.state.toString().split('</option').shift()
+        data.state = data.state.split('>').pop()
+
+        data.postalCode = data.postalCode.split('text').splice(1, 1)
+        data.postalCode = data.postalCode.toString().split('').splice(9, 5)
+        data.postalCode = data.postalCode.join('')
+
+        return data
+    } catch (error) {
+        return {error}
+    }
 } 
 
 router.post('/api/arbiter/profile', auth, async (req, res) => {
     const email = req.body.email
     const password = req.body.password
-    // const userId = req.user._id
-
+    const user = req.user
     try {
         const rawProfile = await getProfile(email, password)
         if(rawProfile.error){
             return res.send({error: "Invalid Login"})
         }
         const parsedProfile = parseHtml(rawProfile)
-
-        res.send(parsedProfile)
+        const updates = Object.keys(parsedProfile)
+        updates.forEach((update) => {
+            user[update] = parsedProfile[update]
+        })
+        await user.save()
+        res.send(user)
     } catch (error) {
         res.status(418).send(error)
     }
-
 })
 
 module.exports = router

@@ -10,6 +10,14 @@ const userSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    fName: {
+        type: String,
+        trim: true
+    },
+    lName: {
+        type: String,
+        trim: true
+    },
     email: {
         type: String,
         unique: true,
@@ -35,6 +43,16 @@ const userSchema = new mongoose.Schema({
             }
         }
     },  
+    asEmail: {
+        type: String,
+        trim: true,
+        lowercase: true,
+        validate(value){
+            if(!validator.isEmail(value)){
+                throw new Error("Value must be a valid email address!")
+            }
+        }
+    },
     street: {
         type: String,
         trim: true
