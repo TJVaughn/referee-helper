@@ -69,7 +69,17 @@ class AllGames extends Component {
                         <p>
                             {item.status}
                         </p>
-                        
+                        <p>
+                            {item.gameCode}
+                        </p>
+                        <p>
+                            {item.platform}
+                        </p>
+                        <p>
+                            {item.paid 
+                            ? 'paid'
+                            : 'unpaid'}
+                        </p>
                         {/* <p>
                             <input value={this.state.paid} type="checkbox" />
                         </p> */}
