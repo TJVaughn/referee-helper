@@ -25,12 +25,10 @@ router.post('/api/horizon/schedule', auth, async (req, res) => {
 
     await page.keyboard.type(password)
     await page.click('#loginsub')
-    await page.screenshot({path: 'screenshotb4.png'})
 
     await page.content()
     await page.waitFor(1000)
     await page.goto('https://www.horizonwebref.com/?pageID=1102')
-    await page.screenshot({path: 'screenshot.png'})
     
     await page.click('#innerfiltbar')
     await page.waitFor(1000)
@@ -45,8 +43,12 @@ router.post('/api/horizon/schedule', auth, async (req, res) => {
 
     await page.click('#gobtn')
     await page.waitFor(1000)
+    await page.screenshot({path: 'screenshot.png'})
 
-    res.send(await page.content())
+    let content = await page.content()
+    content = content.toString().split('schedResults').splice(1)
+    content = content.join('')
+    res.send(content)
     await browser.close()
 })
 
