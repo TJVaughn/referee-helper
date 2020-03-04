@@ -37,9 +37,8 @@ const parseEachGame = html => {
         game.dateTime = new Date(`${date} ${time}`)
         
         if(time.includes('t ba')){
-            game.dateTime = new Date("01/01/2000 12:00 AM")
+            game.dateTime = new Date(`${date} 12:00 AM`)
         }
-
 
         game.type = game.type.split('').reverse().join('').replace(/\n/, '*').split('*').shift()
         game.type = game.type.split('').reverse().join('')
@@ -75,11 +74,12 @@ const parseIntoGames = async (raw) => {
         raw = raw.toString().split('schedResults').splice(1)
         raw = raw.join('').split('<tbody').splice(6, 1)
         raw = raw.join('').split('<tr')
-        const endSplice = raw.length - 7
+        const endSplice = raw.length - 6
         raw = raw.splice(2, endSplice)
+        
         let gameContent = []
         for(let i = 0; i < raw.length; i++){
-            if(raw[i].includes('assignment' && raw[i].includes('Game Time'))){
+            if(raw[i].includes('Game Time')){
                 gameContent.push(raw[i])
             }
         }
@@ -89,14 +89,23 @@ const parseIntoGames = async (raw) => {
     }
 }
 const findRefGroup = (html) => {
+    try {
+        let group = []
+        html = html.split(';')
+        for(let i = 0; i<html.length; i++){
+            if(html[i].includes('organization')){
+                group.push(html[i])
+            }
+        }
+        group = group.pop()
+        group = group.split('=').pop()
+        group = group.split(/"/).splice(1, 1)
 
-    // html = html.split('script').pop()
-    // html = html.toString().split('').reverse().join('').split('>naps<').shift()
-    // html = html.toString().split('').reverse().join('').split('</span').shift()
-    // console.log(html)
-
-    html = 'Referees Crease Youth'
-    return html
+        return group[0]
+    } catch (error) {
+        return {error: `Error in find Ref Group: ${error}`}
+    }
+    
 }
 
 const puppeteerFunction = async (username, password) => {
@@ -115,7 +124,7 @@ const puppeteerFunction = async (username, password) => {
         await page.click('#loginTable2 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > input')
         await page.keyboard.type(username)
         await page.click("#password")
-        await page.waitFor(500)
+        await page.waitFor(750)
     
         await page.keyboard.type(password)
         await page.click('#loginsub')
@@ -136,52 +145,28 @@ const puppeteerFunction = async (username, password) => {
         await page.waitFor(500)
     
         await page.click('#gobtn')
-        await page.waitFor(500)  
+        await page.waitFor(1000)  
     
         const rawSchedule = await page.content()
         const refGroup = findRefGroup(rawSchedule)
         let rawGames = await parseIntoGames(rawSchedule)
-
         let horizonSchedule = []
-        // let errNum = 0
         rawGames.map((game) => {
             game = parseEachGame(game)
-            if(!game.dateError){
-                horizonSchedule.push(game)
-            }
+            horizonSchedule.push(game)
         })
-        // let schedLength = horizonSchedule.length + errNum
-
-        console.log(horizonSchedule.length)
+        let nextGames = []
         while (horizonSchedule.length % 50 === 0) {
             await page.click('#contentofpageid > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > center:nth-child(14) > a:nth-child(1) > img:nth-child(1)')
-            await page.waitFor(500)
+            await page.waitFor(1000)
             let nextPageRaw = await page.content()
-            let nextGames = await parseIntoGames(nextPageRaw)
+            nextGames = await parseIntoGames(nextPageRaw)
             nextGames.map((game) => {
                 game = parseEachGame(game)
-                if(!game.dateError){
-                    horizonSchedule.push(game)
-                } 
-
+                horizonSchedule.push(game)
             })
         }
-        // let removeIndexes = []
-        // for (let i = 0; i < horizonSchedule.length; i++){
-        //     if(!horizonSchedule[i].dateTime){
-        //         console.log("Failed", horizonSchedule[i].dateTime)
-        //         removeIndexes.push(i)
-        //     }
-        //     console.log("success", horizonSchedule[i].dateTime)
-        // }
-        // console.log(removeIndexes)
-        // horizonSchedule.splice(removeIndexes[1], 1)
-        // horizonSchedule.splice(removeIndexes[2], 1)
-
-        // // for (let i = 0; i < removeIndexes.length; i++){
-        // //     horizonSchedule.splice(removeIndexes[i], 1)
-        // // }
-        
+        await page.screenshot({path: 'screenshot.png'})
         return {schedule: horizonSchedule, group: refGroup}
     } catch (error) {
         return ({error: `Error From puppeteer: ${error}`})
@@ -194,40 +179,7 @@ router.post('/api/horizon/schedule', auth, async (req, res) => {
         const password = req.body.password
         const owner = req.user._id
         const currentSchedule = await Game.find({owner})
-        //First we grab the whole html doc from HWR ↓↓↓
-        // let rawSchedule = await puppeteerFunction(username, password)
-        //↑↑↑↑ This returns all the content, or an error
-        // const refGroup = findRefGroup(rawSchedule)
-
-        
-        //↓↓↓ Then we remove everything but the games, which are still in HTML
-        // let rawGames = await parseIntoGames(rawSchedule)
-        //↑↑↑↑ We are returned with an error, or raw html containing the game content
-        
-        //↓↓↓↓↓ Then we map over each item(game) in that array, to parse down the data
-        // let horizonSchedule = []
-
-        // rawGames.map((game) => {
-        //     game = parseEachGame(game)
-        //     if(!game.error){
-        //         horizonSchedule.push(game)
-        //     }
-        // })
-        //↑↑↑↑ Which we then append to this new array
-        
-        // if(horizonSchedule.length % 50 === 0){
-        //     let nextPageScheduleRaw = await puppeteerFunction(username, password, true)
-        //     let nextPageGamesRaw = await parseIntoGames(nextPageScheduleRaw)
-        //     nextPageGamesRaw.map((game) => {
-        //         game = parseEachGame(game)
-        //         if(!game.error){
-        //             horizonSchedule.push(game)
-        //         }
-        //     })
-        // }
-
         let response = await puppeteerFunction(username, password)
-
         let horizonSchedule = response.schedule
         let newGamesToBeAdded = []
 
@@ -240,18 +192,21 @@ router.post('/api/horizon/schedule', auth, async (req, res) => {
             return false
         }
 
-        console.log(typeof horizonSchedule)
-        horizonSchedule.map((item) => {
-            let isMatch = findMatchInDb(item)
+        if(!horizonSchedule) {
+            horizonSchedule = []
+        }
+        horizonSchedule.map((game) => {
+            let isMatch = findMatchInDb(game)
             if(!isMatch){
                 // console.log("NEW GAME ", item.gameId)
-                return newGamesToBeAdded.push(item)
+                return newGamesToBeAdded.push(game)
             }
             // console.log("Duplicate Game: ", item.gameId)
         })
-
+        if(newGamesToBeAdded.length === 0){
+            newGamesToBeAdded = []
+        }
         newGamesToBeAdded.map((item) => {
-                        
                 let game = new Game({
                     dateTime: item.dateTime,
                     refereeGroup: response.group,
@@ -268,11 +223,10 @@ router.post('/api/horizon/schedule', auth, async (req, res) => {
 
                 game.save()
         })
-
         res.send(newGamesToBeAdded)
-        // res.send(newGamesArr)
+
     } catch (error) {
-        res.status(418).send({error: "Error from main " + error})
+        res.status(418).send({error: "Error from main: " + error})
     }
 })
 

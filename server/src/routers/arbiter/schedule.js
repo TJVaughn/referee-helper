@@ -37,7 +37,6 @@ const parseGame = (html) => {
     game.date = game.date.split('').reverse().join('').split('>').shift()
     game.date = game.date.split('').reverse().join('').toLowerCase().replace(/sat|sun|mon|tue|wed|thu|fri/, '')
     game.date = new Date(game.date)
-    console.log(game.date)
 
     game.level = game.level.split('evel').pop()
     game.level = game.level.split('</span').shift()
