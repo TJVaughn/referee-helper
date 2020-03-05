@@ -3,9 +3,9 @@ const router = new express.Router()
 const puppeteer = require('puppeteer')
 const Game = require('../../models/Game')
 const auth = require('../../middleware/auth')
+const addGamesFromArray = require('../../utils/addGamesFromArray')
 
-
-const parseEachGame = html => {
+const parseEachGame = (html, group) => {
     //Games array with each item in the array being a raw game
     // for each game we need to apply the same parsing code
     // then return the games as an array of JSON friendly objects
@@ -13,11 +13,14 @@ const parseEachGame = html => {
         html = html.split('</td')
         let game = {
             dateTime: '',
-            type: html[3],
+            level: html[3],
             home: html[4],
             away: html[5],
-            arena: html[6],
-            fees: html[7]
+            location: html[6],
+            fees: html[7],
+            group: group,
+            position: 'Referee',
+            paid: false
             // paid: html[8]
             // whole: html
         }
@@ -40,8 +43,8 @@ const parseEachGame = html => {
             game.dateTime = new Date(`${date} 12:00 AM`)
         }
 
-        game.type = game.type.split('').reverse().join('').replace(/\n/, '*').split('*').shift()
-        game.type = game.type.split('').reverse().join('')
+        game.level = game.level.split('').reverse().join('').replace(/\n/, '*').split('*').shift()
+        game.level = game.level.split('').reverse().join('')
 
         game.home = game.home.replace('</a>', '').split('').reverse().join('').split('>').shift()
         game.home = game.home.split('').reverse().join('')
@@ -49,9 +52,9 @@ const parseEachGame = html => {
         game.away = game.away.replace('</a>', '').split('').reverse().join('').split('>').shift()
         game.away = game.away.split('').reverse().join('')
 
-        game.arena = game.arena.split('</a>').shift()
-        game.arena = game.arena.split('').reverse().join('').split('>').shift()
-        game.arena = game.arena.split('').reverse().join('')
+        game.location = game.location.split('</a>').shift()
+        game.location = game.location.split('').reverse().join('').split('>').shift()
+        game.location = game.location.split('').reverse().join('')
 
         game.fees = game.fees.split('').reverse().splice(0, 5)
         game.fees = game.fees.join('').split('').reverse().join('').replace('.', '')
@@ -62,7 +65,8 @@ const parseEachGame = html => {
             game.fees = 0
             game.status = 'canceled'
         }
-        
+        // game.status = 'UPDATED'
+        game.gameId = 0000
         return game
     } catch (error) {
         return ({error: "Error from parseEachGame: " + error})
@@ -148,11 +152,11 @@ const puppeteerFunction = async (username, password) => {
         await page.waitFor(1000)  
     
         const rawSchedule = await page.content()
-        const refGroup = findRefGroup(rawSchedule)
+        const refGroup = await findRefGroup(rawSchedule)
         let rawGames = await parseIntoGames(rawSchedule)
         let horizonSchedule = []
         rawGames.map((game) => {
-            game = parseEachGame(game)
+            game = parseEachGame(game, refGroup)
             horizonSchedule.push(game)
         })
         let nextGames = []
@@ -162,12 +166,12 @@ const puppeteerFunction = async (username, password) => {
             let nextPageRaw = await page.content()
             nextGames = await parseIntoGames(nextPageRaw)
             nextGames.map((game) => {
-                game = parseEachGame(game)
+                game = parseEachGame(game, refGroup)
                 horizonSchedule.push(game)
             })
         }
-        await page.screenshot({path: 'screenshot.png'})
-        return {schedule: horizonSchedule, group: refGroup}
+        // await page.screenshot({path: 'screenshot.png'})
+        return horizonSchedule
     } catch (error) {
         return ({error: `Error From puppeteer: ${error}`})
     }
@@ -179,52 +183,9 @@ router.post('/api/horizon/schedule', auth, async (req, res) => {
         const password = req.body.password
         const owner = req.user._id
         const currentSchedule = await Game.find({owner})
-        let response = await puppeteerFunction(username, password)
-        let horizonSchedule = response.schedule
-        let newGamesToBeAdded = []
-
-        const findMatchInDb = (object) => {
-            for(let num = 0; num < currentSchedule.length; num++){
-                if(object.dateTime.toString() === currentSchedule[num].dateTime.toString()){
-                    return true
-                }
-            }
-            return false
-        }
-
-        if(!horizonSchedule) {
-            horizonSchedule = []
-        }
-        horizonSchedule.map((game) => {
-            let isMatch = findMatchInDb(game)
-            if(!isMatch){
-                // console.log("NEW GAME ", item.gameId)
-                return newGamesToBeAdded.push(game)
-            }
-            // console.log("Duplicate Game: ", item.gameId)
-        })
-        if(newGamesToBeAdded.length === 0){
-            newGamesToBeAdded = []
-        }
-        newGamesToBeAdded.map((item) => {
-                let game = new Game({
-                    dateTime: item.dateTime,
-                    refereeGroup: response.group,
-                    level: item.type,
-                    fees: item.fees,
-                    location: item.arena,
-                    home: item.home,
-                    away: item.away,
-                    platform: "Horizon Web Ref",
-                    owner,
-                    status: item.status,
-                    paid: false
-                })
-
-                game.save()
-        })
+        let horizonSchedule = await puppeteerFunction(username, password)
+        let newGamesToBeAdded = await addGamesFromArray(horizonSchedule, "Horizon Web Ref", owner, currentSchedule)
         res.send(newGamesToBeAdded)
-
     } catch (error) {
         res.status(418).send({error: "Error from main: " + error})
     }

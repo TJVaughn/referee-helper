@@ -3,6 +3,8 @@ const router = new express.Router()
 const puppeteer = require('puppeteer')
 const Game = require('../../models/Game')
 const auth = require('../../middleware/auth')
+const addGamesFromArray = require('../../utils/addGamesFromArray')
+
 
 const parseGame = (html) => {
     if(!html[0].includes("</a>")){
@@ -12,7 +14,7 @@ const parseGame = (html) => {
         gameId: html[0],
         group: html[2],
         position: html[3],
-        date: html[4],
+        dateTime: html[4],
         level: html[5],
         location: html[6],
         home: html[7],
@@ -32,11 +34,11 @@ const parseGame = (html) => {
     game.position = game.position.split('').reverse().join('').split('>').shift()
     game.position = game.position.split('').reverse().join('')
 
-    game.date = game.date.split('</span').shift()
-    game.date = game.date.replace('<br>', '')
-    game.date = game.date.split('').reverse().join('').split('>').shift()
-    game.date = game.date.split('').reverse().join('').toLowerCase().replace(/sat|sun|mon|tue|wed|thu|fri/, '')
-    game.date = new Date(game.date)
+    game.dateTime = game.dateTime.split('</span').shift()
+    game.dateTime = game.dateTime.replace('<br>', '')
+    game.dateTime = game.dateTime.split('').reverse().join('').split('>').shift()
+    game.dateTime = game.dateTime.split('').reverse().join('').toLowerCase().replace(/sat|sun|mon|tue|wed|thu|fri/, '')
+    game.dateTime = new Date(game.dateTime)
 
     game.level = game.level.split('evel').pop()
     game.level = game.level.split('</span').shift()
@@ -146,46 +148,7 @@ router.post('/api/arbiter/schedule', auth, async (req, res) => {
         // IF THERE IS A MATCH, DON'T ADD IT TO THE NEW ARRAY
 
         // arbiterSchedule = arbiterSchedule.splice(0, 5)
-        let newGamesToBeAdded = []
-
-        const findMatchInDb = (object) => {
-            for(let num = 0; num < currentSchedule.length; num++){
-                if(object.date.toString() === currentSchedule[num].dateTime.toString()){
-                    return true
-                }
-            }
-            return false
-        }
-
-        arbiterSchedule.map((item) => {
-            let isMatch = findMatchInDb(item)
-            if(!isMatch){
-                // console.log("NEW GAME ", item.gameId)
-                return newGamesToBeAdded.push(item)
-            }
-            // console.log("Duplicate Game: ", item.gameId)
-        })
-
-        newGamesToBeAdded.map((item) => {
-                        
-                let game = new Game({
-                    dateTime: item.date,
-                    refereeGroup: item.group,
-                    level: item.level,
-                    fees: item.fees,
-                    gameCode: item.gameId,
-                    location: item.location,
-                    position: item.position,
-                    home: item.home,
-                    away: item.away,
-                    platform: "Arbiter Sports",
-                    owner,
-                    status: item.status,
-                    paid: false
-                })
-
-                game.save()
-        })
+        const newGamesToBeAdded = await addGamesFromArray(arbiterSchedule, "Arbiter Sports", owner, currentSchedule)
 
         res.send(newGamesToBeAdded)
     } catch (error) {

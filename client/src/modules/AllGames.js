@@ -9,19 +9,21 @@ class AllGames extends Component {
         this.state = {
             schedule: [],
             earned: 0.00,
-            cancelled: ''
+            cancelled: '',
+            error: ''
         }
     }
 
     async callGetAllGames(){
         const res = await fetchRequest('all-games', 'GET')
+        if(res.error){
+            return this.setState({ error: res.error, schedule: []})
+        }
         this.setState({schedule: res})
-        // console.log(res)
         this.sumEarned()
     }
     componentDidMount(){
         this.callGetAllGames()
-        
     }
     sumEarned(){
         let sum = 0
@@ -29,14 +31,9 @@ class AllGames extends Component {
             sum += this.state.schedule[i].fees
         }
         sum = Math.round(sum)
-        console.log(typeof sum)
         if(sum > 999){
-            // sum = sum.split('').reverse().splice(4, 0, ',').reverse().join('')
-            
             sum = Math.round(sum)
-            console.log(sum)
         }
-        console.log(typeof sum)
         this.setState({earned: sum})
     }
     render(){
@@ -89,13 +86,15 @@ class AllGames extends Component {
             )
     	return(
     		<div className="All-games-container">
-                {console.log(this.state.earned)}
                 <h4>Total Earned: 
                     <span className="number">
                         ${`${Math.floor(this.state.earned / 100000)},${((this.state.earned - (Math.floor(this.state.earned / 100000) * 100000)) / 100).toFixed(2)}`}
                     </span></h4>
                 
     			{allGamesMap}
+                <h1>
+                    {this.state.error}
+                </h1>
     		</div>
     	);
     }
