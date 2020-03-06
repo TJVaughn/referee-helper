@@ -67,6 +67,11 @@ const addGamesfromArray = async (schedule, platform, owner, currentSchedule) => 
         // 10/14/18, 5:30 PM CPCT
         // Second 1/18/19 South Kent game 
         // The reason for this is that they have the same date and time as the game prior
+
+        // Just had one of my games updated, Same code, same date, different time.
+        // The software didn't recognize it as a duplicate because I haven't thought of that edge case
+        // It added a new game even though it doesn't exist
+        
         return newGamesToBeAdded
     } catch (error) {
         return `Error in add games from Array: ${error}`
