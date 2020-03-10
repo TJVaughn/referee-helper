@@ -9,8 +9,11 @@ const gameSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    milage: {
-        type: Number
+    distance: {
+        type: String
+    },
+    duration: {
+        type: String
     },
     refereeGroup: {
         type: String

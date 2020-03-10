@@ -3,6 +3,7 @@ const router = new express.Router()
 const auth = require('../middleware/auth')
 const Game = require('../models/Game')
 const multer = require('multer')
+const superagent = require('superagent')
 
 // CREATE GAME
 router.post('/api/game', auth, async (req, res) => {
@@ -15,18 +16,27 @@ router.post('/api/game', auth, async (req, res) => {
     try {
         const owner = req.user._id
         const currentSchedule = await Game.find({owner})
-        currentSchedule.filter((current) => {
-            console.log("New Game: ", game)
-            console.log("Current: ", current)
-            if(game.dateTime.toString().toLowerCase().splice(0, 15) == current.dateTime.toString().toLowerCase().splice(0, 15) 
-            && game.location.toLowerCase() === current.location.toLowerCase()) {
-                return res.send("Game already exists")
+        let duplicates = currentSchedule.filter((current) => {
+            let gameDate = game.dateTime.toString().split().splice(0, 15)
+            gameDate = gameDate.join('')
+            let currDate = current.dateTime.toString().split().splice(0, 15)
+            currDate = currDate.join('')
+            // console.log("New Game dateTime: ", gameDate)
+            // console.log("Current dateTime: ", currDate)
+            if(gameDate === currDate) {
+                return true
             }
+            return false
         })
-        await game.save()
-        res.send(game)
+        if(duplicates.length === 0){
+            await game.save()
+            res.send(game)
+        } else {
+            res.send({_message: "Game already exists"})
+        }
+
     } catch (error) {
-        res.status(418).send(error)
+        res.status(418).send({error: "Error from create game: " + error})
     }
 })
 
@@ -98,6 +108,24 @@ router.get('/api/all-games', auth, async (req, res) => {
         games.sort((a, b) => {
             return b.dateTime - a.dateTime
         })
+        let today = new Date()
+        for(let i = 0; i < games.length; i++){
+            if(!games[i].distance 
+                && games[i].dateTime.getDate() === today.getDate()
+                && games[i].dateTime.getMonth() === today.getMonth()
+                && games[i].dateTime.getFullYear() === today.getFullYear()){
+                    let mapsAPIURL = `https://maps.googleapis.com/maps/api/distancematrix/json?key=${process.env.MAPS_KEY}&origins=${user.street}${user.city}${user.state}&destinations=${encodeURI(games[i].location)}&units=imperial`
+                    let response = await superagent.get(mapsAPIURL)
+                    response.res.text = JSON.parse(response.res.text)
+                    games[i].distance = response.res.text.rows[0].elements[0].distance.text
+                    games[i].duration = response.res.text.rows[0].elements[0].duration.text
+                    games[i].save()
+                    console.log("CALLED MAPS API")
+            } else {
+                // games[i].distance = null
+                // games[i].duration = null
+            }
+        }
         res.send(games)
     } catch (error) {
         res.status(500).send(error)
@@ -135,7 +163,7 @@ router.post('/api/games/import', auth, upload.single('schedule'), async (req, re
     } 
     let firstDateIndex = findFirstDate(schedule)
     schedule = schedule.splice(firstDateIndex)
-    
+    console.log(encodeURI('Stamford Twin Rinks, East'))
 
     res.send(schedule)
 }, (error, req, res, next) => {

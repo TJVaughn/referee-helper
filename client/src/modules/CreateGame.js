@@ -10,14 +10,12 @@ class CreateGame extends Component {
             location: '',
             fees: '',
             group: '',
-            level: '',
-            milage: ''
+            level: ''
         }
         this.handleSubmit = this.handleSubmit.bind(this)
         this.handleDate = this.handleDate.bind(this)
         this.handleTime = this.handleTime.bind(this)
         this.handleLocation = this.handleLocation.bind(this)
-        this.handleMilage = this.handleMilage.bind(this)
         this.handleFees = this.handleFees.bind(this)
         this.handleLevel = this.handleLevel.bind(this)
         this.handleGroup = this.handleGroup.bind(this)
@@ -40,9 +38,6 @@ class CreateGame extends Component {
     handleGroup (evt) {
         this.setState({group: evt.target.value})
     }
-    handleMilage (evt) {
-        this.setState({milage: evt.target.value})
-    }
 
     async callCreateGame () {
         if(!this.state.date || !this.state.time || !this.state.location){
@@ -52,17 +47,18 @@ class CreateGame extends Component {
         const data = {
             "dateTime": dateTime,
             "location": this.state.location,
-            "milage": this.state.milage,
             "fees": this.state.fees * 100,
             "level": this.state.level,
-            "refereeGroup": this.state.group
+            "refereeGroup": this.state.group,
+            "platform": "Manually Added"
         }
-        const res = await postRequest('game', 'POST', { data })
-        console.log(res)
+        let res = await postRequest('game', 'POST', { data })
+        // res = res.json()
+        console.log("Response from creategame: ", res)
         if(res._message){
             return this.setState({error: res._message})
         }
-        window.location.reload()
+        // window.location.reload()
         
     }
     handleSubmit (evt) {
@@ -76,7 +72,6 @@ class CreateGame extends Component {
                     <input placeholder="Date" type="date" onChange={this.handleDate} value={this.state.date} />
                     <input placeholder="Time" type="time" onChange={this.handleTime} value={this.state.time} />
                     <input placeholder="Location" type="text" onChange={this.handleLocation} value={this.state.location} />
-                    <input placeholder="Mileage" type="text" onChange={this.handleMilage} value={this.state.milage} />
                     <input placeholder="Fees" type="text" onChange={this.handleFees} value={this.state.fees} />
                     <input placeholder="Level" type="text" onChange={this.handleLevel} value={this.state.level} />
                     <input placeholder="Ref Group" type="text" onChange={this.handleGroup} value={this.state.group} />

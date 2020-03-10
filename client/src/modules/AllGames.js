@@ -26,13 +26,18 @@ class AllGames extends Component {
         this.callGetAllGames()
     }
     sumEarned(){
-        let sum = 0
+        let sum = 0.00
         for(let i = 0; i < this.state.schedule.length; i++){
             sum += this.state.schedule[i].fees
         }
-        sum = Math.round(sum)
+        sum = sum / 100
         if(sum > 999){
-            sum = Math.round(sum)
+            sum = sum.toString().split('').reverse()
+            sum.splice(6, 0, ',')
+            sum = sum.reverse().join('')
+        }
+        if(sum > 999999){
+
         }
         this.setState({earned: sum})
     }
@@ -52,7 +57,10 @@ class AllGames extends Component {
                             {item.location}
                         </p>
                         <p>
-                            {item.milage}
+                            {item.distance}
+                        </p>
+                        <p>
+                            {item.duration}
                         </p>
                         <p className="number">
                             ${(Math.round(item.fees) / 100).toFixed(2)}
@@ -88,7 +96,8 @@ class AllGames extends Component {
     		<div className="All-games-container">
                 <h4>Total Earned: 
                     <span className="number">
-                        ${`${Math.floor(this.state.earned / 100000)},${((this.state.earned - (Math.floor(this.state.earned / 100000) * 100000)) / 100).toFixed(2)}`}
+                        {` $${this.state.earned}`}
+                        {/* ${`${Math.floor(this.state.earned / 100000)},${((this.state.earned - (Math.floor(this.state.earned / 100000) * 100000)) / 100).toFixed(2)}`} */}
                     </span></h4>
                 
     			{allGamesMap}
