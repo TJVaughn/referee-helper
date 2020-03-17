@@ -20,7 +20,8 @@ const parseEachGame = (html, group) => {
             fees: html[7],
             group: group,
             position: 'Referee',
-            paid: false
+            paid: false,
+            gameId: html[0]
             // paid: html[8]
             // whole: html
         }
@@ -66,7 +67,11 @@ const parseEachGame = (html, group) => {
             game.status = 'canceled'
         }
         // game.status = 'UPDATED'
-        game.gameId = 0000
+        game.gameId = game.gameId.replace(/\"/, '*')
+        game.gameId = game.gameId.split('*').splice(1, 1)
+        game.gameId = game.gameId[0].split('-').splice(1, 1)
+        game.gameId = game.gameId[0].split(/\"/).shift()
+
         return game
     } catch (error) {
         return ({error: "Error from parseEachGame: " + error})
@@ -184,6 +189,7 @@ router.post('/api/horizon/schedule', auth, async (req, res) => {
         const owner = req.user._id
         const currentSchedule = await Game.find({owner})
         let horizonSchedule = await puppeteerFunction(username, password)
+        // res.send(horizonSchedule)
         let newGamesToBeAdded = await addGamesFromArray(horizonSchedule, "Horizon Web Ref", owner, currentSchedule)
         res.send(newGamesToBeAdded)
     } catch (error) {

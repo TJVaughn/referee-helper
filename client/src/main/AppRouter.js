@@ -5,12 +5,12 @@ import Login from '../paths/Login'
 import Signup from '../paths/Signup'
 import Profile from '../paths/Profile'
 import SingleGame from '../paths/SingleGame'
-import AddArena from '../modules/AddArena'
+// import AddArena from '../modules/AddArena'
 
 function IndexRouter(){
     return (
         <div>
-            <AddArena />
+            {/* <AddArena /> */}
             <Schedule />
         </div>
     )

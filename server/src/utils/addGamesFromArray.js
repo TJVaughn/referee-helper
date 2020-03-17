@@ -11,7 +11,10 @@ const addGamesfromArray = async (schedule, platform, owner, currentSchedule) => 
         }
         const findMatchInDb = (object) => {
             for(let num = 0; num < currentSchedule.length; num++){
-                if(object.dateTime.toString() === currentSchedule[num].dateTime.toString() && object.location === currentSchedule[num].location){
+                if(object.gameId.toString().toLowerCase() === 'event' && object.dateTime.toString() === currentSchedule[num].dateTime.toString() && object.location === currentSchedule[num].location){
+                    return num
+                }
+                if((object.gameId.toString().toLowerCase() !== 'event' && object.gameId === currentSchedule[num].gameCode) || (object.dateTime.toString() === currentSchedule[num].dateTime.toString() && object.location === currentSchedule[num].location)){
                     //If there is a match, return the current index
                     return num
                 }
