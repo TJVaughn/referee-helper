@@ -8,7 +8,8 @@ class AddHWRSchedule extends Component {
             toggle: false,
             email: '',
             pass: '',
-            message: ''
+            message: '',
+            inProcess: false
         }
         this.handleEmailChange = this.handleEmailChange.bind(this)
         this.handlePassChange = this.handlePassChange.bind(this)
@@ -21,7 +22,7 @@ class AddHWRSchedule extends Component {
             "password": this.state.pass
         }
         console.log("data: ", data)
-        this.setState({message: "Fetching schedule, this may take up to 30 seconds"})
+        this.setState({message: "Fetching schedule, this may take up to 30 seconds", inProcess: true })
         const response = await postRequest('horizon/schedule', 'POST', { data })
         console.log(response)
         if(response.error){
@@ -50,14 +51,14 @@ class AddHWRSchedule extends Component {
     		<div>
     			<form onSubmit={this.handleSubmit}>
                     <label>Horizon login USERNAME</label>
-                    <input onChange={this.handleEmailChange} placeholder="Horizon login USERNAME" 
+                    <input disabled={this.state.inProcess} onChange={this.handleEmailChange} placeholder="Horizon login USERNAME" 
                         type="text" value={this.state.email} />
                     <label>Horizon login password</label>
-                    <input onChange={this.handlePassChange} placeholder="Horizon login password" 
+                    <input disabled={this.state.inProcess} onChange={this.handlePassChange} placeholder="Horizon login password" 
                         type="password" value={this.state.pass} />
                     {/* <label>Get All Games?</label> */}
                     {/* <input type="checkbox" value={this.state.toggle} checked onClick={this.handleToggle} /> */}
-                    <button>Get Schedule</button>
+                    <button disabled={this.state.inProcess}>Get Schedule</button>
                 </form>
                 <h3>
                     {this.state.message}

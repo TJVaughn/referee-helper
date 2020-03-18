@@ -7,7 +7,8 @@ class AddASSchedule extends Component {
         this.state = {
             email: '',
             pass: '',
-            message: ''
+            message: '',
+            inProcess: false
         }
         this.handleEmailChange = this.handleEmailChange.bind(this)
         this.handlePassChange = this.handlePassChange.bind(this)
@@ -20,7 +21,8 @@ class AddASSchedule extends Component {
             "getAll": true
         }
         console.log("data: ", data)
-        this.setState({message: "Fetching schedule, this may take up to 30 seconds"})
+        this.setState({message: "Fetching schedule, this may take up to 30 seconds", inProcess: true})
+
         const response = await postRequest('arbiter/schedule', 'POST', { data })
         if(response.error){
             return this.setState({message: "Invalid Login"})
@@ -43,12 +45,12 @@ class AddASSchedule extends Component {
     		<div>
     			<form onSubmit={this.handleSubmit}>
                     <label>Arbiter login email</label>
-                    <input onChange={this.handleEmailChange} placeholder="Arbiter login email" 
+                    <input disabled={this.state.inProcess} onChange={this.handleEmailChange} placeholder="Arbiter login email" 
                         type="email" value={this.state.email} />
                     <label>Arbiter login password</label>
-                    <input onChange={this.handlePassChange} placeholder="Arbiter login password" 
+                    <input disabled={this.state.inProcess} onChange={this.handlePassChange} placeholder="Arbiter login password" 
                         type="password" value={this.state.pass} />
-                    <button>Get Schedule</button>
+                    <button disabled={this.state.inProcess} >Get Schedule</button>
                 </form>
                 <h3>
                     {this.state.message}
