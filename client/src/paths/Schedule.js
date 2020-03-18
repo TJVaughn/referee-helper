@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import CreateGame from '../modules/CreateGame'
 import AllGames from '../modules/AllGames'
 import AddASSchedule from '../modules/AddASSchedule'
+import AddHWRSchedule from '../modules/AddHWRSchedule'
 
 class Schedule extends Component {
     render(){
@@ -10,6 +11,8 @@ class Schedule extends Component {
                 <CreateGame />
 				<h3>Import Arbiter Schedule</h3>
 				<AddASSchedule />
+				<h3>Import Horizon Schedule</h3>
+				<AddHWRSchedule />
     			<h2>Schedule</h2>
                 <AllGames />
     		</div>

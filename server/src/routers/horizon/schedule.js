@@ -21,8 +21,8 @@ const parseEachGame = (html, group) => {
             group: group,
             position: 'Referee',
             paid: false,
-            gameId: html[0]
-            // paid: html[8]
+            gameId: html[0],
+            paid: html[8]
             // whole: html
         }
         let date = html[1]
@@ -71,6 +71,30 @@ const parseEachGame = (html, group) => {
         game.gameId = game.gameId.split('*').splice(1, 1)
         game.gameId = game.gameId[0].split('-').splice(1, 1)
         game.gameId = game.gameId[0].split(/\"/).shift()
+
+        game.paid = game.paid.split('</b>').splice(0, 2)
+
+        game.paid.ref = game.paid[0]
+        game.paid.ref = game.paid.ref.split('<i>').pop()
+
+        game.paid.ass = game.paid[1]
+
+        if(game.paid.ref === 'Payment Received'){
+            game.paid.ass = game.paid.ass.split('<br>').pop()
+            game.paid.ass = game.paid.ass.split('.').shift()
+        } else {
+            game.paid.ass = game.paid.ass.split('<i>').pop()
+        }
+
+        game.paid = {
+            ref: game.paid.ref,
+            ass: game.paid.ass
+        }
+        if(game.paid.ref === 'Payment Received' || game.paid.ass === 'Paid By Assignors Payroll' || game.paid.ass === 'PAID'){
+            game.paid = true
+        } else {
+            game.paid = false
+        }
 
         return game
     } catch (error) {

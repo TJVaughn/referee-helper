@@ -1,6 +1,6 @@
 .All-games-game {
     display: grid;
-    grid-template-columns: repeat(11, 9%);
+    grid-template-columns: repeat(12, 8%);
     border-bottom: 2px outset #000;
     text-align: center;
     color: #000;
@@ -25,4 +25,20 @@
 }
 .All-games-game:hover.canceled {
     background: linear-gradient(5deg, rgba(255, 9, 9, 0.842), rgba(255, 166, 0, 0.808));
+}
+.paid {
+    background: linear-gradient(185deg, rgb(2, 231, 14), rgb(0, 255, 157))
+}
+.All-games-game:hover.paid {
+    background: linear-gradient(5deg, rgb(2, 231, 14), rgb(0, 255, 157))
+}
+.canceled.paid {
+    background: linear-gradient(185deg, rgb(96, 3, 247), rgb(252, 29, 0))
+}
+.All-games-game:hover.canceled.paid{
+    background: linear-gradient(5deg, rgb(96, 3, 247), rgb(252, 29, 0))
+
+}
+.All-games-game.schedule-header {
+    background: #fff;
 }

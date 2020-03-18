@@ -3,6 +3,22 @@ import fetchRequest from '../utils/fetchRequest'
 import { toDateObj } from '../utils/toDateObj'
 import { BrowserRouter as Switch, Link} from "react-router-dom";
 
+const gamesHeader = <div className="All-games-game schedule-header">
+    <p>Date</p>
+    <p>Time</p>
+    <p>Location</p>
+    <p>Distance</p>
+    <p>Drive time</p>
+    <p>Fee</p>
+    <p>Level</p>
+    <p>Group</p>
+    <p>Status</p>
+    <p>Game ID</p>
+    <p>Platform</p>
+    <p>Paid</p>
+
+</div>
+
 class AllGames extends Component {
     constructor(props){
         super(props);
@@ -46,7 +62,7 @@ class AllGames extends Component {
             <div key={item._id}>
                 <Switch />
                 <Link to={`/game/${item._id}`}>
-                    <div className={`All-games-game ${item.status.toLowerCase().includes('canceled') ? 'canceled' : ''}`} >
+                    <div className={`All-games-game ${item.paid ? 'paid': ''} ${item.status.toLowerCase().includes('canceled') ? 'canceled' : ''}`} >
                         <p>
                             {toDateObj(item.dateTime).toDateString()}
                         </p>
@@ -99,7 +115,7 @@ class AllGames extends Component {
                         {` $${this.state.earned}`}
                         {/* ${`${Math.floor(this.state.earned / 100000)},${((this.state.earned - (Math.floor(this.state.earned / 100000) * 100000)) / 100).toFixed(2)}`} */}
                     </span></h4>
-                
+                {gamesHeader}
     			{allGamesMap}
                 <h1>
                     {this.state.error}

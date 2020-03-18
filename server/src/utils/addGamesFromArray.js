@@ -57,7 +57,7 @@ const addGamesfromArray = async (schedule, platform, owner, currentSchedule) => 
                 platform,
                 owner,
                 status: item.status,
-                paid: false
+                paid: item.paid
             })
 
             game.save()
