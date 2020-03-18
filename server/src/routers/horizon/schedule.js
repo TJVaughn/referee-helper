@@ -217,7 +217,7 @@ router.post('/api/horizon/schedule', auth, async (req, res) => {
         let newGamesToBeAdded = await addGamesFromArray(horizonSchedule, "Horizon Web Ref", owner, currentSchedule)
         res.send(newGamesToBeAdded)
     } catch (error) {
-        res.status(418).send({error: "Error from main: " + error})
+        res.status(418).send({error: `Error in Horizon/Schedule/MAIN: ${error}`})
     }
 })
 

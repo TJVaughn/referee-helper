@@ -9,6 +9,8 @@ const arenaRouter = require('./server/src/routers/arena')
 const arbiterScheduleRouter = require('./server/src/routers/arbiter/schedule')
 const arbiterProfileRouter = require('./server/src/routers/arbiter/profile')
 const horizonScheduleRouter = require('./server/src/routers/horizon/schedule')
+const arbiterPaymentsRouter = require('./server/src/routers/arbiter/payments')
+
 //  ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
 app.use(express.json())
@@ -20,6 +22,7 @@ app.use(arenaRouter)
 app.use(arbiterScheduleRouter)
 app.use(arbiterProfileRouter)
 app.use(horizonScheduleRouter)
+app.use(arbiterPaymentsRouter)
 //   ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
 app.listen(port, () => {

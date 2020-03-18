@@ -118,6 +118,7 @@ const htmlItemToJson = (item) => {
     return item
 }
 
+
 router.post('/api/arbiter/schedule', auth, async (req, res) => {
     const userEmail = req.body.email
     const userPass = req.body.password
@@ -152,7 +153,7 @@ router.post('/api/arbiter/schedule', auth, async (req, res) => {
 
         res.send(newGamesToBeAdded)
     } catch (error) {
-        res.status(500).send(error)
+        res.status(418).send({error: `Error in Arbiter/Schedule/MAIN: ${error}`})
     }
     
 })

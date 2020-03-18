@@ -97,7 +97,7 @@ router.post('/api/arbiter/profile', auth, async (req, res) => {
         await user.save()
         res.send(user)
     } catch (error) {
-        res.status(418).send(error)
+        res.status(418).send({error: `Error in Arbiter/Profile/MAIN: ${error}`})
     }
 })
 
