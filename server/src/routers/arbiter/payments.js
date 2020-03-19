@@ -33,6 +33,11 @@ const parseHTML = async (html) => {
         })
         // console.log(eachGame)
     }
+    eachPaymentArrOfObj = eachPaymentArrOfObj.filter((payment) => {
+        if(!payment.amount.includes('-')){
+            return payment
+        }
+    })
     
     return eachPaymentArrOfObj
 }
@@ -87,6 +92,19 @@ const getArbiterPaymentData = async (email, pass) => {
     let data = parseHTML(response)
     return data
 }
+const findGameIdMatch = async (current, payment) => {
+    let matchedGames = []
+    for(let i = 0; i < current.length; i++){
+        let gameId = current[i].gameCode
+        for(let i = 0; i < payment.length; i++){
+            if(payment[i].description.includes(gameId)){
+                current[i].paid = true
+                matchedGames.push(current[i])
+            }
+        }
+    }
+    return matchedGames
+}
 
 router.post('/api/arbiter/payments', auth, async (req, res) => {
     try {
@@ -95,6 +113,13 @@ router.post('/api/arbiter/payments', auth, async (req, res) => {
         const password = req.body.password
         const currentSchedule = await Game.find({owner})
         const paymentData = await getArbiterPaymentData(email, password)
+        //currently returns all the payment data of games paid to me (PAGE 1 ONLY)
+        let matchedGames = await findGameIdMatch(currentSchedule, paymentData)
+        // matchedGames.map(async (game) => {
+        //     game.paid = true
+        //     await game.save()
+        // })
+        console.log(matchedGames)
         res.send(paymentData)
     } catch (error) {
         res.status(418).send({error: `Error in Arbiter/Payments/MAIN: ${error}`})
