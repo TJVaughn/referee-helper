@@ -148,15 +148,40 @@ const findGameIdMatch = async (currentSchedule, paymentData) => {
         //iterates through the entire schedule
         for(let x = 0; x < paymentData.length; x++){
             //iterates through all the payment data
-            if(paymentData[x].description.includes(currentSchedule[i].gameCode)){
-                console.log("MATCHED GAME: ", currentSchedule[i])
-                console.log("Payment DESC: ", paymentData[x])
+            if(currentSchedule[i].platform === 'Arbiter Sports' && paymentData[x].description.includes(currentSchedule[i].gameCode)){
+                // console.log("MATCHED GAME: ", currentSchedule[i])
+                // console.log("Payment DESC: ", paymentData[x])
                 matchedGames.push(currentSchedule[i])
             }
         }
     }
+    console.log("Matched games: ", matchedGames.length)
 
-    return matchedGames
+    // let sortedGames = []
+    // for(let y = 0; y < matchedGames.length; y++){
+    //     for(z = 0; z < sortedGames.length; z++){
+    //         if(sortedGames[z]._id !== matchedGames[y]._id){
+    //             sortedGames.push(matchedGames[y])
+    //             console.log(sortedGames.length)
+    //         }
+    //     }
+    // }
+
+    // matchedGames.map((game) => {
+    //     //for every game in the current array, populate new array with the results
+    //     for
+    // })
+    // matchedGames.filter((game) => {
+    //     for(let i = 0; i < matchedGames.length; i++){
+    //         if(game._id !== matchedGames[i]._id){
+    //             return game
+    //         }
+    //     }
+    // })
+    let uniques = [...new Set(matchedGames)]
+    console.log(uniques.length)
+    return uniques
+    // return sortedGames
 }
 
 router.post('/api/arbiter/payments', auth, async (req, res) => {
@@ -173,7 +198,7 @@ router.post('/api/arbiter/payments', auth, async (req, res) => {
             game.paid = true
             game.save()
         })
-        // console.log(matchedGames)
+        console.log(matchedGames.length)
         res.send(matchedGames)
         // res.send(paymentData)
     } catch (error) {
