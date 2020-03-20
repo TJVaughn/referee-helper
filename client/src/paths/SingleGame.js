@@ -20,7 +20,10 @@ class SingleGame extends Component {
             group: '',
             level: '',
             milage: '',
-            status: ''
+            status: '',
+            duration: '',
+            platform: '',
+            paid: Boolean
         }
         this.handleClick = this.handleClick.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
@@ -32,6 +35,8 @@ class SingleGame extends Component {
         this.handleLevel = this.handleLevel.bind(this)
         this.handleGroup = this.handleGroup.bind(this)
         this.handleStatus = this.handleStatus.bind(this)
+        this.handlePlatform = this.handlePlatform.bind(this)
+        this.handlePaid = this.handlePaid.bind(this)
         this.handleSettings = this.handleSettings.bind(this)
         this.handleDelete = this.handleDelete.bind(this)
         this.deleteGame = this.deleteGame.bind(this)
@@ -60,7 +65,15 @@ class SingleGame extends Component {
     }
     handleStatus(evt){
         this.setState({status: evt.target.value})
-
+    }
+    handlePlatform(evt){
+        this.setState({platform: evt.target.value})
+    }
+    handlePaid(){
+        if(!this.state.paid){
+            return this.setState({paid: true})
+        }
+        return this.setState({paid: false})
     }
     async callGetGame(){
         const res = await fetchRequest(`game/${this.props.id}`, 'GET')
@@ -70,11 +83,14 @@ class SingleGame extends Component {
             date: toDateObj(res.dateTime).toDateString(),
             time: toDateObj(res.dateTime).toLocaleTimeString(),
             location: res.location,
+            duration: res.duration,
             fees: res.fees / 100,
             group: res.refereeGroup,
             level: res.level,
             milage: res.milage,
-            status: res.status
+            status: res.status,
+            platform: res.platform,
+            paid: res.paid
         })
     }
     componentDidMount(){
@@ -89,7 +105,9 @@ class SingleGame extends Component {
             "fees": this.state.fees * 100,
             "level": this.state.level,
             "refereeGroup": this.state.group,
-            "status": this.state.status
+            "status": this.state.status,
+            "platform": this.state.platform,
+            "paid": this.state.paid
         }
         const res = await postRequest(`game/${this.props.id}`, 'PATCH', { data })
         console.log(res)
@@ -130,7 +148,7 @@ class SingleGame extends Component {
     }
     render(){
         const tableHead = 
-        <div className="Single-game">
+        <div className="Single-game Single-game-header">
             <p>
                 Date: 
             </p>
@@ -141,7 +159,10 @@ class SingleGame extends Component {
                 Location: 
             </p>
             <p>
-                Miles: 
+                Distance: 
+            </p>
+            <p>
+                Drive Time: 
             </p>
             <p>
                 Fees:
@@ -155,6 +176,15 @@ class SingleGame extends Component {
             <p>
                 Status:
             </p>
+            <p>
+                Game ID:
+            </p>
+            <p>
+                Platform: 
+            </p>
+            <p>
+                Paid: 
+            </p>
         </div>
         const editForm = 
         <div>
@@ -163,11 +193,22 @@ class SingleGame extends Component {
                 <input placeholder="Time" type="text" onChange={this.handleTime} value={this.state.time} />
                 <input placeholder="Location" type="text" onChange={this.handleLocation} value={this.state.location} />
                 <input placeholder="Milage" type="text" onChange={this.handleMilage} value={this.state.milage} />
+                <p>
+                    {this.state.duration}
+                </p>
                 <input placeholder="Fees" type="text" onChange={this.handleFees} value={this.state.fees} />
                 <input placeholder="Level" type="text" onChange={this.handleLevel} value={this.state.level} />
                 <input placeholder="Ref Group" type="text" onChange={this.handleGroup} value={this.state.group} />
                 <input placeholder="Status" type="text" onChange={this.handleStatus} value={this.state.status} />
-                <button>Update:</button>
+                <p>
+                    {this.state.game.gameCode}
+                </p>
+                <input placeholder='Platform' type="text" onChange={this.handlePlatform} value={this.state.platform} />
+                
+                <p id="Single-game-paid-btn" onClick={this.handlePaid}>
+                    {this.state.paid ? 'paid' : 'unpaid'}
+                </p>
+                    <button>Update:</button>
             </form>
         </div>
         const gameDetails = 
@@ -187,9 +228,12 @@ class SingleGame extends Component {
             <p>
                 {this.state.game.milage}
             </p>
+            <p>
+                {this.state.duration}
+            </p>
             
             <p className="number">
-                ${this.state.game.fees / 100}
+                ${this.state.fees}
             </p>
             
             <p>
@@ -202,6 +246,15 @@ class SingleGame extends Component {
             
             <p>
                 {this.state.game.status}
+            </p>
+            <p>
+                {this.state.game.gameCode}
+            </p>
+            <p>
+                {this.state.game.platform}
+            </p>
+            <p>
+                {this.state.game.paid ? 'paid' : 'unpaid'}
             </p>
         </div>
         const gameSettings = 

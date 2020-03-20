@@ -61,7 +61,7 @@ router.patch('/api/game/:id', auth, async (req, res) => {
     const _id = req.params.id
     const updates = Object.keys(req.body)
     const allowedUpdates = [
-        "dateTime", "completed", "fees", "status", "refereeGroup", "location", "platform", "level", "milage"
+        "dateTime", "completed", "fees", "status", "refereeGroup", "location", "platform", "level", "milage", "paid"
     ]
     const isValidUpdate = updates.every((update) => {
         return allowedUpdates.includes(update)

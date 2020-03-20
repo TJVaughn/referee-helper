@@ -1,6 +1,6 @@
 .Single-game {
     display: grid;
-    grid-template-columns: repeat(3, 15%) 8% 8% repeat(3, 13%);
+    grid-template-columns: repeat(12, 8%);
     p {
         margin: 3px 0;
     }
@@ -14,4 +14,17 @@
     padding: 10px;
     border-radius: 5px;
     text-align: center;
+}
+.Single-game-header {
+    border-bottom: 2px solid #fff;
+}
+#Single-game-paid-btn {
+    border: 2px solid #fff;
+    border-radius: 5px;
+    margin: 2px 3px;
+    cursor: pointer;
+    background: #fff3
+}
+#Single-game-paid-btn:hover {
+    background: #fff6
 }

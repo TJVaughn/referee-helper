@@ -62,7 +62,11 @@ class AllGames extends Component {
             <div key={item._id}>
                 <Switch />
                 <Link to={`/game/${item._id}`}>
-                    <div className={`All-games-game ${item.paid ? 'paid': ''} ${item.status.toLowerCase().includes('canceled') ? 'canceled' : ''}`} >
+                    <div className={`All-games-game 
+                    ${item.paid ? 'paid': ''} 
+                    ${item.status.toLowerCase().includes('canceled') ? 'canceled' : ''}
+                    ${item.gameCode === 'Event' ? 'All-games-event': ''}
+                    `} >
                         <p>
                             {toDateObj(item.dateTime).toDateString()}
                         </p>
