@@ -32,46 +32,128 @@ const months = [
     "November",
     "December"
 ];
-const today = new Date()
+let monthNum = 0
+let today = new Date()
 
 class AllGames extends Component {
     constructor(props){
         super(props);
         this.state = {
             schedule: [],
-            earned: 0.00,
+            earned: 0,
+            received: 0,
+            miles: 0,
             cancelled: '',
-            error: ''
+            error: '',
+            remaining: 0
         }
+        this.handleNextMonth = this.handleNextMonth.bind(this)
+        this.handlePrevMonth = this.handlePrevMonth.bind(this)
+    }
+    handleNextMonth(){
+        if(monthNum > 0){
+            monthNum -= 1
+            today = today.setMonth(today.getMonth() + 1)
+            today = new Date(today)
+            // console.log(today)
+            this.callGetAllGames()
+        }
+        
+    }
+    handlePrevMonth(){
+        monthNum += 1
+        today = today.setMonth(today.getMonth() - 1)
+        today = new Date(today)
+        // console.log(today)
+        this.callGetAllGames()
     }
 
     async callGetAllGames(){
-        const res = await fetchRequest('all-games', 'GET')
+        const res = await fetchRequest(`all-games?month=prev-${monthNum}`, 'GET')
         if(res.error){
             return this.setState({ error: res.error, schedule: []})
         }
         this.setState({schedule: res})
         this.sumEarned()
+        this.sumReceived()
+        this.sumMiles()
+        this.sumRemaining()
     }
     componentDidMount(){
         this.callGetAllGames()
     }
     sumEarned(){
-        let sum = 0.00
+        let sum = 0
         for(let i = 0; i < this.state.schedule.length; i++){
             sum += this.state.schedule[i].fees
         }
-        sum = sum / 100
-        if(sum > 999){
+        //NUMBER Is anywhere from $100.00 to $999.99
+        if (sum > 9999 && sum < 99999){
             sum = sum.toString().split('').reverse()
+            sum.splice(2, 0, '.').join('')
+            sum = sum.toString().split(',').reverse().join('')
+        } else if (sum > 99999){
+            sum = sum.toString().split('').reverse()
+            sum.splice(2, 0, '.')
             sum.splice(6, 0, ',')
-            sum = sum.reverse().join('')
+            sum = sum.join('').split('').reverse().join('')
         }
-        if(sum > 999999){
 
-        }
         this.setState({earned: sum})
     }
+
+    sumReceived(){
+        let sum = 0
+        for(let i = 0; i < this.state.schedule.length; i++){
+            if(this.state.schedule[i].paid){
+                sum += this.state.schedule[i].fees
+            }
+        }
+        if (sum > 9999 && sum < 99999){
+            sum = sum.toString().split('').reverse()
+            sum.splice(2, 0, '.').join('')
+            sum = sum.toString().split(',').reverse().join('')
+        } else if (sum > 99999){
+            sum = sum.toString().split('').reverse()
+            sum.splice(2, 0, '.')
+            sum.splice(6, 0, ',')
+            sum = sum.join('').split('').reverse().join('')
+        }
+        this.setState({received: sum})
+
+    }
+
+    sumMiles(){
+        let sum = 0
+        for(let i = 0; i < this.state.schedule.length; i++){
+            sum += this.state.schedule[i].fees
+        }
+    }
+    sumRemaining(){
+        let paid = 0
+        let earned = 0
+        for(let i = 0; i < this.state.schedule.length; i++){
+            earned += this.state.schedule[i].fees
+        }
+        for(let i = 0; i < this.state.schedule.length; i++){
+            if(this.state.schedule[i].paid){
+                paid += this.state.schedule[i].fees
+            }
+        }
+        let sum = earned - paid
+        if (sum > 9999 && sum < 99999){
+            sum = sum.toString().split('').reverse()
+            sum.splice(2, 0, '.').join('')
+            sum = sum.toString().split(',').reverse().join('')
+        } else if (sum > 99999){
+            sum = sum.toString().split('').reverse()
+            sum.splice(2, 0, '.')
+            sum.splice(6, 0, ',')
+            sum = sum.join('').split('').reverse().join('')
+        }
+        this.setState({remaining: sum})
+    }
+    
     render(){
         const allGamesMap = this.state.schedule.map(item =>
             <div key={item._id}>
@@ -129,11 +211,36 @@ class AllGames extends Component {
             )
     	return(
     		<div className="All-games-container">
-                <h4>Earned in {months[(today.getMonth())]}: 
-                    <span className="number">
-                        {` $${this.state.earned}`}
-                        {/* ${`${Math.floor(this.state.earned / 100000)},${((this.state.earned - (Math.floor(this.state.earned / 100000) * 100000)) / 100).toFixed(2)}`} */}
-                    </span></h4>
+                <h2>{months[(today.getMonth())]}, {today.getFullYear()}</h2>
+                <div className="All-games-stats">
+                    <h4>Earned: 
+                        <span className="number">
+                            {` $${this.state.earned}`}
+                        </span>
+                    </h4>
+                    <h4> Received: 
+                        <span className="number">
+                            {` $${this.state.received}`}
+                        </span>
+                    </h4>
+                    <h4> Remaining: 
+                        <span className="number">
+                            {` $${this.state.remaining}`}
+                        </span>
+                    </h4>
+                </div>
+                
+                <button 
+                    onClick={this.handlePrevMonth}>
+                    ←
+                </button>
+                
+                <button 
+                    // disabled={monthNum === 0 ? 'true': 'false'} 
+                    onClick={this.handleNextMonth}>
+                    →
+                </button>
+
                 {gamesHeader}
     			{allGamesMap}
                 <h1>

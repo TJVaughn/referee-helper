@@ -23,7 +23,7 @@ const arenaSchema = new mongoose.Schema({
     },
     zipCode: {
         required: true,
-        type: Number,
+        type: String,
         trim: true
     },
     country: {
