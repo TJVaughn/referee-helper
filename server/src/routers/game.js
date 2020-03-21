@@ -98,9 +98,9 @@ router.delete('/api/game/:id', auth, async (req, res) => {
 
 // GET ALL GAMES WITH SORTING FEATURES
 router.get('/api/all-games', auth, async (req, res) => {
-    const user = req.user
+    
     try {
-        const games = await Game.find({ owner: user._id })
+        const games = await Game.find({ owner: req.user._id })
         if(!games){
             games = []
             return res.send(games)
@@ -126,7 +126,20 @@ router.get('/api/all-games', auth, async (req, res) => {
                 // games[i].duration = null
             }
         }
-        res.send(games)
+        let monthYear = new Date()
+        let gamesByMonth = []
+        if(req.query.month){
+            let num = req.query.month.split('-').pop()
+            monthYear = monthYear.setMonth((today.getMonth() - num))
+            monthYear = new Date(monthYear)
+            console.log(monthYear.getMonth())
+        }
+        for(let x = 0; x < games.length; x ++){
+            if(games[x].dateTime.getMonth() === monthYear.getMonth() && monthYear.getFullYear() === games[x].dateTime.getFullYear()) {
+                gamesByMonth.push(games[x])
+            }   
+        }
+        res.send(gamesByMonth)
     } catch (error) {
         res.status(500).send(error)
     }

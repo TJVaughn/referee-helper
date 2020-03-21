@@ -16,8 +16,23 @@ const gamesHeader = <div className="All-games-game schedule-header">
     <p>Game ID</p>
     <p>Platform</p>
     <p>Paid</p>
-
 </div>
+
+const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+];
+const today = new Date()
 
 class AllGames extends Component {
     constructor(props){
@@ -114,7 +129,7 @@ class AllGames extends Component {
             )
     	return(
     		<div className="All-games-container">
-                <h4>Total Earned: 
+                <h4>Earned in {months[(today.getMonth())]}: 
                     <span className="number">
                         {` $${this.state.earned}`}
                         {/* ${`${Math.floor(this.state.earned / 100000)},${((this.state.earned - (Math.floor(this.state.earned / 100000) * 100000)) / 100).toFixed(2)}`} */}
