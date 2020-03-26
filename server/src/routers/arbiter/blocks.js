@@ -49,7 +49,7 @@ const setBlocks = async (email, pass, futureGames) => {
     await page.goto('https://www1.arbitersports.com/Official/BlockDates.aspx')
     await page.waitFor(500)
     await page.click('#ctl00_ContentHolder_pgeBlockDates_sbrAction_rbtPartDay')
-    await page.waitFor(1000)
+    await page.waitFor(2000)
     await page.click('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_chkSun')
     await page.click('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_chkMon')
     await page.click('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_chkTue')
