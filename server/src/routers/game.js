@@ -132,7 +132,7 @@ router.get('/api/all-games', auth, async (req, res) => {
             let num = req.query.month.split('-').pop()
             monthYear = monthYear.setMonth((today.getMonth() - num))
             monthYear = new Date(monthYear)
-            console.log(monthYear.getMonth())
+            // console.log(monthYear.getMonth())
         }
         for(let x = 0; x < games.length; x ++){
             if(games[x].dateTime.getMonth() === monthYear.getMonth() && monthYear.getFullYear() === games[x].dateTime.getFullYear()) {

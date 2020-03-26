@@ -58,7 +58,7 @@ class CreateGame extends Component {
         if(res._message){
             return this.setState({error: res._message})
         }
-        // window.location.reload()
+        window.location.reload()
         
     }
     handleSubmit (evt) {

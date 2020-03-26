@@ -155,7 +155,7 @@ const findGameIdMatch = async (currentSchedule, paymentData) => {
             }
         }
     }
-    console.log("Matched games: ", matchedGames.length)
+    // console.log("Matched games: ", matchedGames.length)
 
     // let sortedGames = []
     // for(let y = 0; y < matchedGames.length; y++){
@@ -179,7 +179,7 @@ const findGameIdMatch = async (currentSchedule, paymentData) => {
     //     }
     // })
     let uniques = [...new Set(matchedGames)]
-    console.log(uniques.length)
+    // console.log(uniques.length)
     return uniques
     // return sortedGames
 }
@@ -198,7 +198,7 @@ router.post('/api/arbiter/payments', auth, async (req, res) => {
             game.paid = true
             game.save()
         })
-        console.log(matchedGames.length)
+        // console.log(matchedGames.length)
         res.send(matchedGames)
         // res.send(paymentData)
     } catch (error) {
