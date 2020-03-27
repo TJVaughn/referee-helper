@@ -76,7 +76,7 @@ const setBlocks = async (email, pass, futureGames) => {
         await page.keyboard.type(blockStartDate)
 
         let gameStartTime = futureGames[i].dateTime
-        console.log("Game Start: ", gameStartTime.toLocaleTimeString())
+        // console.log("Game Start: ", gameStartTime.toLocaleTimeString())
 
         let blockStart = gameStartTime.setHours(gameStartTime.getHours() - 2)
         blockStart = new Date(blockStart)
@@ -102,7 +102,7 @@ const setBlocks = async (email, pass, futureGames) => {
         blockStartTime.splice(3, 3)
         blockStartTime = blockStartTime.join('').split('').reverse().join('')
         
-        console.log("Block Start: ", blockStartTime)
+        // console.log("Block Start: ", blockStartTime)
         await page.select('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_ddlFromTime', blockStartTime)
         await page.waitFor(500)
 
@@ -114,7 +114,7 @@ const setBlocks = async (email, pass, futureGames) => {
         blockEndTime.splice(3, 3)
         blockEndTime = blockEndTime.join('').split('').reverse().join('')
         
-        console.log("Block End Time", blockEndTime)
+        // console.log("Block End Time", blockEndTime)
         // await page.click('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_ddlToTime')
         await page.select('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_ddlToTime', blockEndTime)
         await page.waitFor(500)

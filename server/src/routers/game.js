@@ -131,13 +131,17 @@ router.get('/api/all-games', auth, async (req, res) => {
         })
         let today = new Date()
         await callMapsApi(today, req.user, games)
+
         let monthYear = new Date()
         let gamesByMonth = []
         if(req.query.month){
-            let num = req.query.month.split('-').pop()
-            monthYear = monthYear.setMonth((today.getMonth() - num))
+            let month = req.query.month
+            monthYear = monthYear.setMonth((month))
             monthYear = new Date(monthYear)
-            // console.log(monthYear.getMonth())
+            monthYear = monthYear.setFullYear(req.query.year)
+            monthYear = new Date(monthYear)
+
+            // console.log(monthYear)
         }
         for(let x = 0; x < games.length; x ++){
             if(games[x].dateTime.getMonth() === monthYear.getMonth() && monthYear.getFullYear() === games[x].dateTime.getFullYear()) {

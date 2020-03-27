@@ -32,7 +32,6 @@ const months = [
     "November",
     "December"
 ];
-let monthNum = 0
 let today = new Date()
 
 class AllGames extends Component {
@@ -51,17 +50,12 @@ class AllGames extends Component {
         this.handlePrevMonth = this.handlePrevMonth.bind(this)
     }
     handleNextMonth(){
-        if(monthNum > 0){
-            monthNum -= 1
-            today = today.setMonth(today.getMonth() + 1)
-            today = new Date(today)
-            // console.log(today)
-            this.callGetAllGames()
-        }
-        
+        today = today.setMonth(today.getMonth() + 1)
+        today = new Date(today)
+        // console.log(today)
+        this.callGetAllGames()
     }
     handlePrevMonth(){
-        monthNum += 1
         today = today.setMonth(today.getMonth() - 1)
         today = new Date(today)
         // console.log(today)
@@ -69,7 +63,8 @@ class AllGames extends Component {
     }
 
     async callGetAllGames(){
-        let res = await fetchRequest(`all-games?month=prev-${monthNum}`, 'GET')
+        let res = await fetchRequest(`all-games?month=${today.getMonth()}&year=${today.getFullYear()}`, 'GET')
+        console.log(today.getFullYear())
         if(res.error){
             return this.setState({ error: res.error, schedule: []})
         }
