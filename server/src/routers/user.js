@@ -4,6 +4,7 @@ const router = new express.Router()
 const User = require('../models/User')
 const auth = require('../middleware/auth')
 const { setExpireTime } = require('../utils/SetExpireTime')
+const { encryptPlainText, decrpytPlainText } = require('../middleware/crypto')
 
 // CREATE
 router.post('/api/user', async (req, res) => {
@@ -43,6 +44,9 @@ router.post(`/api/user/login`, async (req, res) => {
 // READ PROFILE
 router.get(`/api/user/me`, auth, async (req, res) => {
     const user = req.user
+    user.name = encryptPlainText(user.name)
+    console.log(user.name)
+    user.name = decrpytPlainText(user.name)
     res.send(user)
 })
 

@@ -69,9 +69,14 @@ class AllGames extends Component {
     }
 
     async callGetAllGames(){
-        const res = await fetchRequest(`all-games?month=prev-${monthNum}`, 'GET')
+        let res = await fetchRequest(`all-games?month=prev-${monthNum}`, 'GET')
         if(res.error){
             return this.setState({ error: res.error, schedule: []})
+        }
+        // console.log(res)
+
+        if(!res){
+            res = [{}]
         }
         this.setState({schedule: res})
         this.sumEarned()
