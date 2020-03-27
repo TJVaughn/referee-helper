@@ -3,6 +3,7 @@ const router = new express.Router()
 const puppeteer = require('puppeteer')
 const Game = require('../../models/Game')
 const auth = require('../../middleware/auth')
+const { decrpytPlainText } = require('../../utils/crypto')
 
 const parseHTML = async (html) => {
     let payData = html
@@ -184,11 +185,11 @@ const findGameIdMatch = async (currentSchedule, paymentData) => {
     // return sortedGames
 }
 
-router.post('/api/arbiter/payments', auth, async (req, res) => {
+router.get('/api/arbiter/payments', auth, async (req, res) => {
     try {
         const owner = req.user._id
-        const email = req.body.email
-        const password = req.body.password
+        const email = req.user.asEmail
+        const password = decrpytPlainText(req.user.asPassword)
         const currentSchedule = await Game.find({owner})
         const paymentData = await getArbiterPaymentData(email, password)
         //currently returns all the payment data of games paid to me (PAGE 1 ONLY)

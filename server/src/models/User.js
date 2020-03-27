@@ -53,6 +53,11 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
+    asPassword: {
+        type: String,
+        trim: true
+
+    },
     street: {
         type: String,
         trim: true

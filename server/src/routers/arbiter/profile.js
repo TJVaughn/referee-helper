@@ -1,8 +1,7 @@
 const express = require('express')
 const router = new express.Router()
 const puppeteer = require('puppeteer')
-// const Game = require('../../models/Game')
-
+const { decrpytPlainText } = require('../../utils/crypto')
 const auth = require('../../middleware/auth')
 
 const getProfile = async (email, password) => {
@@ -80,9 +79,9 @@ const parseHtml = (data) => {
     }
 } 
 
-router.post('/api/arbiter/profile', auth, async (req, res) => {
-    const email = req.body.email
-    const password = req.body.password
+router.get('/api/arbiter/profile', auth, async (req, res) => {
+    const email = req.user.asEmail
+    const password = decrpytPlainText(req.user.asPassword)
     const user = req.user
     try {
         const rawProfile = await getProfile(email, password)

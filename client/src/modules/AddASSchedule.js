@@ -22,8 +22,8 @@ class AddASSchedule extends Component {
         }
         console.log("data: ", data)
         this.setState({message: "Fetching schedule, this may take up to 30 seconds", inProcess: true})
-
-        const response = await postRequest('arbiter/schedule', 'POST', { data })
+        //FIX THiS
+        const response = await postRequest('arbiter/schedule', 'GET')
         if(response.error){
             return this.setState({message: "Invalid Login"})
         }

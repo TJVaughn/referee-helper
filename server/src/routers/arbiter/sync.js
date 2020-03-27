@@ -12,7 +12,7 @@ router.post('/api/arbiter/sync', auth, async (req, res) => {
         user.asEmail = asEmail
         user.asPassword = encryptPlainText(asPassword)
         await user.save()
-        res.send([user, user.asPassword])
+        res.send(user)
     } catch (error) {
         res.status(418).send({error: "Error from arbiter sync: " + error})
     }

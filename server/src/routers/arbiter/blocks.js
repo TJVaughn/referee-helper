@@ -3,6 +3,7 @@ const router = new express.Router()
 const puppeteer = require('puppeteer')
 const Game = require('../../models/Game')
 const auth = require('../../middleware/auth')
+const { encryptPlainText, decrpytPlainText } = require('../../utils/crypto')
 
 const removePastGames = (games) => {
     const today = new Date()
@@ -127,7 +128,7 @@ const setBlocks = async (email, pass, futureGames) => {
     return response
 }
 
-router.post('/api/arbiter/blocks', auth, async (req, res) => {
+router.get('/api/arbiter/blocks', auth, async (req, res) => {
     // Gets all of your games in the database
     // Checks if the game is today, or in the future -- adds to array
     // If so, for every game in that array we will execute a block generation
@@ -138,7 +139,9 @@ router.post('/api/arbiter/blocks', auth, async (req, res) => {
     try {
         const games = await Game.find({owner: req.user._id})
         let futureGames = removePastGames(games)
-        let response = await setBlocks(req.body.email, req.body.password, futureGames)
+        const asPass = decrpytPlainText(req.user.asPassword)
+        console.log(asPass)
+        let response = await setBlocks(req.user.asEmail, asPass, futureGames)
         res.send(response)
     } catch (error) {
         res.status(418).send({error: `Error from api/arbiter/blocks: ${error}`})

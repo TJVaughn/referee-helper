@@ -4,6 +4,7 @@ const puppeteer = require('puppeteer')
 const Game = require('../../models/Game')
 const auth = require('../../middleware/auth')
 const addGamesFromArray = require('../../utils/addGamesFromArray')
+const { encryptPlainText, decrpytPlainText } = require('../../utils/crypto')
 
 
 const parseGame = (html) => {
@@ -71,7 +72,7 @@ const parseGame = (html) => {
     return game
 }
 
-const getArbiterSchedule = async (email, pass, getAll = false) => {
+const getArbiterSchedule = async (email, pass) => {
     let response = ''
     const browser = await puppeteer.launch({headless: true})
     const page = await browser.newPage()
@@ -97,12 +98,11 @@ const getArbiterSchedule = async (email, pass, getAll = false) => {
     await page.content()
     await page.goto('https://www1.arbitersports.com/Official/GameScheduleEdit.aspx')
 
-    if(getAll){
-        await page.content()
-        await page.select('#ddlDateFilter', '9')
-        await page.click('#btnApplyFilter')
-        await page.waitFor(5000)
-    }
+    await page.content()
+    await page.select('#ddlDateFilter', '9')
+    await page.click('#btnApplyFilter')
+    await page.waitFor(5000)
+    
     response = await page.content()
     response = response.toString()
     response = response.split('ctl00_ContentHolder_pgeGameScheduleEdit_conGameScheduleEdit_dgGames')
@@ -119,15 +119,14 @@ const htmlItemToJson = (item) => {
 }
 
 
-router.post('/api/arbiter/schedule', auth, async (req, res) => {
-    const userEmail = req.body.email
-    const userPass = req.body.password
-    const getAll = req.body.getAll
+router.get('/api/arbiter/schedule', auth, async (req, res) => {
+    const userEmail = req.user.asEmail
+    const userPass = decrpytPlainText(req.user.asPassword)
     const owner = req.user._id
     
     try {
         const currentSchedule = await Game.find({owner})
-        let htmlSchedule = await getArbiterSchedule(userEmail, userPass, getAll)
+        let htmlSchedule = await getArbiterSchedule(userEmail, userPass)
         if(htmlSchedule.error){
             return res.send({error: "Invalid Login"})
         }
