@@ -3,7 +3,7 @@ const router = new express.Router()
 const puppeteer = require('puppeteer')
 const Game = require('../../models/Game')
 const auth = require('../../middleware/auth')
-const { decrpytPlainText } = require('../../utils/crypto')
+const { decryptPlainText } = require('../../utils/crypto')
 
 const parseHTML = async (html) => {
     let payData = html
@@ -139,7 +139,7 @@ const getArbiterPaymentData = async (email, pass) => {
         }
     })
     
-
+    await browser.close()
     return data
 }
 const findGameIdMatch = async (currentSchedule, paymentData) => {
@@ -156,40 +156,17 @@ const findGameIdMatch = async (currentSchedule, paymentData) => {
             }
         }
     }
-    // console.log("Matched games: ", matchedGames.length)
 
-    // let sortedGames = []
-    // for(let y = 0; y < matchedGames.length; y++){
-    //     for(z = 0; z < sortedGames.length; z++){
-    //         if(sortedGames[z]._id !== matchedGames[y]._id){
-    //             sortedGames.push(matchedGames[y])
-    //             console.log(sortedGames.length)
-    //         }
-    //     }
-    // }
-
-    // matchedGames.map((game) => {
-    //     //for every game in the current array, populate new array with the results
-    //     for
-    // })
-    // matchedGames.filter((game) => {
-    //     for(let i = 0; i < matchedGames.length; i++){
-    //         if(game._id !== matchedGames[i]._id){
-    //             return game
-    //         }
-    //     }
-    // })
     let uniques = [...new Set(matchedGames)]
     // console.log(uniques.length)
     return uniques
-    // return sortedGames
 }
 
 router.get('/api/arbiter/payments', auth, async (req, res) => {
     try {
         const owner = req.user._id
         const email = req.user.asEmail
-        const password = decrpytPlainText(req.user.asPassword)
+        const password = decryptPlainText(req.user.asPassword)
         const currentSchedule = await Game.find({owner})
         const paymentData = await getArbiterPaymentData(email, password)
         //currently returns all the payment data of games paid to me (PAGE 1 ONLY)

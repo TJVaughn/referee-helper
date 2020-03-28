@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link, Redirect } from "react-router-dom";
-import fetchRequest from '../utils/fetchRequest'
+import getRequest from '../utils/getRequest'
 import { toDateObj } from '../utils/toDateObj'
 import postRequest from '../utils/postRequest'
 
@@ -76,7 +76,7 @@ class SingleGame extends Component {
         return this.setState({paid: false})
     }
     async callGetGame(){
-        const res = await fetchRequest(`game/${this.props.id}`, 'GET')
+        const res = await getRequest(`game/${this.props.id}`)
         // console.log(res)
         this.setState({game: res})
         this.setState({
@@ -138,7 +138,13 @@ class SingleGame extends Component {
         this.setState({delete: false})
     }
     async deleteGame(){
-        const res = await fetchRequest(`game/${this.props.id}`, 'DELETE')
+        const req = await fetch(`/api/game/${this.props.id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        const res = await req.json()
         if(res.message){
             return this.setState({error: 'Error in deleting game, server error'})
         }

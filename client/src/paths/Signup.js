@@ -6,11 +6,9 @@ class Signup extends Component {
 	constructor(props){
 		super(props)
 		this.state = {
-			name: '',
 			email: '',
 			password: ''
 		}
-		this.handleName = this.handleName.bind(this)
 		this.handleEmail = this.handleEmail.bind(this)
 		this.handlePass = this.handlePass.bind(this)
 		this.handleSubmit = this.handleSubmit.bind(this)
@@ -27,7 +25,6 @@ class Signup extends Component {
 	}
 	async callSignup(){
 		const data = {
-			"name": this.state.name,
 			"email": this.state.email,
 			"password": this.state.password
 		}
@@ -39,7 +36,7 @@ class Signup extends Component {
 		if(res.errmsg){
 			return this.setState({error: "Email already in use"})
 		}
-		this.setState({error: '', redirect: <Redirect to={'/'} />})
+		this.setState({error: '', redirect: <Redirect to={'/arbiter-sync'} />})
 	}
 
 	handleSubmit(evt){
@@ -51,7 +48,6 @@ class Signup extends Component {
     		<div>
 				<h1>Sign Up</h1>
     			<form onSubmit={this.handleSubmit}>
-					<input type="text" placeholder="name" onChange={this.handleName} value={this.state.name} />
 					<input type="email" placeholder="email" onChange={this.handleEmail} value={this.state.email} />
 					<input type="password" placeholder="password" onChange={this.handlePass} value={this.state.password} />
 					<button>Sign Up</button>

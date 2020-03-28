@@ -7,7 +7,6 @@ const Game = require('./Game')
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true,
         trim: true
     },
     fName: {
@@ -56,7 +55,14 @@ const userSchema = new mongoose.Schema({
     asPassword: {
         type: String,
         trim: true
-
+    },
+    hwrUsername: {
+        type: String,
+        trim: true,
+    },
+    hwrPassword: {
+        type: String,
+        trim: true
     },
     street: {
         type: String,
@@ -70,8 +76,8 @@ const userSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
-    zipCode: {
-        type: Number,
+    postalCode: {
+        type: String,
         trim: true
     },
     country: {

@@ -4,6 +4,7 @@ const puppeteer = require('puppeteer')
 const Game = require('../../models/Game')
 const auth = require('../../middleware/auth')
 const addGamesFromArray = require('../../utils/addGamesFromArray')
+const { decryptPlainText } = require('../../utils/crypto')
 
 const parseEachGame = (html, group) => {
     //Games array with each item in the array being a raw game
@@ -206,10 +207,10 @@ const puppeteerFunction = async (username, password) => {
     }
 }
 
-router.post('/api/horizon/schedule', auth, async (req, res) => {
+router.get('/api/horizon/schedule', auth, async (req, res) => {
     try {
-        const username = req.body.username
-        const password = req.body.password
+        const username = req.user.hwrUsername
+        const password = decryptPlainText(req.user.hwrPassword)
         const owner = req.user._id
         const currentSchedule = await Game.find({owner})
         let horizonSchedule = await puppeteerFunction(username, password)

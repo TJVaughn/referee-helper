@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import fetchRequest from '../utils/fetchRequest'
+import getRequest from '../utils/getRequest'
 import { toDateObj } from '../utils/toDateObj'
 import { BrowserRouter as Switch, Link} from "react-router-dom";
 
@@ -63,8 +63,7 @@ class AllGames extends Component {
     }
 
     async callGetAllGames(){
-        let res = await fetchRequest(`all-games?month=${today.getMonth()}&year=${today.getFullYear()}`, 'GET')
-        console.log(today.getFullYear())
+        let res = await getRequest(`all-games?month=${today.getMonth()}&year=${today.getFullYear()}`)
         if(res.error){
             return this.setState({ error: res.error, schedule: []})
         }

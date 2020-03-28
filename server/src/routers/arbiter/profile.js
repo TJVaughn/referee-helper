@@ -1,7 +1,7 @@
 const express = require('express')
 const router = new express.Router()
 const puppeteer = require('puppeteer')
-const { decrpytPlainText } = require('../../utils/crypto')
+const { decryptPlainText } = require('../../utils/crypto')
 const auth = require('../../middleware/auth')
 
 const getProfile = async (email, password) => {
@@ -81,7 +81,7 @@ const parseHtml = (data) => {
 
 router.get('/api/arbiter/profile', auth, async (req, res) => {
     const email = req.user.asEmail
-    const password = decrpytPlainText(req.user.asPassword)
+    const password = decryptPlainText(req.user.asPassword)
     const user = req.user
     try {
         const rawProfile = await getProfile(email, password)

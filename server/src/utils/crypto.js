@@ -31,7 +31,7 @@ const encryptPlainText = (text) => {
 
 }
 
-const decrpytPlainText = (encrypted) => {
+const decryptPlainText = (encrypted) => {
 
     const firstDecryptBytes = CryptoJS.AES.decrypt(encrypted, process.env.CRYPTO_KEY_TWO)
     const firstDecrypt = JSON.parse(firstDecryptBytes.toString(CryptoJS.enc.Utf8))
@@ -43,5 +43,5 @@ const decrpytPlainText = (encrypted) => {
 }
 
 module.exports = {
-    encryptPlainText, decrpytPlainText
+    encryptPlainText, decryptPlainText
 }

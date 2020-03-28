@@ -1,6 +1,6 @@
-const fetchRequest = async (url, method) => {
+const getRequest = async (url) => {
     const response = await fetch(`/api/${url}`, {
-        method: method,
+        method: 'GET',
         headers: {
             "Content-Type": "application/json",
             "Cache-Control": "no-cache"
@@ -10,4 +10,4 @@ const fetchRequest = async (url, method) => {
     return body
 }
 
-export default fetchRequest
+export default getRequest

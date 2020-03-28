@@ -1,29 +1,20 @@
 import React, { Component } from 'react';
-import postRequest from '../utils/postRequest'
+import getRequest from '../utils/getRequest'
 
 class AddHWRSchedule extends Component {
     constructor(props){
         super(props);
         this.state = {
             toggle: false,
-            email: '',
-            pass: '',
             message: '',
             inProcess: false
         }
-        this.handleEmailChange = this.handleEmailChange.bind(this)
-        this.handlePassChange = this.handlePassChange.bind(this)
         this.handleToggle = this.handleToggle.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
     }
     async callGetSchedule(){
-        const data = {
-            "username": this.state.email,
-            "password": this.state.pass
-        }
-        console.log("data: ", data)
         this.setState({message: "Fetching schedule, this may take up to 30 seconds", inProcess: true })
-        const response = await postRequest('horizon/schedule', 'POST', { data })
+        const response = await getRequest('horizon/schedule')
         console.log(response)
         if(response.error){
             return this.setState({message: "Invalid Login"})
@@ -49,17 +40,7 @@ class AddHWRSchedule extends Component {
     render(){
     	return(
     		<div>
-    			<form onSubmit={this.handleSubmit}>
-                    <label>Horizon login USERNAME</label>
-                    <input disabled={this.state.inProcess} onChange={this.handleEmailChange} placeholder="Horizon login USERNAME" 
-                        type="text" value={this.state.email} />
-                    <label>Horizon login password</label>
-                    <input disabled={this.state.inProcess} onChange={this.handlePassChange} placeholder="Horizon login password" 
-                        type="password" value={this.state.pass} />
-                    {/* <label>Get All Games?</label> */}
-                    {/* <input type="checkbox" value={this.state.toggle} checked onClick={this.handleToggle} /> */}
-                    <button disabled={this.state.inProcess}>Get Schedule</button>
-                </form>
+                <button onClick={this.handleSubmit} disabled={this.state.inProcess}>Get Schedule</button>
                 <h3>
                     {this.state.message}
                 </h3>

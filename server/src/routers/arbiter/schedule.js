@@ -4,7 +4,7 @@ const puppeteer = require('puppeteer')
 const Game = require('../../models/Game')
 const auth = require('../../middleware/auth')
 const addGamesFromArray = require('../../utils/addGamesFromArray')
-const { encryptPlainText, decrpytPlainText } = require('../../utils/crypto')
+const { decryptPlainText } = require('../../utils/crypto')
 
 
 const parseGame = (html) => {
@@ -109,6 +109,7 @@ const getArbiterSchedule = async (email, pass) => {
     response = response.splice(2)
     response = response.join('').split('ctl00_ContentHolder_pgeGameScheduleEdit_conGameScheduleEdit_lnkTrigger')
     response = response.splice(0, 1)
+    await browser.close()
     return response
 }
 
@@ -121,7 +122,7 @@ const htmlItemToJson = (item) => {
 
 router.get('/api/arbiter/schedule', auth, async (req, res) => {
     const userEmail = req.user.asEmail
-    const userPass = decrpytPlainText(req.user.asPassword)
+    const userPass = decryptPlainText(req.user.asPassword)
     const owner = req.user._id
     
     try {

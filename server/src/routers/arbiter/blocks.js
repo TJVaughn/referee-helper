@@ -3,7 +3,7 @@ const router = new express.Router()
 const puppeteer = require('puppeteer')
 const Game = require('../../models/Game')
 const auth = require('../../middleware/auth')
-const { encryptPlainText, decrpytPlainText } = require('../../utils/crypto')
+const { decryptPlainText } = require('../../utils/crypto')
 
 const removePastGames = (games) => {
     const today = new Date()
@@ -59,6 +59,7 @@ const setBlocks = async (email, pass, futureGames) => {
     await page.click('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_chkFri')
     await page.click('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_chkSat')
 
+    let blocksCreatedArr = []
     // iterate over the current games array and set appropriate blocks
     for(let i = 0; i < futureGames.length; i++){
         let blockStartDate = futureGames[i].dateTime.toLocaleDateString()
@@ -79,7 +80,7 @@ const setBlocks = async (email, pass, futureGames) => {
         let gameStartTime = futureGames[i].dateTime
         // console.log("Game Start: ", gameStartTime.toLocaleTimeString())
 
-        let blockStart = gameStartTime.setHours(gameStartTime.getHours() - 2)
+        let blockStart = gameStartTime.setHours(gameStartTime.getHours() - 1)
         blockStart = new Date(blockStart)
 
         if(blockStart.getMinutes() !== (15 || 30 || 45)){
@@ -107,7 +108,7 @@ const setBlocks = async (email, pass, futureGames) => {
         await page.select('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_ddlFromTime', blockStartTime)
         await page.waitFor(500)
 
-        blockEndTime = blockEndTime.setHours(blockEndTime.getHours() + 5)
+        blockEndTime = blockEndTime.setHours(blockEndTime.getHours() + 3)
         blockEndTime = new Date(blockEndTime)
 
         blockEndTime = blockEndTime.toLocaleTimeString()
@@ -122,10 +123,17 @@ const setBlocks = async (email, pass, futureGames) => {
 
         await page.click('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_btnRangeApply')
         await page.waitFor(1500)
+        blocksCreatedArr.push({
+            gameStartTime,
+            blockStartTime,
+            blockEndTime
+        })
     }
 
-    let response = await page.content()
-    return response
+    await page.content()
+    await browser.close()
+
+    return blocksCreatedArr
 }
 
 router.get('/api/arbiter/blocks', auth, async (req, res) => {
@@ -139,7 +147,7 @@ router.get('/api/arbiter/blocks', auth, async (req, res) => {
     try {
         const games = await Game.find({owner: req.user._id})
         let futureGames = removePastGames(games)
-        const asPass = decrpytPlainText(req.user.asPassword)
+        const asPass = decryptPlainText(req.user.asPassword)
         console.log(asPass)
         let response = await setBlocks(req.user.asEmail, asPass, futureGames)
         res.send(response)

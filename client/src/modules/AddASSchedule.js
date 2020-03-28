@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
-import postRequest from '../utils/postRequest'
+import getRequest from '../utils/getRequest'
 
 class AddASSchedule extends Component {
     constructor(props){
         super(props);
         this.state = {
-            email: '',
-            pass: '',
             message: '',
             inProcess: false
         }
@@ -15,17 +13,16 @@ class AddASSchedule extends Component {
         this.handleSubmit = this.handleSubmit.bind(this)
     }
     async callGetASSchedule(){
-        const data = {
-            "email": this.state.email,
-            "password": this.state.pass,
-            "getAll": true
-        }
-        console.log("data: ", data)
-        this.setState({message: "Fetching schedule, this may take up to 30 seconds", inProcess: true})
+        this.setState({message: "Fetching schedule, this may take up to 30 seconds...", inProcess: true})
         //FIX THiS
-        const response = await postRequest('arbiter/schedule', 'GET')
+        const response = await getRequest('arbiter/schedule')
         if(response.error){
             return this.setState({message: "Invalid Login"})
+        }
+        this.setState({message: "Schedule fetched, now checking for payments received..."})
+        const payments = await getRequest("arbiter/payments")
+        if(payments.error){
+            return this.setState({message: "Error fetching payments"})
         }
         window.location.reload()
     }
@@ -43,15 +40,7 @@ class AddASSchedule extends Component {
     render(){
     	return(
     		<div>
-    			<form onSubmit={this.handleSubmit}>
-                    <label>Arbiter login email</label>
-                    <input disabled={this.state.inProcess} onChange={this.handleEmailChange} placeholder="Arbiter login email" 
-                        type="email" value={this.state.email} />
-                    <label>Arbiter login password</label>
-                    <input disabled={this.state.inProcess} onChange={this.handlePassChange} placeholder="Arbiter login password" 
-                        type="password" value={this.state.pass} />
-                    <button disabled={this.state.inProcess} >Get Schedule</button>
-                </form>
+                <button onClick={this.handleSubmit} disabled={this.state.inProcess} >Get Schedule</button>
                 <h3>
                     {this.state.message}
                 </h3>

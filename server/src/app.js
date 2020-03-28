@@ -11,6 +11,7 @@ const horizonScheduleRouter = require('../src/routers/horizon/schedule')
 const arbiterPaymentsRouter = require('../src/routers/arbiter/payments')
 const arbiterBlocksRouter = require('../src/routers/arbiter/blocks')
 const arbiterSyncRouter = require('../src/routers/arbiter/sync')
+const horizonSyncRouter = require('../src/routers/horizon/sync')
 //  ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 app.use(express.json())
 //USE ROUTERS HERE ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
@@ -23,6 +24,7 @@ app.use(horizonScheduleRouter)
 app.use(arbiterPaymentsRouter)
 app.use(arbiterBlocksRouter)
 app.use(arbiterSyncRouter)
+app.use(horizonSyncRouter)
 //   ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
 module.exports = app

@@ -9,9 +9,9 @@ class Schedule extends Component {
     	return(
     		<div>
                 <CreateGame />
-				<h3>Import Arbiter Schedule</h3>
+				<h3>Sync Arbiter Schedule</h3>
 				<AddASSchedule />
-				<h3>Import Horizon Schedule</h3>
+				<h3>Sync Horizon Schedule</h3>
 				<AddHWRSchedule />
     			<h2>Schedule</h2>
                 <AllGames />

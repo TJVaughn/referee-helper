@@ -5,7 +5,8 @@ import Login from '../paths/Login'
 import Signup from '../paths/Signup'
 import Profile from '../paths/Profile'
 import SingleGame from '../paths/SingleGame'
-// import AddArena from '../modules/AddArena'
+import ArbiterSync from '../paths/ArbiterSync'
+import HorizonSync from '../paths/HorizonSync'
 
 function IndexRouter(){
     return (
@@ -40,6 +41,22 @@ function SignupRouter(){
     )
 }
 
+function ArbiterSyncRouter(){
+    return (
+        <div>
+            <ArbiterSync />
+        </div>
+    )
+}
+
+function HorizonSyncRouter(){
+    return (
+        <div>
+            <HorizonSync />
+        </div>
+    )
+}
+
 function SingleGameRouter(props){
     return (
         <div>
@@ -64,7 +81,9 @@ class AppRouter extends Component {
                 <div>
                     <Link to={'/signup'}>Sign Up</Link>
                 </div>
-                
+                <div>
+                    <Link to={'/'} >Schedule</Link>
+                </div>
             </div>
         )
     }
@@ -81,6 +100,8 @@ class AppRouter extends Component {
                         <Route path={'/login'} component={LoginRouter} />
                         <Route path={'/signup'} component={SignupRouter} />
                         <Route path={'/game/:id'} component={SingleGameRouter} />
+                        <Route path={'/arbiter-sync'} component={ArbiterSyncRouter} />
+                        <Route path={'/horizon-sync'} component={HorizonSyncRouter} />
                     </Switch>
                 </Router>
 
