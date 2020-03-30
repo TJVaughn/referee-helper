@@ -1,6 +1,7 @@
 const Game = require('../models/Game')
+const calculateDistance = require('../utils/calculateDistance')
 
-const addGamesfromArray = async (schedule, platform, owner, currentSchedule) => {
+const addGamesfromArray = async (schedule, platform, user, currentSchedule) => {
 
     try {
         if(!schedule){
@@ -43,6 +44,14 @@ const addGamesfromArray = async (schedule, platform, owner, currentSchedule) => 
             }
 
         })
+        // Calculate Distance and Duration here
+        // All Schedule syncing will ultimately call this
+        //Takes in current array of new games
+        // Returns new array of games with appended distance and duration
+        
+        await calculateDistance(user, newGamesToBeAdded, currentSchedule)
+
+        //Adding all new games to the database
         newGamesToBeAdded.map((item) => {
             let game = new Game({
                 dateTime: item.dateTime,
@@ -55,9 +64,11 @@ const addGamesfromArray = async (schedule, platform, owner, currentSchedule) => 
                 home: item.home,
                 away: item.away,
                 platform,
-                owner,
+                owner: user._id,
                 status: item.status,
-                paid: item.paid
+                paid: item.paid,
+                distance: item.distance,
+                duration: item.duration
             })
 
             game.save()

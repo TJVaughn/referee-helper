@@ -211,7 +211,7 @@ router.get('/api/horizon/schedule', auth, async (req, res) => {
     try {
         const username = req.user.hwrUsername
         const password = decryptPlainText(req.user.hwrPassword)
-        const owner = req.user._id
+        const owner = req.user
         const currentSchedule = await Game.find({owner})
         let horizonSchedule = await puppeteerFunction(username, password)
         // res.send(horizonSchedule)

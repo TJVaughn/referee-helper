@@ -26,6 +26,9 @@ router.post('/api/arena', auth, async (req, res) => {
         const mapsPlaceUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodeURI(location)}&inputtype=textquery&key=${process.env.MAPS_KEY}&fields=formatted_address,name`
         const response = await superagent.get(mapsPlaceUrl)
         let text = JSON.parse(response.res.text)
+        // console.log(text)
+        let name = text.candidates[0].name
+
         text = text.candidates[0].formatted_address
         text = text.split(',')
 
@@ -41,7 +44,7 @@ router.post('/api/arena', auth, async (req, res) => {
         let state = text[2].state
         
         const arena = new Arena({
-            "name": location,
+            "name": name,
             "street": street,
             "city": city,
             "state": state,
@@ -69,7 +72,7 @@ router.post('/api/arena', auth, async (req, res) => {
         res.send({error: "Arena already exists"})
 
     } catch (error) {
-        res.status(418).send("Error from MAIN: path='/api/arena': ", error)
+        res.status(500).send({err: "Error from MAIN: path='/api/arena': " + error})
     }
 })
 

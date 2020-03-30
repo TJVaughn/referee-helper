@@ -123,7 +123,7 @@ const htmlItemToJson = (item) => {
 router.get('/api/arbiter/schedule', auth, async (req, res) => {
     const userEmail = req.user.asEmail
     const userPass = decryptPlainText(req.user.asPassword)
-    const owner = req.user._id
+    const owner = req.user
     
     try {
         const currentSchedule = await Game.find({owner})

@@ -68,6 +68,7 @@ class CreateGame extends Component {
     render(){
     	return(
     		<div>
+                <h2>Add new game: </h2>
     			<form className="Create-game-form" onSubmit={this.handleSubmit}>
                     <input placeholder="Date" type="date" onChange={this.handleDate} value={this.state.date} />
                     <input placeholder="Time" type="time" onChange={this.handleTime} value={this.state.time} />
@@ -75,7 +76,7 @@ class CreateGame extends Component {
                     <input placeholder="Fees" type="text" onChange={this.handleFees} value={this.state.fees} />
                     <input placeholder="Level" type="text" onChange={this.handleLevel} value={this.state.level} />
                     <input placeholder="Ref Group" type="text" onChange={this.handleGroup} value={this.state.group} />
-                    <button>Add Game: </button>
+                    <button>Add Game</button>
                 </form>
                 {this.state.error}
     		</div>

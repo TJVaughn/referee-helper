@@ -7,7 +7,7 @@ const User = require('../../models/User')
 
 const loginToHWR = async (username, password) => {
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         args: [
             '--window-size=1500,825'
         ]

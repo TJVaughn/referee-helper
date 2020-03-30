@@ -3,7 +3,6 @@ const router = new express.Router()
 const auth = require('../middleware/auth')
 const Game = require('../models/Game')
 const multer = require('multer')
-const superagent = require('superagent')
 
 // CREATE GAME
 router.post('/api/game', auth, async (req, res) => {
@@ -95,31 +94,10 @@ router.delete('/api/game/:id', auth, async (req, res) => {
         res.status(418).send(error)
     }
 })
-const callMapsApi = async (today, user, games) => {
-    try {
-        for(let i = 0; i < games.length; i++){
-            if(!games[i].distance 
-                && games[i].dateTime.getDate() === today.getDate()
-                && games[i].dateTime.getMonth() === today.getMonth()
-                && games[i].dateTime.getFullYear() === today.getFullYear()){
-                    let mapsAPIURL = `https://maps.googleapis.com/maps/api/distancematrix/json?key=${process.env.MAPS_KEY}&origins=${user.street}${user.city}${user.state}&destinations=${encodeURI(games[i].location)}&units=imperial`
-                    let response = await superagent.get(mapsAPIURL)
-                    response.res.text = JSON.parse(response.res.text)
-                    // console.log(response.res.text)
-                    games[i].distance = response.res.text.rows[0].elements[0].distance.text
-                    games[i].duration = response.res.text.rows[0].elements[0].duration.text
-                    games[i].save()
-                    console.log("CALLED MAPS API")
-            }
-        }
-    } catch (error) {
-        return {error: "Error from Maps API: " + error}
-    }
-}
+
 
 // GET ALL GAMES WITH SORTING FEATURES
 router.get('/api/all-games', auth, async (req, res) => {
-    
     try {
         const games = await Game.find({ owner: req.user._id })
         if(!games){
@@ -129,8 +107,6 @@ router.get('/api/all-games', auth, async (req, res) => {
         games.sort((a, b) => {
             return b.dateTime - a.dateTime
         })
-        let today = new Date()
-        await callMapsApi(today, req.user, games)
 
         let monthYear = new Date()
         let gamesByMonth = []

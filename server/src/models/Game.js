@@ -9,6 +9,9 @@ const gameSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    formattedLocation: {
+        type: String
+    },
     distance: {
         type: String
     },
