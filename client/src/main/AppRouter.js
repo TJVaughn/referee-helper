@@ -7,12 +7,16 @@ import Profile from '../paths/Profile'
 import SingleGame from '../paths/SingleGame'
 import ArbiterSync from '../paths/ArbiterSync'
 import HorizonSync from '../paths/HorizonSync'
+import Landing from '../paths/Landing'
+import { getCookie } from '../utils/cookies'
 
 function IndexRouter(){
     return (
         <div>
-            {/* <AddArena /> */}
-            <Schedule />
+            {getCookie("loggedIn") === "true"
+            ? <Schedule />
+            :<Landing />}
+            
         </div>
     )
 }
@@ -72,18 +76,28 @@ class AppRouter extends Component {
                 <div>
                     <Link to={'/'} ><h1 id="Site-title">RefereeHelper.com</h1></Link>
                 </div>
-                <div>
-                    <Link to={'/profile'} >Profile</Link>
+                
+                {getCookie("loggedIn") === "true" 
+                ? <div>
+                    <div>
+                        <Link to={'/'} >Schedule</Link>
+                    </div>
+                    <div>
+                        <Link to={'/profile'} >Profile</Link>
+                    </div>
                 </div>
-                <div>
-                    <Link to={'/login'}>Login</Link>
-                </div>
-                <div>
+                :<div>
+                    <div>
+                        <Link to={'/login'}>Login</Link>
+                    </div>
+                    <div>
                     <Link to={'/signup'}>Sign Up</Link>
+                    </div>
                 </div>
-                <div>
-                    <Link to={'/'} >Schedule</Link>
-                </div>
+                }
+                
+                
+                
             </div>
         )
     }

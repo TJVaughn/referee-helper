@@ -1,19 +1,23 @@
 import React, { Component } from 'react';
 import getRequest from '../utils/getRequest'
+import { getCookie } from '../utils/cookies'
+import { Redirect } from 'react-router-dom';
 
 class Profile extends Component {
 	constructor(props){
 		super(props)
 		this.state = {
 			userProfile: {},
-			message: ''
+			message: '',
+			redirect: ''
 		}
-		this.handleArbiterProfileSubmit = this.handleArbiterProfileSubmit.bind(this)
+		// this.handleArbiterProfileSubmit = this.handleArbiterProfileSubmit.bind(this)
 	}
 	async callGetUser() {
 		const req = await getRequest('user/me')
 		this.setState({userProfile: req, message: ''})
-		console.log(this.state.userProfile)
+		
+		// console.log(this.state.userProfile)
 	}
 	async callGetASProfile(){
 		const req = await getRequest('arbiter/profile')
@@ -23,21 +27,23 @@ class Profile extends Component {
 		}
 		return this.callGetUser()
 	}
-	async handleArbiterProfileSubmit(){
-		// evt.preventdefault()
-		this.setState({message: "Syncing..."})
-		await this.callGetASProfile()
+	async componentDidMount(){
+		if(getCookie("InitialLoginFlow") === "true"){
+			this.setState({message: "Syncing..."})
+			await this.callGetASProfile()
+			await this.callGetUser()
+			this.setState({redirect: <Redirect to={'/'} />})
+		}
+		await this.callGetUser()
 	}
-	componentDidMount(){
-		this.callGetUser()
-	}
+
     render(){
 		let user = this.state.userProfile
     	return(
     		<div>
 				<h1>Profile</h1>
-				<label>Upload from Arbiter: </label>
-				<button onClick={this.handleArbiterProfileSubmit}>Sync</button>
+				{/* <label>Uploading from Arbiter: </label> */}
+				{/* <button onClick={this.handleArbiterProfileSubmit}>Sync</button> */}
 				<h2>
 					{this.state.message}
 				</h2>
@@ -69,6 +75,7 @@ class Profile extends Component {
 						</h3>
 					</div>
 				</div>
+				{this.state.redirect}
     		</div>
     	);
     }

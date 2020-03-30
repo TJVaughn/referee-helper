@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import postRequest from '../utils/postRequest'
 import { Redirect } from 'react-router-dom';
+import { setCookie } from '../utils/cookies'
+import { set } from 'mongoose';
 
 class Signup extends Component {
 	constructor(props){
@@ -36,6 +38,8 @@ class Signup extends Component {
 		if(res.errmsg){
 			return this.setState({error: "Email already in use"})
 		}
+		setCookie("loggedIn", "true")
+		setCookie("InitialLoginFlow", "true")
 		this.setState({error: '', redirect: <Redirect to={'/arbiter-sync'} />})
 	}
 

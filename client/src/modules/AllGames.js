@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import getRequest from '../utils/getRequest'
 import { toDateObj } from '../utils/toDateObj'
 import { BrowserRouter as Switch, Link} from "react-router-dom";
+import { setCookie } from '../utils/cookies';
 
 const gamesHeader = <div className="All-games-game schedule-header">
     <p>Date</p>
@@ -65,6 +66,7 @@ class AllGames extends Component {
     async callGetAllGames(){
         let res = await getRequest(`all-games?month=${today.getMonth()}&year=${today.getFullYear()}`)
         if(res.error){
+            setCookie("loggedIn", "false")
             return this.setState({ error: res.error, schedule: []})
         }
         // console.log(res)
