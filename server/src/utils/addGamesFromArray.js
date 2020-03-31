@@ -51,7 +51,7 @@ const addGamesfromArray = async (schedule, platform, user, currentSchedule) => {
         
         await calculateDistance(user, newGamesToBeAdded, currentSchedule)
 
-        //Adding all new games to the database
+        // //Adding all new games to the database
         newGamesToBeAdded.map((item) => {
             let game = new Game({
                 dateTime: item.dateTime,
@@ -60,6 +60,7 @@ const addGamesfromArray = async (schedule, platform, user, currentSchedule) => {
                 fees: item.fees,
                 gameCode: item.gameId,
                 location: item.location,
+                formattedLocation: item.formattedLocation,
                 position: item.position,
                 home: item.home,
                 away: item.away,
@@ -73,9 +74,9 @@ const addGamesfromArray = async (schedule, platform, user, currentSchedule) => {
 
             game.save()
         })
-        gamesToBeUpdated.map((game) => {
-            game.save()
-        })
+        // gamesToBeUpdated.map((game) => {
+        //     game.save()
+        // })
 
         //Getting parallel save error for two games. 
         // 10/14/18, 5:30 PM CPCT

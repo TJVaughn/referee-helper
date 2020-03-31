@@ -34,7 +34,8 @@ const months = [
     "December"
 ];
 let today = new Date()
-
+today = new Date(today.getFullYear(), today.getMonth(), 1, 12, 0, 0)
+console.log(today)
 class AllGames extends Component {
     constructor(props){
         super(props);
@@ -53,17 +54,18 @@ class AllGames extends Component {
     handleNextMonth(){
         today = today.setMonth(today.getMonth() + 1)
         today = new Date(today)
-        // console.log(today)
+        console.log(today)
         this.callGetAllGames()
     }
     handlePrevMonth(){
         today = today.setMonth(today.getMonth() - 1)
         today = new Date(today)
-        // console.log(today)
+        console.log(today)
         this.callGetAllGames()
     }
 
     async callGetAllGames(){
+        // console.log(`month=${today.getMonth()}&year=${today.getFullYear()}`)
         let res = await getRequest(`all-games?month=${today.getMonth()}&year=${today.getFullYear()}`)
         if(res.error){
             setCookie("loggedIn", "false")
