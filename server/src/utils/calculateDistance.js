@@ -1,23 +1,5 @@
 const superagent = require('superagent')
 
-
-    // NO ARENAS IN THE DATABASE
-    // For each games distance
-    // If the game doesnt have a distance
-    // It will see if there is another game in the database that does have a distance to The SAME LOCATION
-    // AKA iterate over every game, 
-    // If there is another game with the same arena, and distance is calculated, 
-    // the curr game will adopt the other games distance and duration
-    // Otherwise it will call the Google distance matrix API
-    // And assign the games distance with that
-    // ++ Only calls Maps distance matrix API for each arena (Around $0.15 all time unless official moves)
-    // ++ Database remains as lean as possible, no arenas
-    // ++ Database cost will remain low
-    // -- For each game, there will be more functions called when it is imported, slowing down the already slow process
-    // -- There's more code and more work, possibly creating more bugs
-
-
-
 const formatLocation = async (games, state) => {
     for(let i = 0; i < games.length; i++){
         try {
@@ -58,7 +40,7 @@ const callMapsApi = async (user, arenas) => {
             arenas[i].duration = response.res.text.rows[0].elements[0].duration.text
             // arenas[i].distance = i + 1;
             // arenas[i].duration = i + 6;
-            console.log(`Distance: ${arenas[i].distance}, duration: ${arenas[i].duration}`)
+            // console.log(`Distance: ${arenas[i].distance}, duration: ${arenas[i].duration}`)
         }
         
         // game.duration = "10"
@@ -92,7 +74,7 @@ const checkDbForMatchingLocations = (arenas, currentSchedule) => {
             if(arenas[i].name === currentSchedule[x].formattedLocation){
                 arenas[i].distance = currentSchedule[x].distance
                 arenas[i].duration = currentSchedule[x].duration
-                console.log(`In Check DB: Name: ${arenas[i].name}, Distance: ${arenas[i].distance}, Duration: ${arenas[i].duration}`)
+                // console.log(`In Check DB: Name: ${arenas[i].name}, Distance: ${arenas[i].distance}, Duration: ${arenas[i].duration}`)
                 matchedArenas.push(arenas[i])
             }
         }
@@ -111,7 +93,7 @@ const formatArenas = (arenas) => {
             duration: 0
         }
         formattedArenas.push(arena)
-        console.log(`Name: ${arena.name}, Distance: ${arena.distance}`)
+        // console.log(`Name: ${arena.name}, Distance: ${arena.distance}`)
     }
     return formattedArenas
 }
@@ -128,14 +110,14 @@ const calculateDistance = async (user, newGames, currentSchedule) => {
 
             // Then we will check for duplicate arenas 
             let arenas = findUniqueArenas(newGames)
-            console.log(arenas)
+            // console.log(arenas)
 
             arenas = formatArenas(arenas)
-            console.log(arenas)
+            // console.log(arenas)
 
             //Then we will do a maps API call from the users address to the arenas on the list
             let mapsData = await callMapsApi(user, arenas)
-            console.log(mapsData)
+            // console.log(mapsData)
 
 
             //Then we will use that data to assign distance and duration to list of games
@@ -147,15 +129,15 @@ const calculateDistance = async (user, newGames, currentSchedule) => {
         console.log("Database has games")
         //First we need to format the game locations of the new games
         newGames = await formatLocation(newGames, user.state)
-        console.log("New Games with formatted location: " + newGames)
+        // console.log("New Games with formatted location: " + newGames)
 
         // Then we will widdle down the new arenas to uniques
         let arenas = findUniqueArenas(newGames)
-        console.log("Unique arenas: "+ arenas)
+        // console.log("Unique arenas: "+ arenas)
 
         // Then we will format the arenas to be objects
         arenas = formatArenas(arenas)
-        console.log("Current arenas: " + typeof arenas)
+        // console.log("Current arenas: " + typeof arenas)
         // Then we will see if there is another game with the same formatted location
         let matchedArenas = checkDbForMatchingLocations(arenas, currentSchedule)
         // console.log("Current arenas after checking for match: " + arenas)
@@ -165,7 +147,7 @@ const calculateDistance = async (user, newGames, currentSchedule) => {
         let newArenas = []
         for(let i = 0; i < arenas.length; i++ ) {
             if(arenas[i].distance === 0){
-                console.log(`New arena name: ${arenas[i].name}`)
+                // console.log(`New arena name: ${arenas[i].name}`)
                 newArenas.push(arenas[i])
             }
         }
@@ -189,3 +171,19 @@ const calculateDistance = async (user, newGames, currentSchedule) => {
 }
 
 module.exports = calculateDistance;
+
+
+    // NO ARENAS IN THE DATABASE
+    // For each games distance
+    // If the game doesnt have a distance
+    // It will see if there is another game in the database that does have a distance to The SAME LOCATION
+    // AKA iterate over every game, 
+    // If there is another game with the same arena, and distance is calculated, 
+    // the curr game will adopt the other games distance and duration
+    // Otherwise it will call the Google distance matrix API
+    // And assign the games distance with that
+    // ++ Only calls Maps distance matrix API for each arena (Around $0.15 all time unless official moves)
+    // ++ Database remains as lean as possible, no arenas
+    // ++ Database cost will remain low
+    // -- For each game, there will be more functions called when it is imported, slowing down the already slow process
+    // -- There's more code and more work, possibly creating more bugs

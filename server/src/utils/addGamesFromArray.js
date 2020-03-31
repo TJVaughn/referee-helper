@@ -74,9 +74,9 @@ const addGamesfromArray = async (schedule, platform, user, currentSchedule) => {
 
             game.save()
         })
-        // gamesToBeUpdated.map((game) => {
-        //     game.save()
-        // })
+        gamesToBeUpdated.map((game) => {
+            game.save()
+        })
 
         //Getting parallel save error for two games. 
         // 10/14/18, 5:30 PM CPCT
