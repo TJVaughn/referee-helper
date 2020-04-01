@@ -129,8 +129,9 @@ class AllGames extends Component {
     sumMiles(){
         let sum = 0
         for(let i = 0; i < this.state.schedule.length; i++){
-            sum += this.state.schedule[i].fees
+            sum += parseInt(this.state.schedule[i].distance)
         }
+        this.setState({miles: sum})
     }
     sumRemaining(){
         let paid = 0
@@ -229,6 +230,11 @@ class AllGames extends Component {
                     <h4> Remaining: 
                         <span className="number">
                             {` $${this.state.remaining}`}
+                        </span>
+                    </h4>
+                    <h4> Miles: 
+                        <span className="number">
+                            {` ${this.state.miles}`}
                         </span>
                     </h4>
                 </div>

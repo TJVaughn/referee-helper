@@ -13,7 +13,7 @@ const gameSchema = new mongoose.Schema({
         type: String
     },
     distance: {
-        type: String
+        type: Number
     },
     duration: {
         type: String
