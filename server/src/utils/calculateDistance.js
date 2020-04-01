@@ -30,16 +30,18 @@ const findUniqueArenas = (games) => {
 const callMapsApi = async (user, arenas) => {
     try {
         for(let i = 0; i < arenas.length; i++){
-            //we will call maps api for each arena and input the data below
-            //for now we will save money in testing by manually adding that data
-            let mapsAPIURL = `https://maps.googleapis.com/maps/api/distancematrix/json?key=${process.env.MAPS_KEY}&origins=${user.street}${user.city}${user.state}&destinations=${encodeURI(arenas[i].name)}&units=imperial`
-            let response = await superagent.get(mapsAPIURL)
-            console.log("CALLED MAPS API")
-            response.res.text = JSON.parse(response.res.text)
-            arenas[i].distance = response.res.text.rows[0].elements[0].distance.text
-            arenas[i].duration = response.res.text.rows[0].elements[0].duration.text
-            // arenas[i].distance = i + 1;
-            // arenas[i].duration = i + 6;
+
+
+            // let mapsAPIURL = `https://maps.googleapis.com/maps/api/distancematrix/json?key=${process.env.MAPS_KEY}&origins=${user.street}${user.city}${user.state}&destinations=${encodeURI(arenas[i].name)}&units=imperial`
+            // let response = await superagent.get(mapsAPIURL)
+            // console.log("CALLED MAPS API")
+            // response.res.text = JSON.parse(response.res.text)
+            // arenas[i].distance = response.res.text.rows[0].elements[0].distance.text
+            // arenas[i].duration = response.res.text.rows[0].elements[0].duration.text
+
+
+            arenas[i].distance = i + 1;
+            arenas[i].duration = i + 6;
             // console.log(`Distance: ${arenas[i].distance}, duration: ${arenas[i].duration}`)
         }
         

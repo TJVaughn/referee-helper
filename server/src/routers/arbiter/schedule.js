@@ -74,11 +74,16 @@ const parseGame = (html) => {
 
 const getArbiterSchedule = async (email, pass) => {
     let response = ''
-    const browser = await puppeteer.launch({headless: true})
+    const browser = await puppeteer.launch({
+        headless: false,
+        args: [
+            '--window-size=1500,825'
+        ]
+    })
     const page = await browser.newPage()
     await page.setViewport({
-        width: 2000,
-        height: 1500,
+        width: 1500,
+        height: 825,
         deviceScaleFactor: 1
     })
     await page.goto('https://www1.arbitersports.com/shared/signin/signin.aspx');
@@ -87,15 +92,15 @@ const getArbiterSchedule = async (email, pass) => {
     await page.click('#txtPassword')
     await page.keyboard.type(pass)
     await page.click('#ctl00_ContentHolder_pgeSignIn_conSignIn_btnSignIn')
-    await page.content()
+    await page.waitFor(500)
     if(page.url() === 'https://www1.arbitersports.com/shared/signin/signin.aspx') {
         return { error: "Invalid Login"}
     }
-    await page.click('#mobileAlertStayLink')
+    // await page.click('#mobileAlertStayLink')
     await page.goto('https://www1.arbitersports.com/Official/GameScheduleEdit.aspx')
-    await page.content()
+    await page.waitFor(1000)
     await page.click('tr.alternatingItems:nth-child(7)')
-    await page.content()
+    await page.waitFor(500)
     await page.goto('https://www1.arbitersports.com/Official/GameScheduleEdit.aspx')
 
     await page.content()
@@ -150,7 +155,7 @@ router.get('/api/arbiter/schedule', auth, async (req, res) => {
 
         // arbiterSchedule = arbiterSchedule.splice(0, 5)
         const newGamesToBeAdded = await addGamesFromArray(arbiterSchedule, "Arbiter Sports", owner, currentSchedule)
-
+        
         res.send(newGamesToBeAdded)
     } catch (error) {
         res.status(418).send({error: `Error in Arbiter/Schedule/MAIN: ${error}`})

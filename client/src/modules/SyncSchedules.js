@@ -10,7 +10,8 @@ class SyncSchedules extends Component {
             message: '',
             inProcess: false,
             arbiterError: '',
-            horizonError: ''
+            horizonError: '',
+            syncTime: ''
         }
         this.callSyncAllSchedules = this.callSyncAllSchedules.bind(this)
     }
@@ -36,12 +37,19 @@ class SyncSchedules extends Component {
     }
 
     async callSyncAllSchedules(){
-        this.setState({inProcess: true})
+        const startTime = Date.now()
+        // console.log(startTime)
+        this.setState({inProcess: true, syncTime: ''})
         await this.callGetASData()
         await this.callGetHWRData()
         setCookie("InitialLoginFlow", "false")
         this.setState({inProcess: false, message: <Redirect to={'/'} />})
-        window.location.reload()
+        const endTime = Date.now()
+        // console.log(endTime)
+        const secsElapsed = Math.floor((endTime - startTime) / 1000)
+        console.log("The request process took: " + secsElapsed + " seconds")
+        this.setState({syncTime: "The request process took: " + secsElapsed + " seconds"})
+        // window.location.reload()
     }
 
     componentDidMount(){
@@ -57,6 +65,7 @@ class SyncSchedules extends Component {
                 <h1>
                     {this.state.message}
                 </h1>
+                <h5>{this.state.syncTime}</h5>
     		</div>
     	);
     }

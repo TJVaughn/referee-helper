@@ -1,6 +1,20 @@
 const Game = require('../models/Game')
 const calculateDistance = require('../utils/calculateDistance')
 
+const updateRefGroup = (games, groups) => {
+    for(let i = 0; i < games.length; i ++){
+        for(let x = 0; x < groups.length; x++){
+            // console.log("Games i group: " + games[i].group)
+            // console.log("Group x group number: " + groups[x].group.number)
+            if(games[i].group === groups[x].group.number){
+                games[i].group = groups[x].group.name
+                // console.log("MATCH! games i group is: " + games[i].group)
+            }
+        }
+    }
+    return games
+}
+
 const addGamesfromArray = async (schedule, platform, user, currentSchedule) => {
 
     try {
@@ -50,6 +64,8 @@ const addGamesfromArray = async (schedule, platform, user, currentSchedule) => {
         // Returns new array of games with appended distance and duration
         
         await calculateDistance(user, newGamesToBeAdded, currentSchedule)
+
+        newGamesToBeAdded = updateRefGroup(newGamesToBeAdded, user.groups)
 
         // //Adding all new games to the database
         newGamesToBeAdded.map((item) => {

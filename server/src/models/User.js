@@ -84,6 +84,18 @@ const userSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    groups: [
+        {
+            group: {
+                name: {
+                    type: String
+                },
+                number: {
+                    type: String
+                }
+            }
+        }
+    ],
     level: {
         type: Number,
         default: 1,

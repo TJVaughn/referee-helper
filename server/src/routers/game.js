@@ -123,6 +123,7 @@ router.get('/api/all-games', auth, async (req, res) => {
                 gamesByMonth.push(games[x])
             }   
         }
+        
         res.send(gamesByMonth)
     } catch (error) {
         res.status(500).send({error: "Error from get all games: " + error})
