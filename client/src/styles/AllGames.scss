@@ -52,5 +52,11 @@
 }
 .All-games-stats {
     text-align: right;
-    margin-right: 54%;
+    display: flex;
+    flex-wrap: wrap;
+    // grid-template-columns: repeat(4, 25%);
+    div {
+        padding: 10px;
+        width: 150px;
+    }
 }

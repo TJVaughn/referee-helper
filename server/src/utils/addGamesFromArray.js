@@ -6,8 +6,8 @@ const updateRefGroup = (games, groups) => {
         for(let x = 0; x < groups.length; x++){
             // console.log("Games i group: " + games[i].group)
             // console.log("Group x group number: " + groups[x].group.number)
-            if(games[i].group === groups[x].group.number){
-                games[i].group = groups[x].group.name
+            if(games[i].group.title === groups[x].group.number || games[i].group.value === groups[x].group.number){
+                games[i].group.title = groups[x].group.name
                 // console.log("MATCH! games i group is: " + games[i].group)
             }
         }
@@ -71,7 +71,7 @@ const addGamesfromArray = async (schedule, platform, user, currentSchedule) => {
         newGamesToBeAdded.map((item) => {
             let game = new Game({
                 dateTime: item.dateTime,
-                refereeGroup: item.group,
+                refereeGroup: item.group.title,
                 level: item.level,
                 fees: item.fees,
                 gameCode: item.gameId,

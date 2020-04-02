@@ -13,7 +13,10 @@ const parseGame = (html) => {
     }
     let game = {
         gameId: html[0],
-        group: html[2],
+        group: {
+            title: html[2],
+            value: html[2]
+        },
         position: html[3],
         dateTime: html[4],
         level: html[5],
@@ -27,9 +30,12 @@ const parseGame = (html) => {
     game.gameId = game.gameId.split('').reverse().splice(0, 8)
     game.gameId = game.gameId.reverse().join('').split('>').pop()
 
-    game.group = game.group.split('</span>').shift()
-    game.group = game.group.split('').reverse().join('').split('>').shift()
-    game.group = game.group.split('').reverse().join('')
+    game.group.value = game.group.value.split('</span>').shift()
+    game.group.value = game.group.value.split('').reverse().join('').split('>').shift()
+    game.group.value = game.group.value.split('').reverse().join('')
+
+    game.group.title = game.group.title.split(/\"/).splice(7, 1)
+    game.group.title = game.group.title[0].trim()
 
     game.position = game.position.split('</span>').shift()
     game.position = game.position.split('').reverse().join('').split('>').shift()
@@ -104,9 +110,9 @@ const getArbiterSchedule = async (email, pass) => {
     await page.goto('https://www1.arbitersports.com/Official/GameScheduleEdit.aspx')
 
     await page.content()
-    await page.select('#ddlDateFilter', '9')
-    await page.click('#btnApplyFilter')
-    await page.waitFor(5000)
+    // await page.select('#ddlDateFilter', '9')
+    // await page.click('#btnApplyFilter')
+    // await page.waitFor(5000)
     
     response = await page.content()
     response = response.toString()
@@ -154,8 +160,9 @@ router.get('/api/arbiter/schedule', auth, async (req, res) => {
         // IF THERE IS A MATCH, DON'T ADD IT TO THE NEW ARRAY
 
         // arbiterSchedule = arbiterSchedule.splice(0, 5)
+        // res.send(arbiterSchedule)
+
         const newGamesToBeAdded = await addGamesFromArray(arbiterSchedule, "Arbiter Sports", owner, currentSchedule)
-        
         res.send(newGamesToBeAdded)
     } catch (error) {
         res.status(418).send({error: `Error in Arbiter/Schedule/MAIN: ${error}`})

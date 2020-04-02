@@ -124,7 +124,7 @@ router.get('/api/all-games', auth, async (req, res) => {
             }   
         }
         
-        res.send(gamesByMonth)
+        res.send([gamesByMonth, req.user.groups])
     } catch (error) {
         res.status(500).send({error: "Error from get all games: " + error})
     }
