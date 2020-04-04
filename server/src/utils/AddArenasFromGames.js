@@ -13,6 +13,9 @@ const addArenasFromGames = (games) => {
             name: val.split('*').shift(),
             address: val.split('*').pop()
         }
+        if(!arena.address){
+            arena.address = arena.name
+        }
         uniqueArenas.push(arena)
     }
     return uniqueArenas

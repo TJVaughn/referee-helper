@@ -100,6 +100,9 @@ const userSchema = new mongoose.Schema({
         name: {
             type: String
         },
+        address: {
+            type: String
+        },
         street: {
             type: String
         },

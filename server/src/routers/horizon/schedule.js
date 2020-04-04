@@ -20,7 +20,9 @@ const parseEachGame = (html, group) => {
             away: html[5],
             location: html[6],
             fees: html[7],
-            group: group,
+            group: {
+                title: group
+            },
             position: 'Referee',
             paid: false,
             gameId: html[0],
@@ -227,9 +229,18 @@ router.get('/api/horizon/schedule', auth, async (req, res) => {
         const password = decryptPlainText(req.user.hwrPassword)
         const owner = req.user
         const currentSchedule = await Game.find({owner})
+        let startTime = Date.now()
         let horizonSchedule = await puppeteerFunction(username, password)
+        let endTime = Date.now()
+        let secsElapsed = Math.floor((endTime - startTime) / 1000)
+        console.log("Getting Horizon Schedule: " + secsElapsed)
+
         // res.send(horizonSchedule)
+        startTime = Date.now()
         let newGamesToBeAdded = await addGamesFromArray(horizonSchedule, "Horizon Web Ref", owner, currentSchedule)
+        endTime = Date.now()
+        secsElapsed = Math.floor((endTime - startTime) / 1000)
+        console.log("Parsing, checking DB and adding arenas: " + secsElapsed)
         res.send(newGamesToBeAdded)
     } catch (error) {
         res.status(418).send({error: `Error in Horizon/Schedule/MAIN: ${error}`})

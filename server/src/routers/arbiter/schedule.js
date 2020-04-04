@@ -138,31 +138,26 @@ router.get('/api/arbiter/schedule', auth, async (req, res) => {
     
     try {
         const currentSchedule = await Game.find({owner})
+        let startTime = Date.now()
         let htmlSchedule = await getArbiterSchedule(userEmail, userPass)
+        let endTime = Date.now()
+        let secsElapsed = Math.floor((endTime - startTime) / 1000)
+        console.log("Getting Arbiter Schedule: " + secsElapsed)
         if(htmlSchedule.error){
             return res.send({error: "Invalid Login"})
         }
-        //at this point, we have the beginning to the end of all the schedule data
-        //next we need to figure out how to single out all of the elements
-        // EACH game is it's own TR
+        startTime = Date.now()
         let allGamesHtmlArray = htmlSchedule.join('').split('<tr')
-        // EACH element starts with TD
         let arbiterSchedule = []
         allGamesHtmlArray.map((item) => {
             item = htmlItemToJson(item)
             arbiterSchedule.push(item)
         })
-        //CHECK FOR DUPLICATES
-        // ARBITER SCHEDULE ARRAY OF OBJECTS
-        // DATABASE SCHEDULE ARRAY OF OBJECTS
-
-        // FOR EVERY ITEM/OBJECT IN THE ARBITER ARRAY CHECK IF THERE IS A MATCH IN THE DATABASE
-        // IF THERE IS A MATCH, DON'T ADD IT TO THE NEW ARRAY
-
-        // arbiterSchedule = arbiterSchedule.splice(0, 5)
-        // res.send(arbiterSchedule)
 
         const newGamesToBeAdded = await addGamesFromArray(arbiterSchedule, "Arbiter Sports", owner, currentSchedule)
+        endTime = Date.now()
+        secsElapsed = Math.floor((endTime - startTime) / 1000)
+        console.log("Parsing Time: " + secsElapsed)
         res.send(newGamesToBeAdded)
     } catch (error) {
         res.status(418).send({error: `Error in Arbiter/Schedule/MAIN: ${error}`})
