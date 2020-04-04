@@ -15,7 +15,7 @@ const parseGame = (html) => {
         gameId: html[0],
         group: {
             title: html[2],
-            value: html[2]
+            value: html[2],
         },
         position: html[3],
         dateTime: html[4],
@@ -34,8 +34,11 @@ const parseGame = (html) => {
     game.group.value = game.group.value.split('').reverse().join('').split('>').shift()
     game.group.value = game.group.value.split('').reverse().join('')
 
-    game.group.title = game.group.title.split(/\"/).splice(7, 1)
+    game.group.title = game.group.title.split('title').splice(1, 1)
+    game.group.title = game.group.title.join('').split(/\"/).splice(1, 1)
     game.group.title = game.group.title[0].trim()
+    // game.group.title = game.group.title.split(/\"/).splice(7, 1)
+    // game.group.title = game.group.title[0].trim()
 
     game.position = game.position.split('</span>').shift()
     game.position = game.position.split('').reverse().join('').split('>').shift()

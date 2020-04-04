@@ -159,16 +159,16 @@ const puppeteerFunction = async (username, password) => {
             height: 825,
             deviceScaleFactor: 1
         })
-        await page.setRequestInterception(true);
-        page.on('request', request => {
-            if (request.resourceType() === 'stylesheet') {
-                request.abort();
-            } else {
-                request.continue();
-            }
-        })
+        // await page.setRequestInterception(true);
+        // page.on('request', request => {
+        //     if (request.resourceType() === 'stylesheet') {
+        //         request.abort();
+        //     } else {
+        //         request.continue();
+        //     }
+        // })
         await page.goto('https://www.horizonwebref.com/?pageID=login')
-        await page.waitFor(1000)
+        await page.waitFor(1500)
 
         await page.click('#loginTable2 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > input')
         await page.keyboard.type(username)
