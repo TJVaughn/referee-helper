@@ -1,5 +1,8 @@
 const Game = require('../models/Game')
 const calculateDistance = require('../utils/calculateDistance')
+const formatGameLocation = require('./formatGameLocation')
+const formattedHorizonSchedule = require('./formattedhorizonschedule')
+const addArenasFromGames = require('./AddArenasFromGames')
 
 const updateRefGroup = (games, groups) => {
     for(let i = 0; i < games.length; i ++){
@@ -58,41 +61,39 @@ const addGamesfromArray = async (schedule, platform, user, currentSchedule) => {
             }
 
         })
-        // Calculate Distance and Duration here
-        // All Schedule syncing will ultimately call this
-        //Takes in current array of new games
-        // Returns new array of games with appended distance and duration
-        
-        await calculateDistance(user, newGamesToBeAdded, currentSchedule)
 
-        newGamesToBeAdded = updateRefGroup(newGamesToBeAdded, user.groups)
+        // newGamesToBeAdded = await formatGameLocation(newGamesToBeAdded, user.state)
+        newGamesToBeAdded = formattedHorizonSchedule
+        let uniqueArenasFromGames = addArenasFromGames(newGamesToBeAdded)
+        return uniqueArenasFromGames
+        // newGamesToBeAdded = updateRefGroup(newGamesToBeAdded, user.groups)
 
         // //Adding all new games to the database
-        newGamesToBeAdded.map((item) => {
-            let game = new Game({
-                dateTime: item.dateTime,
-                refereeGroup: item.group.title,
-                level: item.level,
-                fees: item.fees,
-                gameCode: item.gameId,
-                location: item.location,
-                formattedLocation: item.formattedLocation,
-                position: item.position,
-                home: item.home,
-                away: item.away,
-                platform,
-                owner: user._id,
-                status: item.status,
-                paid: item.paid,
-                distance: item.distance,
-                duration: item.duration
-            })
+        // newGamesToBeAdded.map((item) => {
+        //     let game = new Game({
+        //         dateTime: item.dateTime,
+        //         refereeGroup: item.group.title,
+        //         level: item.level,
+        //         fees: item.fees,
+        //         gameCode: item.gameId,
+        //         location: item.location,
+        //         formattedLocation: item.formattedLocation,
+        //         position: item.position,
+        //         home: item.home,
+        //         away: item.away,
+        //         platform,
+        //         owner: user._id,
+        //         status: item.status,
+        //         paid: item.paid,
+        //         distance: item.distance,
+        //         duration: item.duration
+        //     })
 
-            game.save()
-        })
-        gamesToBeUpdated.map((game) => {
-            game.save()
-        })
+        //     game.save()
+        // })
+        // gamesToBeUpdated.map((game) => {
+        //     game.save()
+        // })
 
         //Getting parallel save error for two games. 
         // 10/14/18, 5:30 PM CPCT

@@ -96,6 +96,29 @@ const userSchema = new mongoose.Schema({
             }
         }
     ],
+    arenas: [{
+        name: {
+            type: String
+        },
+        street: {
+            type: String
+        },
+        city: {
+            type: String
+        },
+        state: {
+            type: String
+        },
+        zipcode: {
+            type: String
+        },
+        distance: {
+            type: Number
+        },
+        duration: {
+            type: Number
+        }
+    }],
     level: {
         type: Number,
         default: 1,

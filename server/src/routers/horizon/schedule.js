@@ -145,8 +145,18 @@ const findRefGroup = (html) => {
 
 const puppeteerFunction = async (username, password) => {
     try {
-        const browser = await puppeteer.launch({ ignoreHTTPSErrors: true, headless: true, defaultViewport: {height: 1000, width: 1500}})
+        const browser = await puppeteer.launch({
+            headless: false,
+            args: [
+                '--window-size=1500,825'
+            ]
+        })
         const page = await browser.newPage()
+        await page.setViewport({
+            width: 1500,
+            height: 825,
+            deviceScaleFactor: 1
+        })
         await page.setRequestInterception(true);
         page.on('request', request => {
             if (request.resourceType() === 'stylesheet') {
@@ -155,7 +165,9 @@ const puppeteerFunction = async (username, password) => {
                 request.continue();
             }
         })
-        await page.goto('https://www.horizonwebref.com/?pageID=login', {waitUntil: 'networkidle2'})
+        await page.goto('https://www.horizonwebref.com/?pageID=login')
+        await page.waitFor(1000)
+
         await page.click('#loginTable2 > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > input')
         await page.keyboard.type(username)
         await page.click("#password")
@@ -202,6 +214,7 @@ const puppeteerFunction = async (username, password) => {
             })
         }
         // await page.screenshot({path: 'screenshot.png'})
+        await browser.close()
         return horizonSchedule
     } catch (error) {
         return ({error: `Error From puppeteer: ${error}`})
