@@ -1,7 +1,10 @@
+const superagent = require('superagent')
+
 const Game = require('../models/Game')
+const Arena = require('../models/Arena')
+
 const calculateDistance = require('../utils/calculateDistance')
 const formatGameLocation = require('./formatGameLocation')
-// const formattedHorizonSchedule = require('./formattedhorizonschedule')
 const addArenasFromGames = require('./AddArenasFromGames')
 
 const updateRefGroup = (games, groups) => {
@@ -17,17 +20,18 @@ const updateRefGroup = (games, groups) => {
     }
     return games
 }
-const findArenasInDb = (newArenas, oldArenas) => {
+const removeDuplicateArenas = (newArenas, oldArenas) => {
     let arenasToBeAdded = []
+    let arenasToBeUpdated = []
     newArenas.map((arena) => {
         for(let i = 0; i < oldArenas.length; i ++){
             if(arena.name === oldArenas[i].name && arena.address === oldArenas[i].address){
-                return true
+                return arenasToBeUpdated.push(arena)
             }
         }
         arenasToBeAdded.push(arena)
     })
-    return arenasToBeAdded
+    return {arenasToBeAdded, arenasToBeUpdated}
 }
 
 const assignDistanceDataToGames = (arenas, games) => {
@@ -40,6 +44,7 @@ const assignDistanceDataToGames = (arenas, games) => {
             }
         }
     }
+    return games
 }   
 
 const addGamesfromArray = async (schedule, platform, user, currentSchedule) => {
@@ -73,16 +78,12 @@ const addGamesfromArray = async (schedule, platform, user, currentSchedule) => {
             //Duplicate, we need to update the game if the game info is different
             // if isMatch is not false, we get the index of the game in the current schedule array
             currgame = currentSchedule[isMatch]
+            const updates = Object.keys(gameIm)
+            updates.forEach((update) => {
+                currgame[update] = gameIm[update]
+            })
 
-            if(gameIm.fees === currgame.fees){
-                return
-            } else {
-                if(gameIm.paid){
-                    currgame.paid = gameIm.paid
-                }
-                currgame.status = gameIm.status
-                gamesToBeUpdated.push(currgame)
-            }
+            return gamesToBeUpdated.push(currgame)
 
         })
 
@@ -94,31 +95,50 @@ const addGamesfromArray = async (schedule, platform, user, currentSchedule) => {
         let newUniqueArenasFromGames = addArenasFromGames(newGamesToBeAdded)
 
         //Now we will check the database to see if there are existing arenas
-        let currentArenas = await user.arenas
-        
-        let newArenasNotInDb = []
-        newArenasNotInDb = findArenasInDb(newUniqueArenasFromGames, currentArenas)
+        let currentArenas = await Arena.find({owner: user._id})
+        gamesToBeUpdated =  assignDistanceDataToGames(currentArenas, gamesToBeUpdated)
+        let splitArenas = removeDuplicateArenas(newUniqueArenasFromGames, currentArenas)
+        let newArenasNotInDb = splitArenas.arenasToBeAdded
+        let arenasToBeUpdated = splitArenas.arenasToBeUpdated
 
+        arenasToBeUpdated.map((arena) => {
+            superagent.patch(`/api/arena/${arena._id}`)
+            .send({
+                "name": arena.name,
+                "address": arena.address,
+                "distance": arena.distance,
+                "duration": arena.duration
+            })
+            .set('accept', 'json')
+            .end((err, res) => {
+                if(err){
+                    return err
+                }
+                return res
+            });
+        })
         //Now we need to calculate distance to these arenas
         newArenasNotInDb = await calculateDistance(user, newArenasNotInDb)
 
         //Next we will save those arenas to the databse
-        await newArenasNotInDb.map((arena) => {
-            user.arenas = user.arenas.concat({ 
+        newArenasNotInDb.map((arena) => {
+            let newArena = new Arena({ 
                 name: arena.name,
                 address: arena.address,
                 distance: arena.distance,
-                duration: arena.duration
+                duration: arena.duration,
+                owner: user._id,
+
              })
-            user.save()
+            newArena.save()
         })
-        let allArenas = user.arenas
+        currentArenas = await Arena.find({owner: user._id})
         //Next we will assign those distances and durations to their respective games
-        assignDistanceDataToGames(allArenas, newGamesToBeAdded)
+        newGamesToBeAdded = assignDistanceDataToGames(currentArenas, newGamesToBeAdded)
         newGamesToBeAdded = await updateRefGroup(newGamesToBeAdded, user.groups)
 
         //Adding all new games to the database
-        newGamesToBeAdded.map((item) => {
+        await newGamesToBeAdded.map((item) => {
             let game = new Game({
                 dateTime: item.dateTime,
                 refereeGroup: item.group.title,
@@ -148,7 +168,7 @@ const addGamesfromArray = async (schedule, platform, user, currentSchedule) => {
         // The software didn't recognize it as a duplicate because I haven't thought of that edge case
         // It added a new game even though it doesn't exist
         
-        return newGamesToBeAdded
+        return {newGamesToBeAdded, gamesToBeUpdated}
     } catch (error) {
         return `Error in add games from Array: ${error}`
     }   

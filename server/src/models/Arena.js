@@ -6,33 +6,43 @@ const arenaSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    address: {
+        type: String,
+        trim: true
+    },
     street: {
-        required: true,
         type: String,
         trim: true
     },
     city: {
-        required: true,
         type: String,
         trim: true
     },
     state: {
-        required: true,
         type: String,
         trim: true
     },
     zipCode: {
-        required: true,
         type: String,
         trim: true
     },
     country: {
-        required: true,
         type: String,
         trim: true
     },
+    distance: {
+        type: Number
+    },
+    duration: {
+        type: Number
+    },
     directionsToRefRoom: {
         type: String
+    },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
     }
 }, {
     timestamps: true

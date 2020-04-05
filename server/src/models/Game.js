@@ -16,7 +16,7 @@ const gameSchema = new mongoose.Schema({
         type: Number
     },
     duration: {
-        type: String
+        type: Number
     },
     refereeGroup: {
         type: String

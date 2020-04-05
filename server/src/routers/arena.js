@@ -77,9 +77,32 @@ router.post('/api/arena', auth, async (req, res) => {
 })
 
 //UPDATE BY ID
-// router.patch('/api/arena/:id', auth, async (req, res) => {
-    
-// })
+router.patch('/api/arena/:id', auth, async (req, res) => {
+    const _id = req.params.id
+    const updates = Object.keys(req.body)
+    const allowedUpdates = [
+        "distance", "duration", "address", "name", "directionsToRefRoom"
+    ]
+    const isValidUpdate = updates.every((update) => {
+        return allowedUpdates.includes(update)
+    })
+    if(!isValidUpdate){
+        return res.status(418).send({error: "Invalid Update"})
+    }
+    try {
+        const arena = await Arena.findOne({owner: req.user._id, _id})
+        if(!arena){
+            return res.status(404).send({error: "Arena not found"})
+        }
+        updates.forEach((update) => {
+            arena[update] = req.body[update]
+        })
+        await arena.save()
+        res.send(arena)
+    } catch (error) {
+        res.status(500).send(error)
+    }
+})
 
 //GET ARENA by ID
 // router.get('/api/arena/:id', auth, async (req, res) => {

@@ -2,23 +2,39 @@ const superagent = require('superagent')
 
 const calculateDistance = async (user, arenas) => {
     try {
+        let num = user.hasCalledDistanceMatrixApi
         for(let i = 0; i < arenas.length; i++){
+            if(!arenas[i].distance){
+                // let mapsAPIURL = `https://maps.googleapis.com/maps/api/distancematrix/json?key=${process.env.MAPS_KEY}&origins=${user.street}${user.city}${user.state}&destinations=${encodeURI(arenas[i].address)}&units=imperial`
+                // let response = await superagent.get(mapsAPIURL)
+                num += 1
+                console.log("CALLED MAPS API " + num)
+                // response.res.text = JSON.parse(response.res.text)
+                // let distance = response.res.text.rows[0].elements[0].distance.text
+                // let duration = response.res.text.rows[0].elements[0].duration.text
+                // distance = distance.split(' ').shift()
+                // distance = Math.round(distance)
 
-            // let mapsAPIURL = `https://maps.googleapis.com/maps/api/distancematrix/json?key=${process.env.MAPS_KEY}&origins=${user.street}${user.city}${user.state}&destinations=${encodeURI(arenas[i].name)}&units=imperial`
-            // let response = await superagent.get(mapsAPIURL)
-            // console.log("CALLED MAPS API")
-            // response.res.text = JSON.parse(response.res.text)
-            // arenas[i].distance = response.res.text.rows[0].elements[0].distance.text
-            // arenas[i].duration = response.res.text.rows[0].elements[0].duration.text
+                // duration = duration.split(' ').shift()
+                // duration = Math.round(duration)
+                // console.log(distance, duration)
+                // if(distance === NaN){
+                //     distance = 0
+                //     duration = 0
+                // }
+                // arenas[i].distance = distance
+                // arenas[i].duration = duration
 
-            arenas[i].distance = i + 1;
-            arenas[i].duration = i + 6;
-            console.log(`Arena in calculate Miles: ${arenas[i].name}, ${arenas[i].street}`)
-            // console.log(`Distance: ${arenas[i].distance}, duration: ${arenas[i].duration}`)
+                arenas[i].distance = i + 10;
+                arenas[i].duration = i + 22;
+                // console.log(`Arena in calculate Miles: ${arenas[i].name},`)
+                // console.log(`Distance: ${arenas[i].distance}, duration: ${arenas[i].duration}`)
+            }
         }
         
         // game.duration = "10"
         // game.distance = "4"
+        await user.save()
         return arenas
     } catch (error) {
         return {error: "Error from Maps API: " + error}
