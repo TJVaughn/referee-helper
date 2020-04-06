@@ -32,7 +32,18 @@ class SyncSchedules extends Component {
             this.setState({message: "Grabbing Horizon Schedule & Payment Data"})
             await getRequest('horizon/schedule')
         } catch (error) {
-            return this.setState({arbiterError: "Error fetching Arbiter schedule: " + error})
+            return this.setState({horizonError: "Error fetching Arbiter schedule: " + error})
+        }
+    }
+    async callArenaData(){
+        try {
+            this.setState({message: "Adding/updating arenas from schedule. Fetching mileage and drive duration time to arenas."})
+            await getRequest('arena/add-arenas-from-schedule')
+            this.setState({message: "Updating game distances and durations"})
+            await getRequest('arena/assign-distance-to-games')
+            
+        } catch (error) {
+            return this.setState({})
         }
     }
 
@@ -43,6 +54,7 @@ class SyncSchedules extends Component {
         await this.callGetASData()
         await this.callGetHWRData()
         setCookie("InitialLoginFlow", "false")
+        await this.callArenaData()
         this.setState({inProcess: false, message: <Redirect to={'/'} />})
         const endTime = Date.now()
         // console.log(endTime)
@@ -65,6 +77,12 @@ class SyncSchedules extends Component {
                 <h1>
                     {this.state.message}
                 </h1>
+                <p>
+                    {this.state.arbiterError}
+                </p>
+                <p>
+                    {this.state.horizonError}
+                </p>
                 <h5>{this.state.syncTime}</h5>
     		</div>
     	);

@@ -1,23 +1,98 @@
 const express = require('express')
 const router = new express.Router()
 const Arena = require('../models/Arena')
+const Game = require('../models/Game')
 const auth = require('../middleware/auth')
 const superagent = require('superagent')
+const addArenasFromGames = require('../utils/AddArenasFromGames')
+const calculateDistance = require('../utils/calculateDistance')
 
-//Get PlaceID by search
-// router.post('/api/search', auth, async (req, res) => {
+const removeDuplicateArenas = (newArenas, oldArenas) => {
+    let arenasToBeAdded = []
+    let arenasToBeUpdated = []
+    newArenas.map((arena) => {
+        for(let i = 0; i < oldArenas.length; i ++){
+            if(arena.name === oldArenas[i].name){
+                return arenasToBeUpdated.push(arena)
+            }
+        }
+        arenasToBeAdded.push(arena)
+    })
+    return {arenasToBeAdded, arenasToBeUpdated}
+}
 
-    //user will post data to this request, or maybe just put it as a param
-    //I will make sure that the user has an address, or maybe I will just require it on signup
-    //Then from here I will make a server request to the maps API
-    //Then I will grab the place ID
-    //Then I will get the distance to the rink from the users address
-    //I will also get the rink address details
-    //Then I will return that data to the front end
-    //Then I will handle errors if they exist
+router.get('/api/arena/add-arenas-from-schedule', auth, async (req, res) => {
+    try {
+        const arenas = await Arena.find({owner: req.user._id})
+        const schedule = await Game.find({owner: req.user._id})
+        let newArenas = addArenasFromGames(schedule)
+        let oldAndNewArenas = removeDuplicateArenas(newArenas, arenas)
+        let arenasToBeAdded = oldAndNewArenas.arenasToBeAdded
+        let distanceData = await calculateDistance(req.user, arenasToBeAdded)
+        arenasToBeAdded = distanceData.arenas
+        arenasToBeUpdated = oldAndNewArenas.arenasToBeUpdated
+        arenasToBeUpdated.map((arena) => {
+            superagent.patch(`/api/arena/${arena._id}`)
+            .send({
+                "name": arena.name,
+                "address": arena.address,
+                "distance": arena.distance,
+                "duration": arena.duration
+            })
+            .set('accept', 'json')
+            .end((err, res) => {
+                if(err){
+                    return err
+                }
+                return res
+            });
+        })
+        let calledMapsDistanceAPI = distanceData.num
+        req.user.hasCalledDistanceMatrixApi = calledMapsDistanceAPI
+        await req.user.save()
+        arenasToBeAdded.map((arena) => {
+            let newArena = new Arena({ 
+                name: arena.name,
+                address: arena.address,
+                distance: arena.distance,
+                duration: arena.duration,
+                owner: req.user._id,
+             })
+            newArena.save()
+        })
+        res.send(arenasToBeAdded)
+    } catch (error) {
+        res.status(500).send({error: `Error from api/arena/add-arenas-from-schedule: ${error}`})
+    }
+})
+router.get('/api/arena/assign-distance-to-games', auth, async (req, res) => {
+    try {
+        const arenas = await Arena.find({ owner: req.user._id })
+        const games = await Game.find({ owner: req.user._id })
+    
+        const assignDistanceDataToGames = (arenas, games) => {
+            //for every game, find it's matching arena and assign the arena distnace and duratin to the game
+            for(let i = 0; i < games.length; i ++){
+                for(let x = 0; x < arenas.length; x++){
+                    if(games[i].formattedLocation === arenas[x].name){
+                        games[i].distance = arenas[x].distance
+                        games[i].duration = arenas[x].duration
+                    }
+                }
+            }
+            return games
+        }   
+    
+        let updatedGames = assignDistanceDataToGames(arenas, games)
+        updatedGames.map((game) => {
+            game.save()
+        })
+        res.send(updatedGames)
+    } catch (error) {
+        res.status(500).send({error: `Error from api/arena/assign distance to games: ${error}`})
+    }
 
-
-// })
+})
 
 // CREATE
 router.post('/api/arena', auth, async (req, res) => {
