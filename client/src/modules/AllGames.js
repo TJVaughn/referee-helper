@@ -89,7 +89,8 @@ class AllGames extends Component {
                 earned: 0,
                 received: 0,
                 remaining: 0,
-                miles: 0
+                miles: 0,
+                duration: 0
             }
             groupObj.push(group)
         }
@@ -171,10 +172,12 @@ class AllGames extends Component {
 
     sumMiles(groups){
         let sum = 0
+        let dur = 0
         for(let i = 0; i < this.state.schedule.length; i++){
-            sum += parseInt(this.state.schedule[i].distance)
+            sum += this.state.schedule[i].distance
+            dur += this.state.schedule[i].duration
         }
-        this.setState({miles: sum})
+        this.setState({miles: sum, duration: dur})
     }
     sumRemaining(groups){
         let paid = 0
@@ -280,6 +283,15 @@ class AllGames extends Component {
                 <h2>{months[(today.getMonth())]}, {today.getFullYear()}</h2>
                 <div className="All-games-stats">
                     {groupDataMap}
+                    <div>
+                    <p>
+                        Total Miles: <strong>{this.state.miles * 2}</strong> <br /> * $0.575 <br /> = ${((this.state.miles * 2) * 0.575).toFixed(2)}
+                    </p>
+                    <p>
+                        Time Driven(hours): {(this.state.duration * 2 / 60).toFixed(2)}
+                    </p>
+                    </div>
+                    
                     {/* <h4>Earned: 
                         <span className="number">
                             {` $${this.state.earned}`}
@@ -312,7 +324,7 @@ class AllGames extends Component {
                     onClick={this.handleNextMonth}>
                     →
                 </button>
-
+                
                 {gamesHeader}
     			{allGamesMap}
                 <h1>
