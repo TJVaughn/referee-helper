@@ -6,6 +6,8 @@ const userRouter = require('./routers/user')
 const gameRouter = require('./routers/game')
 const arenaRouter = require('./routers/arena')
 
+const stripePaymentsRouter = require('./routers/stripe')
+
 const arbiterScheduleRouter = require('./routers/arbiter/schedule')
 const arbiterProfileRouter = require('../src/routers/arbiter/profile')
 const arbiterPaymentsRouter = require('../src/routers/arbiter/payments')
@@ -21,6 +23,8 @@ app.use(express.json())
 app.use(userRouter)
 app.use(gameRouter)
 app.use(arenaRouter)
+
+app.use(stripePaymentsRouter)
 
 app.use(arbiterScheduleRouter)
 app.use(arbiterProfileRouter)

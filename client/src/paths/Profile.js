@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import getRequest from '../utils/getRequest'
 import { getCookie } from '../utils/cookies'
 import { Redirect } from 'react-router-dom';
+import Stripe from '../paths/Stripe'
 
 class Profile extends Component {
 	constructor(props){
@@ -76,6 +77,7 @@ class Profile extends Component {
 					</div>
 				</div>
 				{this.state.redirect}
+				<Stripe />
     		</div>
     	);
     }

@@ -3,6 +3,7 @@ import '../styles/App.scss';
 import '../styles/AllGames.scss'
 import '../styles/CreateGame.scss'
 import '../styles/SingleGame.scss'
+import '../styles/Stripe.scss'
 import AppRouter from '../main/AppRouter'
 
 function App() {
