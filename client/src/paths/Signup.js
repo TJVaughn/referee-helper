@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import postRequest from '../utils/postRequest'
 import { Redirect } from 'react-router-dom';
 import { setCookie } from '../utils/cookies'
-import { set } from 'mongoose';
 
 class Signup extends Component {
 	constructor(props){

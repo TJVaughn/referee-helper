@@ -1,7 +1,25 @@
 import React, { Component } from 'react';
 import { ElementsConsumer, CardElement } from '@stripe/react-stripe-js';
-
 import CardSection from './CardSection';
+
+const stripePaymentMethodHandler = async (result) => {
+    if (result.error) {
+      // Show error in payment form
+    } else {
+      // Otherwise send paymentMethod.id to your server
+      const res = await fetch('/create-customer', {
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          email: 'jenny.rosen@example.com',
+          payment_method: result.paymentMethod.id
+        }),
+      });
+  
+      // The customer has been created
+      const customer = await res.json();
+    }
+  }
 
 class CheckoutForm extends Component {
     async getClientSecret(){
@@ -12,55 +30,46 @@ class CheckoutForm extends Component {
             }
         })
         const body = await response.json()
+        // if(!body.succeeded){
+        //     return console.log("Card failed")
+        // }
         console.log(body)
-
-        return body.client_secret
+        return body.clientSecret
     }
-  handleSubmit = async (event) => {
+    async handleSubmit (event){
     // We don't want to let default form submission happen here,
     // which would refresh the page.
     event.preventDefault();
 
-    const {stripe, elements} = this.props
+    const { stripe, elements } = this.props
 
     if (!stripe || !elements) {
       // Stripe.js has not yet loaded.
       // Make  sure to disable form submission until Stripe.js has loaded.
       return;
     }
-    const clientSecret = await this.getClientSecret()
-    const result = await stripe.confirmCardPayment(clientSecret, {
-      payment_method: {
+    const result = await stripe.createPaymentMethod({
+        type: 'card',
         card: elements.getElement(CardElement),
         billing_details: {
-          name: 'Bob Johnson',
+            name: 'Trevor Vaughn',
         },
-      }
     });
 
-    if (result.error) {
-      // Show error to your customer (e.g., insufficient funds)
-      console.log(result.error.message);
-    } else {
-      // The payment has been processed!
-      if (result.paymentIntent.status === 'succeeded') {
-        // Show a success message to your customer
-        // There's a risk of the customer closing the window before callback
-        // execution. Set up a webhook or plugin to listen for the
-        // payment_intent.succeeded event that handles any business critical
-        // post-payment actions.
-      }
-    }
+    stripePaymentMethodHandler(result)
   };
 
   render() {
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <CardSection />
-        <button disabled={!this.props.stripe}>Confirm order</button>
-      </form>
-    );
-  }
+      const stripe = this.props
+        return (
+            <form onSubmit={this.handleSubmit}>
+            <CardSection />
+            <button type="submit" disabled={!stripe}>
+              Subscribe
+            </button>
+          </form>
+        );
+    }
 }
 
 export default function InjectedCheckoutForm() {
