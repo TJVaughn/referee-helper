@@ -3,6 +3,48 @@ const router = new express.Router()
 const stripe = require('stripe')(process.env.TEST_STRIPE_SECRET)
 const auth = require('../middleware/auth')
 
+router.post('/api/stripe/setup-customer', auth, async(req, res) => {
+    // User signs up for referee helper
+    // User is then asked to choose between monthly subscription, semi-annual, and annual subscription
+    // User selects product they desire, and then fills out billing information/customer form
+    // The form will consist of name to be used in billing, card information(num, cvv, zip), and we will already have their
+    //email and password from the initial signup.
+    // The form with user info, card info and product selected will then be sent here
+    // Where we will set up the customer and then process the initial sale
+    // Or if we are doing a free trial, we will automatically bill the customer after the trial period has completed..
+    try {
+        // const paymentIntent = await stripe.paymentIntents.create({
+
+        // })
+        const stripeCustomer = await stripe.customers.create({
+            payment_method: req.body.payment_method,
+            email: req.user.email,
+            name: `${req.user.fName} ${req.user.lName}`,
+            invoice_settings: {
+                default_payment_method: req.body.payment_method
+            }
+        })
+        let subPlan = ''
+        if(req.body.plan === "monthly"){
+            subPlan = 'plan_H4ZzM7KVrZ9OE0'
+        } else if (req.body.plan === "semi-annual"){
+            subPlan = 'plan_H4a0mrWJu17u6H'
+        } else {
+            subPlan = 'plan_H4a14g8r6IEohe'
+        }
+        const subscription = await stripe.subscriptions.create({
+            customer: stripeCustomer.id,
+            items: [{plan: subPlan}],
+            expand: ["latest_invoice.payment_intent"]
+        })
+        res.send({
+            customer: stripeCustomer,
+            subscription
+        })
+    } catch (error) {
+        res.status(500).send({error: "Error in stripe/setup-customer: " + error})
+    }
+})
 
 const calculateOrderAmount = (products) => {
     let num = 0;

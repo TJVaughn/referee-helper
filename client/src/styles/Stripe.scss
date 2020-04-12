@@ -2,13 +2,13 @@
     box-sizing: border-box;
   
     height: 40px;
-    width: 300px;
+    width: 500px;
     padding: 10px 12px;
   
     border: 1px solid transparent;
     border-radius: 4px;
     background-color: white;
-  
+    margin: 0 auto;
     box-shadow: 0 1px 3px 0 #e6ebf1;
     -webkit-transition: box-shadow 150ms ease;
     transition: box-shadow 150ms ease;
@@ -24,4 +24,37 @@
   
   .StripeElement--webkit-autofill {
     background-color: #fefde5 !important;
+  }
+
+  .Stripe-checkout-subscription-container {
+    display: grid;
+    grid-template-columns: repeat(3, 33.33%);
+  }
+  .Stripe-checkout-subscription-choice {
+    border: 1px solid #ddd5;
+    margin: 0 5px;
+    padding: 5px;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 5px 5px 5px #ccc;
+
+    
+  }
+  .selected{
+    background: linear-gradient(45deg, rgb(45, 99, 218), rgba(17, 9, 134, 0.467))
+  }
+  .Stripe-checkout-card-section {
+    margin: 0 auto;
+  }
+  .Stripe-checkout-button {
+    margin: 10px auto;
+    text-align: center;
+    background: linear-gradient(45deg, rgb(45, 99, 218), rgba(17, 9, 134, 0.467));
+    border-radius: 5px;
+    color: #fff;
+    padding: 5px;
+    border: none;
+    display: block;
+    
   }

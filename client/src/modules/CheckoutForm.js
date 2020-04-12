@@ -2,72 +2,120 @@ import React, { Component } from 'react';
 import { ElementsConsumer, CardElement } from '@stripe/react-stripe-js';
 import CardSection from './CardSection';
 
-const stripePaymentMethodHandler = async (result) => {
-    if (result.error) {
-      // Show error in payment form
-    } else {
-      // Otherwise send paymentMethod.id to your server
-      const res = await fetch('/create-customer', {
-        method: 'post',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          email: 'jenny.rosen@example.com',
-          payment_method: result.paymentMethod.id
-        }),
-      });
-  
-      // The customer has been created
-      const customer = await res.json();
-    }
-  }
 
 class CheckoutForm extends Component {
-    async getClientSecret(){
-        const response = await fetch('/api/stripe', {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-        const body = await response.json()
-        // if(!body.succeeded){
-        //     return console.log("Card failed")
-        // }
-        console.log(body)
-        return body.clientSecret
+    constructor(props){
+        super(props);
+        this.state = {
+            monthly: false,
+            semiAnnual: false,
+            annual: true,
+            message: '',
+        }
+        this.handleSubmit = this.handleSubmit.bind(this)
+        this.handleMonthlySub = this.handleMonthlySub.bind(this)
+        this.handleSemiAnnualSub = this.handleSemiAnnualSub.bind(this)
+        this.handleAnnualSub = this.handleAnnualSub.bind(this)
     }
+
+
+    async stripePaymentMethodHandler(result) {
+        if (result.error) {
+          // Show error in payment form
+          this.setState({message: result.error})
+        } else {
+          // Otherwise send paymentMethod.id to your server
+          let plan = ''
+        if(this.state.monthly){
+            plan = 'monthly'
+        } else if(this.state.semiAnnual){
+            plan = 'semi-annual'
+        } else {
+            plan = 'annual'
+        }
+          const data = {
+            payment_method: result.paymentMethod.id,
+            plan
+          }
+          const res = await fetch('/api/stripe/setup-customer', {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data),
+          });
+      
+          // The customer has been created
+          const customer = await res.json();
+          console.log(customer)
+          this.setState({message: "Success!"})
+        }
+      }
+
+
     async handleSubmit (event){
     // We don't want to let default form submission happen here,
     // which would refresh the page.
-    event.preventDefault();
+        event.preventDefault();
+        const { stripe, elements } = this.props
 
-    const { stripe, elements } = this.props
+        if (!stripe || !elements) {
+        // Stripe.js has not yet loaded.
+        // Make  sure to disable form submission until Stripe.js has loaded.
+        return;
+        }
+        const result = await stripe.createPaymentMethod({
+            type: 'card',
+            card: elements.getElement(CardElement)
+        });
 
-    if (!stripe || !elements) {
-      // Stripe.js has not yet loaded.
-      // Make  sure to disable form submission until Stripe.js has loaded.
-      return;
+        this.stripePaymentMethodHandler(result)
+    };
+    handleMonthlySub(){
+        this.setState({monthly: true, semiAnnual: false, annual: false})
     }
-    const result = await stripe.createPaymentMethod({
-        type: 'card',
-        card: elements.getElement(CardElement),
-        billing_details: {
-            name: 'Trevor Vaughn',
-        },
-    });
+    handleSemiAnnualSub(){
+        this.setState({monthly: false, semiAnnual: true, annual: false})
+    }
+    handleAnnualSub(){
+        this.setState({monthly: false, semiAnnual: false, annual: true})
+    }
 
-    stripePaymentMethodHandler(result)
-  };
+    render() {
 
-  render() {
-      const stripe = this.props
+        const {stripe} = this.props
+
         return (
             <form onSubmit={this.handleSubmit}>
-            <CardSection />
-            <button type="submit" disabled={!stripe}>
-              Subscribe
-            </button>
-          </form>
+                <h2>Select your subscription: </h2>
+                <div className="Stripe-checkout-subscription-container">
+                    <div onClick={this.handleMonthlySub} className={`Stripe-checkout-subscription-choice ${this.state.monthly ? 'selected': ''}`}>
+                        <h5>Monthly</h5>
+                        <p className="number">$10.99/month</p>
+                    </div>
+                    <div onClick={this.handleSemiAnnualSub} className={`Stripe-checkout-subscription-choice ${this.state.semiAnnual ? 'selected': ''}`}>
+                        <h5>Semi-Annual (every 6 months)</h5>
+                        <p className="number">$50.99/6 months</p>
+                    </div>
+                    <div onClick={this.handleAnnualSub} className={`Stripe-checkout-subscription-choice ${this.state.annual ? 'selected': ''}`}>
+                        <h5>Annual</h5>
+                        <p className="number">$77.97/year</p>
+                    </div>
+                </div>
+                <div className="Stripe-checkout-card-section">
+                    <CardSection />
+                </div>
+
+                <button className="Stripe-checkout-button" type="submit" disabled={!stripe}>
+                    Subscribe
+                </button>
+                <br />
+                <br />
+                <br />
+                <br />
+                {this.state.message}
+                <p>Thanks</p>
+            </form>
         );
     }
 }

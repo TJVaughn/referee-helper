@@ -23,7 +23,7 @@ const CARD_ELEMENT_OPTIONS = {
 function CardSection() {
   return (
     <label>
-      Card details
+      <h5>Card details</h5>
       <CardElement options={CARD_ELEMENT_OPTIONS} />
     </label>
   );
