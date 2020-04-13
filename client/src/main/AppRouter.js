@@ -9,6 +9,7 @@ import ArbiterSync from '../paths/ArbiterSync'
 import HorizonSync from '../paths/HorizonSync'
 import Landing from '../paths/Landing'
 import { getCookie } from '../utils/cookies'
+import Stripe from '../paths/Stripe';
 
 function IndexRouter(){
     return (
@@ -68,6 +69,13 @@ function SingleGameRouter(props){
         </div>
     )
 }
+function SubscriptionRouter(){
+    return (
+        <div>
+            <Stripe />
+        </div>
+    )
+}
 class AppRouter extends Component {
 
     navbarMenu(){
@@ -111,9 +119,10 @@ class AppRouter extends Component {
                     <Switch>
                         <Route exact path={'/'} component={IndexRouter} />
                         <Route path={'/profile'} component={ProfileRouter} />
+                        <Route path={'/game/:id'} component={SingleGameRouter} />
                         <Route path={'/login'} component={LoginRouter} />
                         <Route path={'/signup'} component={SignupRouter} />
-                        <Route path={'/game/:id'} component={SingleGameRouter} />
+                        <Route path={'/subscription'} component={SubscriptionRouter} />
                         <Route path={'/arbiter-sync'} component={ArbiterSyncRouter} />
                         <Route path={'/horizon-sync'} component={HorizonSyncRouter} />
                     </Switch>

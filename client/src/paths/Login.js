@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import postRequest from '../utils/postRequest'
 import { Redirect } from 'react-router-dom';
-
+import { setCookie } from '../utils/cookies'
 
 class Login extends Component {
 	constructor(props){
@@ -33,6 +33,7 @@ class Login extends Component {
 		if(res.error){
 			return this.setState({error: res.error})
 		}
+		setCookie('loggedIn', true)
 		this.setState({error: '', redirect: <Redirect to={'/'} />})
 	}
 

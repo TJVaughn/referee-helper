@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ElementsConsumer, CardElement } from '@stripe/react-stripe-js';
 import CardSection from './CardSection';
-
+import { Redirect } from 'react-router-dom'
 
 class CheckoutForm extends Component {
     constructor(props){
@@ -11,74 +11,158 @@ class CheckoutForm extends Component {
             semiAnnual: false,
             annual: true,
             message: '',
+            loading: false,
+            price: '77.97'
         }
         this.handleSubmit = this.handleSubmit.bind(this)
         this.handleMonthlySub = this.handleMonthlySub.bind(this)
         this.handleSemiAnnualSub = this.handleSemiAnnualSub.bind(this)
         this.handleAnnualSub = this.handleAnnualSub.bind(this)
+        this.handleLoading = this.handleLoading.bind(this)
     }
 
+    async orderComplete(subscription) {
+        //TALK TO SERVER TO TALK TO DATABASE to update the user model to be subscribed
+        console.log(`ORDER COMPLETE:`)
+        console.log(subscription)
+        let data = {
+            subscription: subscription
+        }
+        const response = await fetch('/api/stripe/order-complete', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        const body = await response.json()
+        console.log(body)
+        if(body.success){
+            this.setState({message: "Order complete! Redirecting in 3 seconds"})
+            setTimeout(() => {
+                this.setState({message: <Redirect to={'/arbiter-sync'} />})
+            }, 3000)
+        }
 
+    }
+    async confirmSubscription(subscriptionId) {
+        const response = await fetch('/api/stripe/subscription', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                subscriptionId: subscriptionId
+            })
+        })
+        let value = await response.json()
+        console.log("Confirm subscription: ")
+        console.log(value)
+        this.orderComplete(value)
+      }
+    
+    setErrorMessage(error){
+        this.setState({message: error.message, loading: false})
+    }
+    async handleSubscription(subscription){
+        const { latest_invoice } = subscription
+        const { payment_intent } = latest_invoice
+
+        if (payment_intent) {
+            const { client_secret, status } = payment_intent;
+        
+            if (status === 'requires_action') {
+
+                const result = await this.props.stripe.confirmCardPayment(client_secret)
+
+                if (result.error) {
+                  // Display error message in your UI.
+                  // The card was declined (i.e. insufficient funds, card has expired, etc)
+                  console.log(`Handle subscription, result error:`)
+                  console.log(result)
+                  this.setErrorMessage(result.error);
+                } else {
+                  // Show a success message to your customer
+                  console.log(`Handle subscription, confirm subscription with back end:`)
+                  console.log(subscription.id)
+                  this.confirmSubscription(subscription.id);
+                }
+
+            } else {
+              // No additional information was needed
+              // Show a success message to your customer
+              this.orderComplete(subscription);
+            }
+
+          } else {
+            this.orderComplete(subscription);
+          }
+    }
     async stripePaymentMethodHandler(result) {
         if (result.error) {
-          // Show error in payment form
-          this.setState({message: result.error})
+            // Show error in payment form
+            this.setState({message: result.error.message})
         } else {
-          // Otherwise send paymentMethod.id to your server
-          let plan = ''
-        if(this.state.monthly){
-            plan = 'monthly'
-        } else if(this.state.semiAnnual){
-            plan = 'semi-annual'
-        } else {
-            plan = 'annual'
+            // Otherwise send paymentMethod.id to your server
+            let plan = ''
+            if(this.state.monthly){
+                plan = 'monthly'
+            } else if(this.state.semiAnnual){
+                plan = 'semi-annual'
+            } else {
+                plan = 'annual'
+            }
+            const data = {
+                payment_method: result.paymentMethod.id,
+                plan
+            }
+            const res = await fetch('/api/stripe/setup-customer', {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data),
+            });
+        
+            // The customer has been created
+            const response = await res.json();
+            console.log("Payment Method handler, setup customer/subscription: ")
+            console.log(response)
+            this.handleSubscription(response.subscription)
         }
-          const data = {
-            payment_method: result.paymentMethod.id,
-            plan
-          }
-          const res = await fetch('/api/stripe/setup-customer', {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data),
-          });
-      
-          // The customer has been created
-          const customer = await res.json();
-          console.log(customer)
-          this.setState({message: "Success!"})
-        }
-      }
-
-
-    async handleSubmit (event){
-    // We don't want to let default form submission happen here,
-    // which would refresh the page.
+    }
+    async handleSubmit(event){
+        this.setState({loading: true})
         event.preventDefault();
         const { stripe, elements } = this.props
 
         if (!stripe || !elements) {
-        // Stripe.js has not yet loaded.
-        // Make  sure to disable form submission until Stripe.js has loaded.
-        return;
+            // Stripe.js has not yet loaded.
+            // Make  sure to disable form submission until Stripe.js has loaded.
+            return;
         }
         const result = await stripe.createPaymentMethod({
             type: 'card',
             card: elements.getElement(CardElement)
         });
-
+        console.log("Handle submit, create payment method: ")
+        console.log(result)
         this.stripePaymentMethodHandler(result)
-    };
+    }
+
     handleMonthlySub(){
-        this.setState({monthly: true, semiAnnual: false, annual: false})
+        this.setState({monthly: true, semiAnnual: false, annual: false, price: "10.99"})
     }
+
     handleSemiAnnualSub(){
-        this.setState({monthly: false, semiAnnual: true, annual: false})
+        this.setState({monthly: false, semiAnnual: true, annual: false, price: "50.99"})
     }
+
     handleAnnualSub(){
-        this.setState({monthly: false, semiAnnual: false, annual: true})
+        this.setState({monthly: false, semiAnnual: false, annual: true, price: "77.97"})
+    }
+    handleLoading(){
+        this.setState({loading: true})
     }
 
     render() {
@@ -86,7 +170,8 @@ class CheckoutForm extends Component {
         const {stripe} = this.props
 
         return (
-            <form onSubmit={this.handleSubmit}>
+            <div>
+                <form onSubmit={this.handleSubmit}>
                 <h2>Select your subscription: </h2>
                 <div className="Stripe-checkout-subscription-container">
                     <div onClick={this.handleMonthlySub} className={`Stripe-checkout-subscription-choice ${this.state.monthly ? 'selected': ''}`}>
@@ -105,17 +190,19 @@ class CheckoutForm extends Component {
                 <div className="Stripe-checkout-card-section">
                     <CardSection />
                 </div>
-
-                <button className="Stripe-checkout-button" type="submit" disabled={!stripe}>
+                
+                <button onClick={this.handleLoading} className="Stripe-checkout-button" type="submit" disabled={!stripe || this.state.loading}>
+                    <strong className='number'>
+                        ${this.state.price}
+                    </strong>
+                    <br />
                     Subscribe
                 </button>
-                <br />
-                <br />
-                <br />
-                <br />
-                {this.state.message}
-                <p>Thanks</p>
+                <h3>
+                    {this.state.message}
+                </h3>
             </form>
+            </div>
         );
     }
 }

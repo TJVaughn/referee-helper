@@ -45,6 +45,32 @@ router.post('/api/stripe/setup-customer', auth, async(req, res) => {
         res.status(500).send({error: "Error in stripe/setup-customer: " + error})
     }
 })
+router.post('/api/stripe/subscription', auth, async (req, res) => {
+    try {
+        let subscription = await stripe.subscriptions.retrieve(
+            req.body.subscriptionId
+          );
+            console.log(subscription)
+          res.send(subscription);
+    } catch (error) {
+        res.status(500).send({error: "Error in api/stripe/subscription: " + error})
+    }
+    
+});
+
+router.post('/api/stripe/order-complete', auth, async (req, res) => {
+    try {
+        const subscription = req.body.subscription
+        if(subscription.status === 'active'){
+            req.user.subscription = true
+            await req.user.save()
+            return res.send({success: true})
+        }
+        return res.send({success: false})
+    } catch (error) {
+        res.status(500).send({error: "Error in api/stripe/order-complete: " + error})
+    }
+})
 
 const calculateOrderAmount = (products) => {
     let num = 0;

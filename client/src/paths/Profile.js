@@ -77,7 +77,7 @@ class Profile extends Component {
 					</div>
 				</div>
 				{this.state.redirect}
-				<Stripe />
+				{/* <Stripe /> */}
     		</div>
     	);
     }
