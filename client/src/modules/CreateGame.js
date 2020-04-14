@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import postRequest from '../utils/postRequest'
+import getRequest from '../utils/getRequest';
 
 class CreateGame extends Component {
     constructor(props){
@@ -10,7 +11,8 @@ class CreateGame extends Component {
             location: '',
             fees: '',
             group: '',
-            level: ''
+            level: '',
+            arenas: []
         }
         this.handleSubmit = this.handleSubmit.bind(this)
         this.handleDate = this.handleDate.bind(this)
@@ -37,6 +39,13 @@ class CreateGame extends Component {
     }
     handleGroup (evt) {
         this.setState({group: evt.target.value})
+    }
+    async getAllArenas(){
+        let res = await getRequest('arena/all')
+        this.setState({arenas: res})
+    }
+    componentDidMount(){
+        this.getAllArenas()
     }
 
     async callCreateGame () {
@@ -66,13 +75,20 @@ class CreateGame extends Component {
         this.callCreateGame()
     }
     render(){
+        let arenaMap = this.state.arenas.map(arena => 
+                <option value={arena.name} key={arena._id}>
+                    {arena.name}
+                </option>
+            )
     	return(
     		<div>
                 <h2>Add new game: </h2>
     			<form className="Create-game-form" onSubmit={this.handleSubmit}>
                     <input placeholder="Date" type="date" onChange={this.handleDate} value={this.state.date} />
                     <input placeholder="Time" type="time" onChange={this.handleTime} value={this.state.time} />
-                    <input placeholder="Location" type="text" onChange={this.handleLocation} value={this.state.location} />
+                    <select value={this.state.location} onChange={this.handleLocation}>
+                        {arenaMap}
+                    </select>
                     <input placeholder="Fees" type="text" onChange={this.handleFees} value={this.state.fees} />
                     <input placeholder="Level" type="text" onChange={this.handleLevel} value={this.state.level} />
                     <input placeholder="Ref Group" type="text" onChange={this.handleGroup} value={this.state.group} />

@@ -26,11 +26,9 @@ router.post('/api/stripe/setup-customer', auth, async(req, res) => {
         })
         let subPlan = ''
         if(req.body.plan === "monthly"){
-            subPlan = 'plan_H4ZzM7KVrZ9OE0'
-        } else if (req.body.plan === "semi-annual"){
-            subPlan = 'plan_H4a0mrWJu17u6H'
+            subPlan = 'plan_H62hzhG7bqMkTL'
         } else {
-            subPlan = 'plan_H4a14g8r6IEohe'
+            subPlan = 'plan_H62hqS2f7FGllB'
         }
         const subscription = await stripe.subscriptions.create({
             customer: stripeCustomer.id,

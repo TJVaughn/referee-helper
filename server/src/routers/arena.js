@@ -119,12 +119,14 @@ router.post('/api/arena', auth, async (req, res) => {
         let state = text[2].state
         
         const arena = new Arena({
-            "name": name,
-            "street": street,
-            "city": city,
-            "state": state,
-            "zipCode": zipCode,
-            "country": country
+            name: name,
+            street: street,
+            city: city,
+            state: state,
+            zipCode: zipCode,
+            country: country,
+            address: `${street}, ${city}, ${state}, ${zipCode}, ${country}`,
+            owner: req.user._id
         })
         const allArenas = await Arena.find({})
         // res.send(allArenas)
@@ -141,8 +143,18 @@ router.post('/api/arena', auth, async (req, res) => {
             return false
         }
         if(!isMatch(arena)){
+            let arenas = []
+            arenas.push(arena)
+            let distanceData = await calculateDistance(req.user, arenas)
+            let distance = distanceData.arenas[0].distance
+            let duration = distanceData.arenas[0].duration
+
+            arena.distance = distance
+            arena.duration = duration
+            req.user.hasCalledDistanceMatrixApi = distanceData.num
+            await req.user.save()
             await arena.save()
-            res.send(arena)
+            return res.send(arena)
         }
         res.send({error: "Arena already exists"})
 
@@ -185,9 +197,17 @@ router.patch('/api/arena/:id', auth, async (req, res) => {
 // })
 
 //GET ALL ARENAS
-// router.get('/api/arena/all', auth, async (req, res) => {
-    
-// })
+router.get('/api/arena/all', auth, async (req, res) => {
+    try {
+        let arenas = await Arena.find({owner: req.user._id})
+        if(!arenas){
+            arenas = []
+        }
+        res.send(arenas)
+    } catch (error) {
+        res.status(500).send({error: "Error in get all arenas: " + error})
+    }
+})
 
 //DELETE ARENA
 // router.delete('/api/arena/:id', auth, async (req, res) => {

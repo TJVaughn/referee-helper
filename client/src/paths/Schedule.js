@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import CreateGame from '../modules/CreateGame'
 import AllGames from '../modules/AllGames'
 import SyncSchedules from '../modules/SyncSchedules'
+import AddArena from '../modules/AddArena'
 
 class Schedule extends Component {
     render(){
     	return(
     		<div>
                 <CreateGame />
+				<AddArena />
 				<h2>Sync Schedules</h2>
 				<SyncSchedules />
     			<h2>Schedule</h2>

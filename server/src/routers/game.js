@@ -3,16 +3,21 @@ const router = new express.Router()
 const auth = require('../middleware/auth')
 const Game = require('../models/Game')
 const multer = require('multer')
+const Arena = require('../models/Arena')
 
 // CREATE GAME
 router.post('/api/game', auth, async (req, res) => {
-    const game = new Game({
-        ...req.body,
-        owner: req.user._id,
-        status: "normal",
-        paid: false
-    })
     try {
+        let arena = await Arena.find({owner: req.user._id, name: req.body.location})
+        console.log(arena)
+        const game = new Game({
+            ...req.body,
+            distance: arena[0].distance,
+            duration: arena[0].duration,
+            owner: req.user._id,
+            status: "normal",
+            paid: false
+        })
         const owner = req.user._id
         const currentSchedule = await Game.find({owner})
         let duplicates = currentSchedule.filter((current) => {

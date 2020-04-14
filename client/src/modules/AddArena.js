@@ -17,7 +17,7 @@ class AddArena extends Component {
         const data = {
             "name": this.state.name
         }
-        // const res = await postRequest('arena', 'POST', { data })
+        const res = await postRequest('arena', 'POST', { data })
         //I will input a search
         //The backend will handle everything
         //And return the rink details as well as distance and duration
@@ -32,7 +32,7 @@ class AddArena extends Component {
     	return(
     		<div>
                 <form onSubmit={this.handleSubmit}>
-                    <input placeholder="name" value={this.state.arena} />
+                    <input placeholder="location" value={this.state.arena} />
                     <button>Add Arena</button>
                 </form>
     		</div>

@@ -177,6 +177,7 @@ class AllGames extends Component {
             sum += this.state.schedule[i].distance
             dur += this.state.schedule[i].duration
         }
+        sum = this.formatNumber(sum * 10)
         this.setState({miles: sum, duration: dur})
     }
     sumRemaining(groups){
@@ -220,7 +221,7 @@ class AllGames extends Component {
                     Owed: ${this.formatNumber(group.earned - group.received)}
                 </p>
                 <p>
-                    Miles Driven: {group.miles * 2}
+                    Miles Driven: {this.formatNumber(group.miles * 20)}
                 </p>
             </div>
             )
@@ -243,7 +244,7 @@ class AllGames extends Component {
                             {item.location}
                         </p>
                         <p>
-                            {item.distance}
+                            {this.formatNumber(item.distance * 10)}
                         </p>
                         <p>
                             {item.duration}

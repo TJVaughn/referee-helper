@@ -8,7 +8,6 @@ class CheckoutForm extends Component {
         super(props);
         this.state = {
             monthly: false,
-            semiAnnual: false,
             annual: true,
             message: '',
             loading: false,
@@ -16,7 +15,6 @@ class CheckoutForm extends Component {
         }
         this.handleSubmit = this.handleSubmit.bind(this)
         this.handleMonthlySub = this.handleMonthlySub.bind(this)
-        this.handleSemiAnnualSub = this.handleSemiAnnualSub.bind(this)
         this.handleAnnualSub = this.handleAnnualSub.bind(this)
         this.handleLoading = this.handleLoading.bind(this)
     }
@@ -107,8 +105,6 @@ class CheckoutForm extends Component {
             let plan = ''
             if(this.state.monthly){
                 plan = 'monthly'
-            } else if(this.state.semiAnnual){
-                plan = 'semi-annual'
             } else {
                 plan = 'annual'
             }
@@ -151,15 +147,11 @@ class CheckoutForm extends Component {
     }
 
     handleMonthlySub(){
-        this.setState({monthly: true, semiAnnual: false, annual: false, price: "10.99"})
-    }
-
-    handleSemiAnnualSub(){
-        this.setState({monthly: false, semiAnnual: true, annual: false, price: "50.99"})
+        this.setState({monthly: true, annual: false, price: "10.99"})
     }
 
     handleAnnualSub(){
-        this.setState({monthly: false, semiAnnual: false, annual: true, price: "77.97"})
+        this.setState({monthly: false, annual: true, price: "77.97"})
     }
     handleLoading(){
         this.setState({loading: true})
@@ -177,10 +169,6 @@ class CheckoutForm extends Component {
                     <div onClick={this.handleMonthlySub} className={`Stripe-checkout-subscription-choice ${this.state.monthly ? 'selected': ''}`}>
                         <h5>Monthly</h5>
                         <p className="number">$10.99/month</p>
-                    </div>
-                    <div onClick={this.handleSemiAnnualSub} className={`Stripe-checkout-subscription-choice ${this.state.semiAnnual ? 'selected': ''}`}>
-                        <h5>Semi-Annual (every 6 months)</h5>
-                        <p className="number">$50.99/6 months</p>
                     </div>
                     <div onClick={this.handleAnnualSub} className={`Stripe-checkout-subscription-choice ${this.state.annual ? 'selected': ''}`}>
                         <h5>Annual</h5>
