@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import getRequest from '../utils/getRequest'
 import { getCookie } from '../utils/cookies'
-import { Redirect } from 'react-router-dom';
-import Stripe from '../paths/Stripe'
+import { Redirect, Link } from 'react-router-dom';
 
 class Profile extends Component {
 	constructor(props){
@@ -12,7 +11,7 @@ class Profile extends Component {
 			message: '',
 			redirect: ''
 		}
-		// this.handleArbiterProfileSubmit = this.handleArbiterProfileSubmit.bind(this)
+		this.handleArbiterProfileSubmit = this.handleArbiterProfileSubmit.bind(this)
 	}
 	async callGetUser() {
 		const req = await getRequest('user/me')
@@ -27,6 +26,9 @@ class Profile extends Component {
 			return this.setState({message: req.error})
 		}
 		return this.callGetUser()
+	}
+	handleArbiterProfileSubmit() {
+		this.callGetASProfile()
 	}
 	async componentDidMount(){
 		if(getCookie("InitialLoginFlow") === "true"){
@@ -43,8 +45,8 @@ class Profile extends Component {
     	return(
     		<div>
 				<h1>Profile</h1>
-				{/* <label>Uploading from Arbiter: </label> */}
-				{/* <button onClick={this.handleArbiterProfileSubmit}>Sync</button> */}
+				<label>ReSync from Arbiter: </label>
+				<button onClick={this.handleArbiterProfileSubmit}>Sync</button>
 				<h2>
 					{this.state.message}
 				</h2>
@@ -70,14 +72,24 @@ class Profile extends Component {
 						</p>
 					</div>
 					<div>
-						<h3>Arbiter Email: {user.asEmail}</h3>
+						<h3>
+							Arbiter Email: {user.asEmail}
+						</h3>
+						<Link to={'/arbiter-sync'} >Update Arbiter Login Info</Link>
 						<h3>
 							Horizon Username: {user.hwrUsername}
 						</h3>
+						<Link to={'/horizon-sync'} >Update Horizon Login Info</Link>
 					</div>
 				</div>
 				{this.state.redirect}
 				{/* <Stripe /> */}
+				<div>
+					<h3>
+						Manage your subscription
+					</h3>
+				</div>
+				
     		</div>
     	);
     }

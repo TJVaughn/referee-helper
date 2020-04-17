@@ -10,6 +10,7 @@ import HorizonSync from '../paths/HorizonSync'
 import Landing from '../paths/Landing'
 import { getCookie } from '../utils/cookies'
 import Stripe from '../paths/Stripe';
+import ProfileDropdown from '../modules/ProfileDropdown';
 
 function IndexRouter(){
     return (
@@ -82,16 +83,18 @@ class AppRouter extends Component {
         return (
             <div className="Site-Navigation">
                 <div>
-                    <Link to={'/'} ><h1 id="Site-title">RefereeHelper.com</h1></Link>
+                    <Link id="Site-title" to={'/'} >Referee Helper</Link>
                 </div>
                 
                 {getCookie("loggedIn") === "true" 
                 ? <div>
-                    <div>
+                    {/* <div>
                         <Link to={'/'} >Schedule</Link>
-                    </div>
+                    </div> */}
                     <div>
-                        <Link to={'/profile'} >Profile</Link>
+                        <ProfileDropdown />
+                    
+    
                     </div>
                 </div>
                 :<div>

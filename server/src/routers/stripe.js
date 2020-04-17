@@ -154,3 +154,9 @@ module.exports = router
 // }
 // const paymentIntent = await callStripe()
 // res.send(paymentIntent)
+
+
+// thank you so much to the universe!! This is such a cool keyboard! I cherish you so much! 
+
+// Wahhooooo, lbootooos this is feeling so nice!
+//are you seeing this rtight now  are you seeing this right nowyou are the sexiest man alive and i love everything about you!!!!

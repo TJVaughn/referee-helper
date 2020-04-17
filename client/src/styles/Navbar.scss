@@ -1,0 +1,38 @@
+.Profile-img-icon {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    float: right;
+    padding: 10px 0;
+    margin: 10px 0;
+    cursor: pointer;
+}
+.Site-Navigation {
+    display: grid; 
+    grid-template-columns: max-content auto;
+}
+#Site-title {
+    width: max-content;
+    display: block;
+    padding: 10px 0;
+    margin: 10px 0;
+    text-decoration: none;
+    color: rgb(0, 119, 255);
+    font-size: 38px;
+    font-weight: 700;
+}
+.Profile-img-dropdown {
+    display: block;
+    position: relative;
+    border: 1px solid #444;
+    border-radius: 5px;
+    width: max-content;
+    padding: 5px;
+    a {
+        top: 5px;
+    }
+}
+// #Site-title:visited {
+//     text-decoration: none;
+    
+// }
