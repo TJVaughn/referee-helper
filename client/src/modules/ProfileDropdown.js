@@ -50,9 +50,9 @@ class ProfileDropdown extends Component {
                     {this.state.logout
                     ?<div>
                         <span className="pointer" onClick={this.handleLogout}>Are you sure?</span><br />
-                        <Link onClick={this.logoutUser}>Logout</Link>
+                        <span className="pointer blue" onClick={this.logoutUser}>Logout</span>
                     </div>
-                    :<Link onClick={this.handleLogout}>Log Out</Link>}
+                    :<span className="pointer blue" onClick={this.handleLogout}>Log Out</span>}
                     
                 </div>
                 :''}
