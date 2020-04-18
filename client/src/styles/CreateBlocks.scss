@@ -1,0 +1,13 @@
+.Create-blocks-container {
+    display: grid;
+    grid-template-columns: repeat(3, 33.33%);
+    text-align: center;
+    p {
+        border: 1px solid #333;
+        border-radius: 5px;
+        cursor: pointer;
+        padding: 10px;
+        margin: 5px 10px;
+    }
+    
+}

@@ -44,7 +44,7 @@ class Profile extends Component {
 		let user = this.state.userProfile
     	return(
     		<div>
-				<h1>Profile</h1>
+				<h1>Account</h1>
 				<label>ReSync from Arbiter: </label>
 				<button onClick={this.handleArbiterProfileSubmit}>Sync</button>
 				<h2>

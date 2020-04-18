@@ -43,6 +43,9 @@ class CreateGame extends Component {
     async getAllArenas(){
         let res = await getRequest('arena/all')
         this.setState({arenas: res})
+        if(!this.state.arenas){
+            this.setState({arenas: []})
+        }
     }
     componentDidMount(){
         this.getAllArenas()
@@ -82,7 +85,7 @@ class CreateGame extends Component {
             )
     	return(
     		<div>
-                <h2>Add new game: </h2>
+                <h4>Add a new game: </h4>
     			<form className="Create-game-form" onSubmit={this.handleSubmit}>
                     <input placeholder="Date" type="date" onChange={this.handleDate} value={this.state.date} />
                     <input placeholder="Time" type="time" onChange={this.handleTime} value={this.state.time} />

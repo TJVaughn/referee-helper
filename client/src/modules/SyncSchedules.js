@@ -14,6 +14,8 @@ class SyncSchedules extends Component {
             syncTime: ''
         }
         this.callSyncAllSchedules = this.callSyncAllSchedules.bind(this)
+        this.callGetASData = this.callGetASData.bind(this)
+        this.callGetHWRData = this.callGetHWRData.bind(this)
     }
 
     async callGetASData(){  
@@ -73,6 +75,9 @@ class SyncSchedules extends Component {
     render(){
     	return(
     		<div>
+                <h4>Sync your schedules: </h4>
+                {/* <button disabled={this.state.inProcess} onClick={this.callGetASData} >Sync Arbiter Sports</button>
+                <button disabled={this.state.inProcess} onClick={this.callGetHWRData} >Sync Horizon Web Ref</button> */}
     			<button disabled={this.state.inProcess} onClick={this.callSyncAllSchedules}>Sync All Schedules</button>
                 <h1>
                     {this.state.message}

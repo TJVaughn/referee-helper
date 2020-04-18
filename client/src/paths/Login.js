@@ -35,6 +35,8 @@ class Login extends Component {
 		}
 		setCookie('loggedIn', true)
 		this.setState({error: '', redirect: <Redirect to={'/'} />})
+		window.location.reload()
+
 	}
 
 	handleSubmit(evt){

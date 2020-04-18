@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom'
 import ProfileImg from '../images/grey-profile-img.png'
+import { setCookie } from '../utils/cookies';
+
 class ProfileDropdown extends Component {
     constructor(props){
         super(props)
@@ -24,8 +26,17 @@ class ProfileDropdown extends Component {
         }
         this.setState({logout: true})
     }
-    logoutUser(){
-
+    async logoutUser(){
+        let res = await fetch('/api/user/logout-all', {
+            method: 'POST',
+            headers: {
+                "Content-Type": 'application/json'
+            }
+        })
+        res = await res.json()
+        console.log(res)
+        setCookie('loggedIn', 'false')
+        window.location.reload()
     }
     render(){
     	return(

@@ -21,7 +21,7 @@ class AddArena extends Component {
         //I will input a search
         //The backend will handle everything
         //And return the rink details as well as distance and duration
-        
+        console.log(res)
     }
 
     handleSubmit(evt){
@@ -31,8 +31,9 @@ class AddArena extends Component {
     render(){
     	return(
     		<div>
+                <h4>Add a new arena: </h4>
                 <form onSubmit={this.handleSubmit}>
-                    <input placeholder="location" value={this.state.arena} />
+                    <input onChange={this.handleArenaChange} placeholder="location" value={this.state.arena} />
                     <button>Add Arena</button>
                 </form>
     		</div>
