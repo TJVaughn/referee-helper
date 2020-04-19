@@ -3,6 +3,7 @@ import getRequest from '../utils/getRequest'
 import { toDateObj } from '../utils/toDateObj'
 import { BrowserRouter as Switch, Link} from "react-router-dom";
 import { setCookie } from '../utils/cookies';
+import formatNumber from '../utils/formatNumber';
 
 const gamesHeader = <div className="All-games-game schedule-header">
     <p>Date</p>
@@ -102,24 +103,7 @@ class AllGames extends Component {
     componentDidMount(){
         this.callGetAllGames()
     }
-    formatNumber(number){
-        if (number > 99 && number < 10000){
-            number = number.toString().split('').reverse()
-            number.splice(2, 0, '.').join('')
-            number = number.toString().split(',').reverse().join('')
-        } else if (number > 9999 && number < 100000){
-            number = number.toString().split('').reverse()
-            number.splice(2, 0, '.').join('')
-            number = number.toString().split(',').reverse().join('')
-        } else if (number > 99999){
-            number = number.toString().split('').reverse()
-            number.splice(2, 0, '.')
-            number.splice(6, 0, ',')
-            number = number.join('').split('').reverse().join('')
-        }
-
-        return number
-    }
+    
     sumEarned(groupObj){
         let total = 0
         
@@ -145,7 +129,7 @@ class AllGames extends Component {
         // console.log(groupObj)
     
 
-        total = this.formatNumber(total)
+        total = formatNumber(total)
         this.setState({earned: total, groupData: groupObj})
     }
 
@@ -177,7 +161,7 @@ class AllGames extends Component {
             sum += this.state.schedule[i].distance
             dur += this.state.schedule[i].duration
         }
-        sum = this.formatNumber(sum * 10)
+        sum = formatNumber(sum * 10)
         this.setState({miles: sum, duration: dur})
     }
     sumRemaining(groups){
@@ -244,7 +228,7 @@ class AllGames extends Component {
                             {item.location}
                         </p>
                         <p>
-                            {this.formatNumber(item.distance * 10)}
+                            {formatNumber(item.distance * 10)}
                         </p>
                         <p>
                             {item.duration}

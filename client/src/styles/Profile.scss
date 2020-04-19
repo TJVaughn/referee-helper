@@ -1,0 +1,48 @@
+.Profile-cancel-button {
+    width: max-content;
+    padding: 5px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    color: #000;
+    background: linear-gradient(0deg, rgb(145, 1, 1), rgb(156, 102, 0));
+    cursor: pointer;
+}
+.Profile-cancel-button:hover {
+    background: linear-gradient(0deg, rgb(255, 0, 0), rgb(255, 166, 0));
+}
+.Profile-alert-box-container {
+    width: 100%;
+    height: 100%;
+    background-color: #0007;
+    position: fixed;
+    top: 0%;
+    left: 0;
+    margin: auto;
+}
+.Profile-alert-box-inner{
+    position: relative;
+    margin: 10px auto;
+    width: 350px;
+    text-align: center;
+    background-color: #fff;
+    padding: 10px;
+}
+.Profile-dont-cancel-button {
+    width: max-content;
+    padding: 5px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    color: #fff;
+    background: linear-gradient(0deg, rgb(0, 255, 21), rgb(0, 119, 255));
+    cursor: pointer;
+    margin: auto;
+}
+.disabled {
+    cursor: not-allowed;
+}
+.Profile-dont-cancel-button:hover {
+    background: linear-gradient(0deg, rgb(0, 255, 98), rgb(0, 47, 255));
+}
+.Profile-cancel-email-input{
+    width: 250px;
+}

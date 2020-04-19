@@ -26,9 +26,17 @@ router.post('/api/stripe/setup-customer', auth, async(req, res) => {
         })
         let subPlan = ''
         if(req.body.plan === "monthly"){
-            subPlan = 'plan_H62hzhG7bqMkTL'
+            if(process.env.NODE_ENV === 'production'){
+                subPlan = process.env.LIVE_STRIPE_PLAN_MONTHLY
+            } else {
+                subPlan = process.env.TEST_STRIPE_PLAN_MONTHLY
+            }
         } else {
-            subPlan = 'plan_H62hqS2f7FGllB'
+            if(process.env.NODE_ENV === 'production'){
+                subPlan = process.env.LIVE_STRIPE_PLAN_ANNUAL
+            } else {
+                subPlan = process.env.TEST_STRIPE_PLAN_ANNUAL
+            }
         }
         const subscription = await stripe.subscriptions.create({
             customer: stripeCustomer.id,
@@ -56,12 +64,69 @@ router.post('/api/stripe/subscription', auth, async (req, res) => {
     
 });
 
+// stripeData: {
+//     customer: {
+//         type: String
+//     },
+//     id: {
+//         type: String
+//     },
+//     startDate: {
+//         type: Number
+//     },
+//     status: {
+//         type: String
+//     },
+//     cancelAtPeriodEnd: {
+//         type: Boolean
+//     },
+//     plan: {
+//         id: {
+//             type: String
+//         },
+//         product: {
+//             type: String
+//         },
+//         nickname: {
+//             type: String
+//         },
+//         amount: {
+//             type: Number
+//         }
+//     }
+// },
+
+router.post('/api/stripe/cancel-subscription', auth, async (req, res) => {
+    try {
+        let user = req.user
+
+        await stripe.subscriptions.update(user.stripeData.id, {cancel_at_period_end: true})
+        user.stripeData.cancelAtPeriodEnd = true
+        await user.save()
+        res.send(user)
+    } catch (error) {
+        res.status(500).send({error: "Error in api/stripe/cancel-subscription: " + error})
+    }
+})
+
 router.post('/api/stripe/order-complete', auth, async (req, res) => {
     try {
         const subscription = req.body.subscription
-        if(subscription.status === 'active'){
-            req.user.subscription = true
-            await req.user.save()
+        const user = req.user
+
+        user.stripeData.customer = subscription.customer
+        user.stripeData.id = subscription.id
+        user.stripeData.startDate = subscription.start_date
+        user.stripeData.endDate = subscription.current_period_end
+        user.stripeData.status = subscription.status
+        user.stripeData.cancelAtPeriodEnd = subscription.cancel_at_period_end
+        user.stripeData.plan.id = subscription.plan.id
+        user.stripeData.plan.product = subscription.plan.product
+        user.stripeData.plan.nickname = subscription.plan.nickname
+        user.stripeData.plan.amount = subscription.plan.amount
+        user.stripeData.billingCycleAnchor = subscription.billing_cycle_anchor
+        await user.save()
+        if(user.stripeData.status === 'active'){
             return res.send({success: true})
         }
         return res.send({success: false})

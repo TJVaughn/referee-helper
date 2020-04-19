@@ -91,6 +91,43 @@ const userSchema = new mongoose.Schema({
     subscription: {
         type: Boolean
     },
+    stripeData: {
+        customer: {
+            type: String
+        },
+        id: {
+            type: String
+        },
+        startDate: {
+            type: Number
+        },
+        endDate: {
+            type: Number
+        },
+        billingCycleAnchor: {
+            type: Number
+        },
+        status: {
+            type: String
+        },
+        cancelAtPeriodEnd: {
+            type: Boolean
+        },
+        plan: {
+            id: {
+                type: String
+            },
+            product: {
+                type: String
+            },
+            nickname: {
+                type: String
+            },
+            amount: {
+                type: Number
+            }
+        }
+    },
     groups: [
         {
             group: {
