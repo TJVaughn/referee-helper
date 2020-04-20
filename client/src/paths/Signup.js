@@ -39,7 +39,7 @@ class Signup extends Component {
 		}
 		setCookie("loggedIn", "true")
 		setCookie("InitialLoginFlow", "true")
-		this.setState({error: '', redirect: <Redirect to={'/subscription'} />})
+		this.setState({error: '', redirect: <Redirect to={'/arbiter-sync'} />})
 	}
 
 	handleSubmit(evt){

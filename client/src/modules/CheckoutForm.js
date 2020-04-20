@@ -38,7 +38,7 @@ class CheckoutForm extends Component {
         if(body.success){
             this.setState({message: "Order complete! Redirecting in 3 seconds"})
             setTimeout(() => {
-                this.setState({message: <Redirect to={'/arbiter-sync'} />})
+                this.setState({message: <Redirect to={'/profile'} />})
             }, 3000)
         }
 

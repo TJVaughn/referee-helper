@@ -71,7 +71,8 @@ class AllGames extends Component {
         let res = await getRequest(`all-games?month=${today.getMonth()}&year=${today.getFullYear()}`)
         if(res.error){
             setCookie("loggedIn", "false")
-            return this.setState({ error: res.error, schedule: []})
+            this.setState({ error: res.error, schedule: []})
+            return window.location.reload()
         }
         // console.log(res)
 
@@ -101,6 +102,8 @@ class AllGames extends Component {
         this.sumRemaining(groupObj)
     }
     componentDidMount(){
+        
+        setCookie('InitialLoginFlow', 'false')
         this.callGetAllGames()
     }
     
@@ -133,7 +136,7 @@ class AllGames extends Component {
         this.setState({earned: total, groupData: groupObj})
     }
 
-    sumReceived(groups){
+    sumReceived(){
         let sum = 0
         for(let i = 0; i < this.state.schedule.length; i++){
             if(this.state.schedule[i].paid){
@@ -154,17 +157,18 @@ class AllGames extends Component {
 
     }
 
-    sumMiles(groups){
+    sumMiles(){
         let sum = 0
         let dur = 0
         for(let i = 0; i < this.state.schedule.length; i++){
             sum += this.state.schedule[i].distance
             dur += this.state.schedule[i].duration
         }
-        sum = formatNumber(sum * 10)
+        sum = sum * 10
+        console.log(sum)
         this.setState({miles: sum, duration: dur})
     }
-    sumRemaining(groups){
+    sumRemaining(){
         let paid = 0
         let earned = 0
         for(let i = 0; i < this.state.schedule.length; i++){
@@ -193,19 +197,19 @@ class AllGames extends Component {
         const groupDataMap = this.state.groupData.map(group => 
             <div key={group.id}>
                 <h3>
-                    {this.formatNumber(group.name)}
+                    {formatNumber(group.name)}
                 </h3>
                 <p>
-                    Earned: ${this.formatNumber(group.earned)}
+                    Earned: ${formatNumber(group.earned)}
                 </p>
                 <p>
-                    Received: ${this.formatNumber(group.received)}
+                    Received: ${formatNumber(group.received)}
                 </p>
                 <p>
-                    Owed: ${this.formatNumber(group.earned - group.received)}
+                    Owed: ${formatNumber(group.earned - group.received)}
                 </p>
                 <p>
-                    Miles Driven: {this.formatNumber(group.miles * 20)}
+                    Miles Driven: {formatNumber(group.miles * 20)}
                 </p>
             </div>
             )
@@ -270,7 +274,8 @@ class AllGames extends Component {
                     {groupDataMap}
                     <div>
                     <p>
-                        Total Miles: <strong>{this.state.miles * 2}</strong> <br /> * $0.575 <br /> = ${((this.state.miles * 2) * 0.575).toFixed(2)}
+                        Total Miles: <strong>{formatNumber(this.state.miles * 2)}</strong> <br /> * $0.575 
+                        <br /> = ${formatNumber(Math.round(((this.state.miles * 2) * 0.575)))}
                     </p>
                     <p>
                         Time Driven(hours): {(this.state.duration * 2 / 60).toFixed(2)}

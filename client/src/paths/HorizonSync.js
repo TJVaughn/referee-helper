@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import postRequest from '../utils/postRequest';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 
 class HorizonSync extends Component {
     constructor(props){
@@ -41,7 +41,7 @@ class HorizonSync extends Component {
             return this.setState({message: result.error})
         }
         console.log(result)
-        return this.setState({redirect: <Redirect to={'/profile'} />})
+        return this.setState({redirect: <Redirect to={'/subscription'} />})
     }
     render(){
     	return(
@@ -59,6 +59,9 @@ class HorizonSync extends Component {
                 <h2>
                     {this.state.message}
                 </h2>
+                <p>
+                    <Link to={'/subscription'}>skip</Link>
+                </p>
                 {this.state.redirect}
     		</div>
     	);

@@ -56,7 +56,7 @@ class Schedule extends Component {
 						Create New Game
 					</p>
 					<p onClick={this.handleArenaToggle} className="pointer">
-						Add An Arena
+						Arena
 					</p>
 					<p onClick={this.handleSyncToggle} className="pointer">
 						Sync your schedule

@@ -13,9 +13,6 @@ router.post('/api/stripe/setup-customer', auth, async(req, res) => {
     // Where we will set up the customer and then process the initial sale
     // Or if we are doing a free trial, we will automatically bill the customer after the trial period has completed..
     try {
-        // const paymentIntent = await stripe.paymentIntents.create({
-
-        // })
         const stripeCustomer = await stripe.customers.create({
             payment_method: req.body.payment_method,
             email: req.user.email,
@@ -38,6 +35,9 @@ router.post('/api/stripe/setup-customer', auth, async(req, res) => {
                 subPlan = process.env.TEST_STRIPE_PLAN_ANNUAL
             }
         }
+        //DAILY FOR TESTING
+        subPlan = 'plan_H8IBHelcP0dUk3'
+        //REMOVE LATER
         const subscription = await stripe.subscriptions.create({
             customer: stripeCustomer.id,
             items: [{plan: subPlan}],
@@ -64,37 +64,6 @@ router.post('/api/stripe/subscription', auth, async (req, res) => {
     
 });
 
-// stripeData: {
-//     customer: {
-//         type: String
-//     },
-//     id: {
-//         type: String
-//     },
-//     startDate: {
-//         type: Number
-//     },
-//     status: {
-//         type: String
-//     },
-//     cancelAtPeriodEnd: {
-//         type: Boolean
-//     },
-//     plan: {
-//         id: {
-//             type: String
-//         },
-//         product: {
-//             type: String
-//         },
-//         nickname: {
-//             type: String
-//         },
-//         amount: {
-//             type: Number
-//         }
-//     }
-// },
 
 router.post('/api/stripe/cancel-subscription', auth, async (req, res) => {
     try {
@@ -132,6 +101,16 @@ router.post('/api/stripe/order-complete', auth, async (req, res) => {
         return res.send({success: false})
     } catch (error) {
         res.status(500).send({error: "Error in api/stripe/order-complete: " + error})
+    }
+})
+
+router.get('/api/stripe/customer', auth, async(req, res) => {
+    try {
+        let customer = await stripe.customers.retrieve(`${req.user.stripeData.customer}`)
+        console.log(customer)
+        res.send(customer)
+    } catch (error) {
+        res.status(500).send({error: "Error in api/stripe/customer/id: " + error})
     }
 })
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import postRequest from '../utils/postRequest';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 
 class ArbiterSync extends Component {
     constructor(props){
@@ -59,6 +59,9 @@ class ArbiterSync extends Component {
                 <h2>
                     {this.state.message}
                 </h2>
+                <p>
+                    <Link to={'/horizon-sync'}>skip</Link>
+                </p>
                 {this.state.redirect}
     		</div>
     	);

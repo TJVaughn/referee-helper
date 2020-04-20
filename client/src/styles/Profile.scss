@@ -46,3 +46,17 @@
 .Profile-cancel-email-input{
     width: 250px;
 }
+.Profile-navigation {
+    display: flex;
+    flex-wrap: wrap;
+    h2 {
+        border: 1px solid #333;
+        border-radius: 5px;
+        text-align: center;
+        margin: 10px;
+        width: max-content; 
+        padding: 10px;
+        cursor: pointer;
+        background: linear-gradient(45deg, rgb(17, 255, 235), rgb(0, 214, 64));
+    }
+}
