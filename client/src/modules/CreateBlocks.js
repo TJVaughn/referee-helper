@@ -23,6 +23,7 @@ class CreateBlocks extends Component {
     }
 
     async handleASClick(){
+        this.setState({message: "Setting blocks...please do not refresh"})
         if(this.state.inProcess){
             return this.setState({message: "Can only do one request at a time."})
         }
@@ -32,6 +33,7 @@ class CreateBlocks extends Component {
     }
 
     async handleHWRClick(){
+        this.setState({message: "Setting blocks...please do not refresh"})
         if(this.state.inProcess){
             return this.setState({message: "Can only do one request at a time."})
         }
@@ -41,11 +43,14 @@ class CreateBlocks extends Component {
     }
 
     async handleBothClick(){
+        this.setState({message: "Setting blocks...please do not refresh"})
         if(this.state.inProcess){
             return this.setState({message: "Can only do one request at a time."})
         }
         this.setState({inProcess: true})
+        this.setState({message: "Setting Arbiter Sports blocks...please do not refresh"})
         await this.callASBlocks()
+        this.setState({message: "Setting Horizon Web Ref blocks...please do not refresh"})
         await this.callHWRBlocks()
         this.setState({inProcess: false, message: 'Request completed'})
     }

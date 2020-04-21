@@ -15,8 +15,8 @@ router.post('/api/stripe/setup-customer', auth, async(req, res) => {
     try {
         const stripeCustomer = await stripe.customers.create({
             payment_method: req.body.payment_method,
-            email: req.user.email,
-            name: `${req.user.fName} ${req.user.lName}`,
+            email: req.body.email,
+            name: req.body.name,
             invoice_settings: {
                 default_payment_method: req.body.payment_method
             }
@@ -36,7 +36,7 @@ router.post('/api/stripe/setup-customer', auth, async(req, res) => {
             }
         }
         //DAILY FOR TESTING
-        subPlan = 'plan_H8IBHelcP0dUk3'
+        // subPlan = 'plan_H8IBHelcP0dUk3'
         //REMOVE LATER
         const subscription = await stripe.subscriptions.create({
             customer: stripeCustomer.id,
@@ -108,41 +108,12 @@ router.get('/api/stripe/customer', auth, async(req, res) => {
     try {
         let customer = await stripe.customers.retrieve(`${req.user.stripeData.customer}`)
         let customerBillingHistory = await stripe.invoices.list({customer: `${req.user.stripeData.customer}`})
-        console.log(customerBillingHistory)
+        // console.log(customerBillingHistory)
         res.send({customer, customerBillingHistory})
     } catch (error) {
         res.status(500).send({error: "Error in api/stripe/customer/id: " + error})
     }
 })
-
-const calculateOrderAmount = (products) => {
-    let num = 0;
-    for(let i = 0; i < products.length; i++){
-        num += products[i].price
-    }
-    console.log(num)
-    return num
-}
-const products = [
-    {
-        name: "monthly",
-        price: 1099,
-        occurs: "Monthly"
-        //Get the date that the customers subscription begins, and bill that customer on the same date of the following month
-        // When the user signs up, we will create a stripe customer
-    },
-    {
-        name: "six-month",
-        price: 5099,
-        occurs: "twice per year"
-    },
-    {
-        name: "yearly",
-        price: 7797,
-        occurs: "annually"
-    }
-]
-
 
 router.post('/api/stripe', auth, async (req, res) => {
     try {

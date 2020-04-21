@@ -4,7 +4,6 @@
     height: 40px;
     width: 500px;
     padding: 10px 12px;
-  
     border: 1px solid transparent;
     border-radius: 4px;
     background-color: white;
@@ -12,6 +11,9 @@
     box-shadow: 0 1px 3px 0 #e6ebf1;
     -webkit-transition: box-shadow 150ms ease;
     transition: box-shadow 150ms ease;
+    ::placeholder {
+      color: #32325d !important;
+    }
   }
   
   .StripeElement--focus {
@@ -46,6 +48,7 @@
   }
   .Stripe-checkout-card-section {
     margin: 0 auto;
+    color: #32325d;
   }
   .Stripe-checkout-button {
     margin: 10px auto;
@@ -58,4 +61,43 @@
     display: block;
     width: 100px;
     cursor: pointer;
+  }
+  .Stripe-checkout-info-section {
+    font-size: 16px;
+    height: 40px;
+    width: 500px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background-color: white;
+    box-sizing: border-box;
+    box-shadow: 0 1px 3px 0 #e6ebf1;
+    -webkit-transition: box-shadow 150ms ease;
+    transition: box-shadow 150ms ease;
+    padding: 10px 12px;
+    margin: 5px auto;
+    display: block;
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+  }
+  .Stripe-checkout-info-section:invalid {
+    font-size: 16px;
+    height: 40px;
+    width: 500px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background-color: white;
+    box-sizing: border-box;
+    box-shadow: 0 1px 3px 0 #e6ebf1;
+    -webkit-transition: box-shadow 150ms ease;
+    transition: box-shadow 150ms ease;
+    padding: 10px 12px;
+    margin: 5px auto;
+    display: block;
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+    color: #fa755a;
+    border-color: #fa755a;
+  }
+  .Stripe-checkout-info-section::placeholder {
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+    color: #aab7c4;
+    opacity: 1;
   }

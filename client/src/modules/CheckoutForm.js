@@ -11,12 +11,17 @@ class CheckoutForm extends Component {
             annual: true,
             message: '',
             loading: false,
-            price: '77.97'
+            price: '77.97',
+            email: '',
+            name: '',
+            invalid: true
         }
         this.handleSubmit = this.handleSubmit.bind(this)
         this.handleMonthlySub = this.handleMonthlySub.bind(this)
         this.handleAnnualSub = this.handleAnnualSub.bind(this)
         this.handleLoading = this.handleLoading.bind(this)
+        this.handleEmailChange = this.handleEmailChange.bind(this)
+        this.handleNameChange = this.handleNameChange.bind(this)
     }
 
     async orderComplete(subscription) {
@@ -38,7 +43,7 @@ class CheckoutForm extends Component {
         if(body.success){
             this.setState({message: "Order complete! Redirecting in 3 seconds"})
             setTimeout(() => {
-                this.setState({message: <Redirect to={'/profile'} />})
+                this.setState({message: <Redirect to={'/profile/account'} />})
             }, 3000)
         }
 
@@ -61,6 +66,13 @@ class CheckoutForm extends Component {
     
     setErrorMessage(error){
         this.setState({message: error.message, loading: false})
+    }
+
+    handleNameChange(evt){
+        this.setState({name: evt.target.value})
+    }
+    handleEmailChange(evt){ 
+        this.setState({email: evt.target.value})
     }
     async handleSubscription(subscription){
         const { latest_invoice } = subscription
@@ -108,9 +120,13 @@ class CheckoutForm extends Component {
             } else {
                 plan = 'annual'
             }
+            let email = this.state.email
+            let name = this.state.name
             const data = {
                 payment_method: result.paymentMethod.id,
-                plan
+                plan,
+                email,
+                name
             }
             const res = await fetch('/api/stripe/setup-customer', {
                 method: 'post',
@@ -174,6 +190,15 @@ class CheckoutForm extends Component {
                         <h5>Annual</h5>
                         <p className="number">$77.97/year</p>
                     </div>
+                </div>
+                <div>
+                    {/* <label>Email for receipt: </label> */}
+                    <input className={`Stripe-checkout-info-section`} 
+                    type="email" placeholder="Email" value={this.state.email} onChange={this.handleEmailChange} />
+                </div>
+                <div>
+                    {/* <label>Full Name: </label> */}
+                    <input className="Stripe-checkout-info-section" type="text" placeholder="Full Name" value={this.state.name} onChange={this.handleNameChange} />
                 </div>
                 <div className="Stripe-checkout-card-section">
                     <CardSection />

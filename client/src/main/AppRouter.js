@@ -78,7 +78,24 @@ function SubscriptionRouter(){
     )
 }
 class AppRouter extends Component {
-
+    constructor(props){
+        super(props);
+        this.state = {
+            loggedIn: false
+        }
+    }
+    isLoggedIn(){
+        if(getCookie('loggedIn') === 'true'){
+            return this.setState({loggedIn: true})
+        }
+        return this.setState({loggedIn: false})
+    }
+    componentWillUnmount(){
+        this.isLoggedIn()
+    }
+    componentDidMount(){
+        this.isLoggedIn()
+    }
     navbarMenu(){
         return (
             <div className="Site-Navigation">
@@ -86,7 +103,7 @@ class AppRouter extends Component {
                     <Link id="Site-title" to={'/'} >Referee Helper</Link>
                 </div>
                 
-                {getCookie("loggedIn") === "true" 
+                {this.state.loggedIn
                 ? <div>
                     {/* <div>
                         <Link to={'/'} >Schedule</Link>

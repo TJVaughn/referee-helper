@@ -38,7 +38,7 @@ class Signup extends Component {
 			return this.setState({error: "Email already in use"})
 		}
 		setCookie("loggedIn", "true")
-		setCookie("InitialLoginFlow", "true")
+		setCookie("InitialLoginFlow", true)
 		this.setState({error: '', redirect: <Redirect to={'/arbiter-sync'} />})
 	}
 

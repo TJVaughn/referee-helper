@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import formatNumber from '../utils/formatNumber';
 import postRequest from '../utils/postRequest';
+import getRequest from '../utils/getRequest';
 
 class ProfileBilling extends Component {
     constructor(props){
@@ -44,7 +45,7 @@ class ProfileBilling extends Component {
 			cancelEmail: this.state.cancelEmail
 		}
 		const req = await postRequest('stripe/cancel-subscription', 'POST', {data})
-		console.log(req)
+		// console.log(req)
 		window.location.reload()
 	}
 	handleUserEmail(evt){
@@ -59,16 +60,22 @@ class ProfileBilling extends Component {
             }
         })
         response = await response.json()
-        console.log(response)
+        // console.log(response)
         this.setState({stripeUser: response.customer, billingHistory: response.customerBillingHistory})
     }
-
+    async callGetUser() {
+		const req = await getRequest('user/me')
+		this.setState({user: req, message: ''})
+		
+		// console.log(this.state.user)
+	}
     componentDidMount(){
         this.callStripeApi()
+        this.callGetUser()
     }
     render(){
-        let user = this.props.user
-        console.log(user)
+        let user = this.state.user
+        // console.log(user)
         let stripeUser = this.state.stripeUser
         const alertBox = 
         <div className='Profile-alert-box-container'>
@@ -138,7 +145,7 @@ class ProfileBilling extends Component {
 				:''}
                 <h3>History</h3>
                 {billingHistoryMap}
-                {console.log(stripeUser.subscriptions.data[0])}
+                {/* {console.log(stripeUser.subscriptions.data[0])} */}
     		</div>
     	);
     }

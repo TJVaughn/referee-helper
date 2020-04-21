@@ -12,8 +12,11 @@ class ProfileAccount extends Component {
 					plan: {
 
 					}
-				}
+				},
+				
 			},
+			user: {},
+			redirect: ''
         }
 		this.handleArbiterProfileSubmit = this.handleArbiterProfileSubmit.bind(this)
 
@@ -28,6 +31,7 @@ class ProfileAccount extends Component {
 			await this.callGetASProfile()
 			return this.setState({redirect: <Redirect to={'/'} />})
 		}
+		await this.callGetUser()
 	}
     async callGetASProfile(){
 		const req = await getRequest('arbiter/profile')
@@ -35,12 +39,21 @@ class ProfileAccount extends Component {
 		if(req.error){
 			return this.setState({message: req.error})
 		}
+		return
+	}
+	async callGetUser() {
+		const req = await getRequest('user/me')
+		this.setState({user: req, message: ''})
+		
+		// console.log(this.state.user)
 	}
 	handleArbiterProfileSubmit() {
+		this.setState({message: "Syncing..."})
 		this.callGetASProfile()
+		window.location.reload()
 	}
     render(){
-        let user = this.props.user
+        let user = this.state.user
     	return(
     		<div>
     			<h3>Account</h3>
@@ -81,6 +94,7 @@ class ProfileAccount extends Component {
 						<Link to={'/horizon-sync'} >Update Horizon Login Info</Link>
 					</div>
 				</div>
+				{this.state.redirect}
     		</div>
     	);
     }

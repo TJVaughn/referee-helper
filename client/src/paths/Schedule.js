@@ -4,6 +4,7 @@ import AllGames from '../modules/AllGames'
 import SyncSchedules from '../modules/SyncSchedules'
 import AddArena from '../modules/AddArena'
 import CreateBlocks from '../modules/CreateBlocks';
+import { getCookie } from '../utils/cookies';
 
 class Schedule extends Component {
 	constructor(props){
@@ -20,6 +21,11 @@ class Schedule extends Component {
 		this.handleBlocksToggle = this.handleBlocksToggle.bind(this)
 	}
 
+	componentDidMount(){
+		if(getCookie('InitialLoginFlow') === 'true'){
+			return this.setState({syncToggle: true})
+		}
+	}
 	handleGameToggle(){
 		if(this.state.gameToggle){
 			return this.setState({gameToggle: false})

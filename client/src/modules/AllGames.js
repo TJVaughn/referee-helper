@@ -102,8 +102,6 @@ class AllGames extends Component {
         this.sumRemaining(groupObj)
     }
     componentDidMount(){
-        
-        setCookie('InitialLoginFlow', 'false')
         this.callGetAllGames()
     }
     

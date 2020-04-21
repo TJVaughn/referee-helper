@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import getRequest from '../utils/getRequest'
-import { getCookie } from '../utils/cookies'
-import { Redirect, Link } from 'react-router-dom';
+// import getRequest from '../utils/getRequest'
+// import { getCookie } from '../utils/cookies'
+import { Link } from 'react-router-dom';
 import ProfileAccount from '../modules/ProfileAccount';
 import ProfileBilling from '../modules/ProfileBilling';
 
@@ -17,24 +17,24 @@ class Profile extends Component {
 		}
 	}
 	
-	async callGetUser() {
-		const req = await getRequest('user/me')
-		this.setState({user: req, message: ''})
+	// async callGetUser() {
+	// 	const req = await getRequest('user/me')
+	// 	this.setState({user: req, message: ''})
 		
-		console.log(this.state.user)
-	}
-	async componentDidMount(){
-		this.callGetUser()
-		if(getCookie('loggedIn') === 'false'){
-			return this.setState({redirect: <Redirect to={'/'} />})
-		}
-		if(getCookie("InitialLoginFlow") === "true"){
-			this.setState({message: "Syncing..."})
-			await this.callGetASProfile()
-			await this.callGetUser()
-			return this.setState({redirect: <Redirect to={'/'} />})
-		}
-	}
+	// 	console.log(this.state.user)
+	// }
+	// async componentDidMount(){
+	// 	this.callGetUser()
+	// 	if(getCookie('loggedIn') === 'false'){
+	// 		return this.setState({redirect: <Redirect to={'/'} />})
+	// 	}
+	// 	if(getCookie("InitialLoginFlow") === "true"){
+	// 		this.setState({message: "Syncing..."})
+	// 		// await this.callGetASProfile()
+	// 		await this.callGetUser()
+	// 		return this.setState({redirect: <Redirect to={'/'} />})
+	// 	}
+	// }
 
 	handleAccountClick(){
 		return this.setState({account: true, billing: false})
@@ -50,15 +50,15 @@ class Profile extends Component {
 					<Link to={'/profile/billing'}><h2>Billing</h2></Link>
 				</div>
 				{this.props.path === '/profile/account' 
-				? <ProfileAccount user={this.state.user} />
+				? <ProfileAccount />
 				:''}
 
 				{this.props.path === '/profile/billing' 
-				? <ProfileBilling user={this.state.user} />
+				? <ProfileBilling />
 				:''}
 				
 				{this.state.redirect}
-				{console.log(this.props.path)}
+				{/* {console.log(this.props.path)} */}
     		</div>
     	);
     }

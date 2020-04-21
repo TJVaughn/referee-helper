@@ -20,9 +20,9 @@ class SyncSchedules extends Component {
 
     async callGetASData(){  
         try {
-            this.setState({message: "Grabbing Arbiter Schedule"})
+            this.setState({message: "Grabbing Arbiter Schedule... please don't refresh"})
             await getRequest('arbiter/schedule')
-            this.setState({message: "Now getting payment data from Arbiter"})
+            this.setState({message: "Now getting payment data from Arbiter... please don't refresh"})
             await getRequest('arbiter/payments')
         } catch (error) {
             return this.setState({arbiterError: "Error fetching Arbiter schedule: " + error})
@@ -31,7 +31,7 @@ class SyncSchedules extends Component {
 
     async callGetHWRData(){
         try {
-            this.setState({message: "Grabbing Horizon Schedule & Payment Data"})
+            this.setState({message: "Grabbing Horizon Schedule & Payment Data... please don't refresh"})
             await getRequest('horizon/schedule')
         } catch (error) {
             return this.setState({horizonError: "Error fetching Arbiter schedule: " + error})
@@ -39,9 +39,9 @@ class SyncSchedules extends Component {
     }
     async callArenaData(){
         try {
-            this.setState({message: "Adding/updating arenas from schedule. Fetching mileage and drive duration time to arenas."})
+            this.setState({message: "Adding/updating arenas from schedule. Fetching mileage and drive duration time to arenas... please don't refresh"})
             await getRequest('arena/add-arenas-from-schedule')
-            this.setState({message: "Updating game distances and durations"})
+            this.setState({message: "Updating game distances and durations... please don't refresh"})
             await getRequest('arena/assign-distance-to-games')
             
         } catch (error) {
@@ -55,7 +55,6 @@ class SyncSchedules extends Component {
         this.setState({inProcess: true, syncTime: ''})
         await this.callGetASData()
         await this.callGetHWRData()
-        setCookie("InitialLoginFlow", "false")
         await this.callArenaData()
         this.setState({inProcess: false, message: <Redirect to={'/'} />})
         const endTime = Date.now()
@@ -63,6 +62,8 @@ class SyncSchedules extends Component {
         const secsElapsed = Math.floor((endTime - startTime) / 1000)
         console.log("The request process took: " + secsElapsed + " seconds")
         this.setState({syncTime: "The request process took: " + secsElapsed + " seconds"})
+        setCookie("InitialLoginFlow", "false")
+
         // window.location.reload()
     }
 
