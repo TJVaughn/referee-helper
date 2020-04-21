@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import getRequest from '../utils/getRequest'
 import { getCookie } from '../utils/cookies'
-import { Redirect } from 'react-router-dom';
-import postRequest from '../utils/postRequest';
+import { Redirect, Link } from 'react-router-dom';
 import ProfileAccount from '../modules/ProfileAccount';
 import ProfileBilling from '../modules/ProfileBilling';
 
@@ -10,16 +9,12 @@ class Profile extends Component {
 	constructor(props){
 		super(props)
 		this.state = {
-			account: true,
-			billing: false, 
 			message: '',
 			redirect: '',
 			user: {
 				
 			}
 		}
-		this.handleAccountClick = this.handleAccountClick.bind(this)
-		this.handleBillingClick = this.handleBillingClick.bind(this)
 	}
 	
 	async callGetUser() {
@@ -51,17 +46,19 @@ class Profile extends Component {
     	return(
     		<div>
 				<div className="Profile-navigation">
-					<h2 onClick={this.handleAccountClick} >Account</h2>
-					<h2 onClick={this.handleBillingClick} >Billing</h2>
+					<Link to={'/profile/account'}><h2>Account</h2></Link>
+					<Link to={'/profile/billing'}><h2>Billing</h2></Link>
 				</div>
-				{this.state.account
+				{this.props.path === '/profile/account' 
 				? <ProfileAccount user={this.state.user} />
 				:''}
-				{this.state.billing
+
+				{this.props.path === '/profile/billing' 
 				? <ProfileBilling user={this.state.user} />
 				:''}
-				{this.state.redirect}
 				
+				{this.state.redirect}
+				{console.log(this.props.path)}
     		</div>
     	);
     }

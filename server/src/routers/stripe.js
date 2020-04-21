@@ -107,8 +107,9 @@ router.post('/api/stripe/order-complete', auth, async (req, res) => {
 router.get('/api/stripe/customer', auth, async(req, res) => {
     try {
         let customer = await stripe.customers.retrieve(`${req.user.stripeData.customer}`)
-        console.log(customer)
-        res.send(customer)
+        let customerBillingHistory = await stripe.invoices.list({customer: `${req.user.stripeData.customer}`})
+        console.log(customerBillingHistory)
+        res.send({customer, customerBillingHistory})
     } catch (error) {
         res.status(500).send({error: "Error in api/stripe/customer/id: " + error})
     }

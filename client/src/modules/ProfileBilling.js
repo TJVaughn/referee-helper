@@ -18,6 +18,11 @@ class ProfileBilling extends Component {
                     ]
                 }
             },
+            billingHistory: {
+                data: [{
+                    status_transitions: {}
+                }]
+            },
             user: {
                 stripeData: {
                     plan: {}
@@ -55,7 +60,7 @@ class ProfileBilling extends Component {
         })
         response = await response.json()
         console.log(response)
-        this.setState({stripeUser: response})
+        this.setState({stripeUser: response.customer, billingHistory: response.customerBillingHistory})
     }
 
     componentDidMount(){
@@ -63,6 +68,7 @@ class ProfileBilling extends Component {
     }
     render(){
         let user = this.props.user
+        console.log(user)
         let stripeUser = this.state.stripeUser
         const alertBox = 
         <div className='Profile-alert-box-container'>
@@ -85,11 +91,20 @@ class ProfileBilling extends Component {
             </div>
         </div>
 
-        // const billingHistoryMap = this.state.billingHistory.map(item =>
-        //     <div>
-        //         {item}
-        //     </div>
-        // )
+        const billingHistoryMap = this.state.billingHistory.data.map(item =>
+            <div>
+                <p>
+                    Date paid: {new Date(item.status_transitions.paid_at * 1000).toLocaleDateString()}
+                </p>
+                <p>
+                    Amount paid: ${formatNumber(item.amount_paid)}
+                </p>
+                <p>
+                    Status: {item.status}
+                </p>
+                <hr />
+            </div>
+        )
 
     	return(
     		<div>
@@ -107,7 +122,7 @@ class ProfileBilling extends Component {
 						Subscription status: {stripeUser.subscriptions.data[0].plan.active ? 'pro' : 'free'}
 					</p>
 					<div>
-						{user.stripeData.cancelAtPeriodEnd
+						{stripeUser.subscriptions.data[0].cancel_at_period_end
 						? <p>
 							Will not renew on {new Date(stripeUser.subscriptions.data[0].current_period_end * 1000).toLocaleDateString()}
 							</p>
@@ -122,7 +137,7 @@ class ProfileBilling extends Component {
 				? alertBox
 				:''}
                 <h3>History</h3>
-                {/* {billingHistoryMap} */}
+                {billingHistoryMap}
                 {console.log(stripeUser.subscriptions.data[0])}
     		</div>
     	);

@@ -45,9 +45,9 @@ class ProfileDropdown extends Component {
                 
                 {this.state.toggle
                 ?<div className={`Profile-img-dropdown`}>
-                    <Link onClick={this.handleToggle} to={'/profile'}>Account</Link>
+                    <Link onClick={this.handleToggle} to={'/profile/account'}>Account</Link>
                     <br />
-                    <Link onClick={this.handleToggle} to={'/profile'}>Billing</Link>
+                    <Link onClick={this.handleToggle} to={'/profile/billing'}>Billing</Link>
                     <br />
                     <hr />
                     {this.state.logout

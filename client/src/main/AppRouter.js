@@ -23,10 +23,10 @@ function IndexRouter(){
     )
 }
 
-function ProfileRouter(){
+function ProfileRouter(props){
     return(
         <div>
-            <Profile />
+            <Profile path={props.location.pathname} />
         </div>
     )
 }
