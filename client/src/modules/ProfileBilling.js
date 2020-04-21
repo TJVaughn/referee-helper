@@ -44,7 +44,7 @@ class ProfileBilling extends Component {
 		const data = {
 			cancelEmail: this.state.cancelEmail
 		}
-		const req = await postRequest('stripe/cancel-subscription', 'POST', {data})
+		await postRequest('stripe/cancel-subscription', 'POST', {data})
 		// console.log(req)
 		window.location.reload()
 	}

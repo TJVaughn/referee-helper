@@ -3,6 +3,7 @@ const router = new express.Router()
 const puppeteer = require('puppeteer')
 const Game = require('../../models/Game')
 const auth = require('../../middleware/auth')
+const stripe = require('stripe')(process.env.TEST_STRIPE_SECRET)
 const { decryptPlainText } = require('../../utils/crypto')
 
 const removePastGames = (games) => {
@@ -145,6 +146,11 @@ router.get('/api/arbiter/blocks', auth, async (req, res) => {
     // Navigate to blocks page
     // Iterate over array 
     try {
+        let customer = await stripe.customers.retrieve(req.user.stripeData.customer)
+        // console.log(customer.subscriptions.data[0].plan.active)
+        if(!customer.subscriptions.data[0].plan.active){
+            return res.send({error: "Unathorized to do that."})
+        }
         const games = await Game.find({owner: req.user._id})
         let futureGames = removePastGames(games)
         const asPass = decryptPlainText(req.user.asPassword)

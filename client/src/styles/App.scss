@@ -16,3 +16,117 @@ a {
 .blue {
   color: $blue;
 }
+
+.loading-animation {
+  position: fixed;
+  background: repeating-linear-gradient(45deg, #44f7 10px, #22c7 20px);
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  margin: auto;
+  .loading-animation-inner {
+    position: relative;
+    margin: 10% auto;
+    width: 350px;
+    text-align: center;
+    background-color: #fff;
+    padding: 10px;
+    height: 100px;
+    width: 100px;
+    border-radius: 5px;
+    .loading-animation-dot {
+      animation: loading-animation 2000ms cubic-bezier(.95,.05,.8,.04) infinite;
+      height: 10px;
+      width: 10px;
+      position: relative;
+      background-color: #fff;
+      border-radius: 50%;
+      margin: 0px;
+      padding: 0;
+      border: 1px solid blue;
+      top: 0;
+      left: 90px;
+    }
+    .loading-animation-dot-2 {
+      animation: loading-animation-2 1800ms cubic-bezier(.95,.05,.8,.04) infinite;
+      height: 10px;
+      width: 10px;
+      position: relative;
+      background-color: #fff;
+      border-radius: 50%;
+      margin: 0px;
+      padding: 0;
+      border: 1px solid blue;
+      top: 0;
+      left: 90px;
+    }
+  }
+}
+
+@keyframes loading-animation {
+  from {
+    top: 0;
+    left: 0;
+  }
+  25% {
+    top: 0px;
+    left: 90px;
+  }
+  50% {
+    top: 90px;
+    left: 90px;
+  }
+  75% {
+    top: 90px;
+    left: 0;
+  }
+  to {
+    top: 0;
+    left: 0;
+  }
+}
+// @keyframes loading-animation-2 {
+//   from {
+//     top: -11px;
+//     left: 0;
+//   }
+//   25% {
+//     top: -11px;
+//     left: 90px;
+//   }
+//   50% {
+//     top: 79px;
+//     left: 90px;
+//   }
+//   75% {
+//     top: 79px;
+//     left: 0;
+//   }
+//   to {
+//     top: -11px;
+//     left: 0;
+//   }
+// }
+@keyframes loading-animation-2 {
+  from {
+    top: 79px;
+    left: 90px;
+  }
+  25% {
+    top: 79px;
+    left: 0;
+  }
+  50% {
+    top: -11px;
+    left: 0;
+  }
+  75% {
+    top: -11px;
+    left: 90px;
+  }
+  to {
+    top: 79px;
+    left: 90px;
+  }
+}

@@ -23,8 +23,11 @@ class Stripe extends Component {
             }
         })
         response = await response.json()
-        // console.log(response)
-        if(response.customer){
+		// console.log(response)
+		if(!response.customer){
+			return
+		}
+        if(response.customer.subscriptions.data[0].plan.active){
 			return this.setState({isUser: true})
 		}
 	}

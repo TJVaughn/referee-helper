@@ -68,9 +68,10 @@ class SyncSchedules extends Component {
     }
 
     componentDidMount(){
-        if(getCookie("InitialLoginFlow") === "true"){
-            this.callSyncAllSchedules()
-        }
+        //DONT AUTO SYNC RIGHT NOW OTHERWISE WE WILL HAVE TO PAY FOR GOOGLE MAPS API CALLS
+        // if(getCookie("InitialLoginFlow") === "true"){
+        //     this.callSyncAllSchedules()
+        // }
     }
 
     render(){

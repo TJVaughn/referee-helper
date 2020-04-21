@@ -36,7 +36,7 @@ router.post('/api/stripe/setup-customer', auth, async(req, res) => {
             }
         }
         //DAILY FOR TESTING
-        // subPlan = 'plan_H8IBHelcP0dUk3'
+        subPlan = 'plan_H8IBHelcP0dUk3'
         //REMOVE LATER
         const subscription = await stripe.subscriptions.create({
             customer: stripeCustomer.id,
