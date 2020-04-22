@@ -6,7 +6,11 @@ class CreateBlocks extends Component {
         super(props);
         this.state = {
             inProcess: false,
-            message: ''
+            message: '',
+            arbiterErr: '',
+            hwrErr: '',
+            arbiterBlocks: [{gameData: {}}],
+            horizonBlocks: [{gameData: {}}]
         }
         this.handleASClick = this.handleASClick.bind(this)
         this.handleHWRClick = this.handleHWRClick.bind(this)
@@ -15,11 +19,19 @@ class CreateBlocks extends Component {
     async callASBlocks(){
         let res = await getRequest('arbiter/blocks')
         console.log(res)
+        if(res.error){
+            return this.setState({message: 'Request Timed out', arbiterErr: 'There was an error setting blocks for Arbiter Sports'})
+        }
+        return this.setState({arbiterBlocks: res})
     }
 
     async callHWRBlocks(){
         let res = await getRequest('horizon/blocks')
         console.log(res)
+        if(res.error){
+            return this.setState({message: 'Request Timed out', hwrErr: 'There was an error setting blocks for Horizon Web Ref'})
+        }
+        return this.setState({horizonBlocks: res})
     }
 
     async handleASClick(){
@@ -56,6 +68,26 @@ class CreateBlocks extends Component {
     }
 
     render(){
+        const arbiterBlockMap = this.state.arbiterBlocks.map(item =>
+                <div key={item.gameData._id}>
+                    Start: {item.blockStartTime}
+                    <br />
+                    End: {item.blockEndTime}
+                    <br />
+                    For Game: {new Date(item.gameStartTime).toLocaleDateString()}, {new Date(item.gameStartTime).toLocaleTimeString()}
+                    <hr />
+                </div>
+            );
+            const horizonBlockMap = this.state.horizonBlocks.map(item => 
+                <div key={item.gameData._id}>
+                    Start: {item.blockStartTime}
+                    <br />
+                    End: {item.blockEndTime}
+                    <br />
+                    For Game: {new Date(item.gameStartTime).toLocaleDateString()}, {new Date(item.gameStartTime).toLocaleTimeString()}
+                    <hr />
+                </div>
+                );
     	return(
     		<div>
                 <h4 title="Create blocks for future games that are not on the respective platform.">
@@ -79,6 +111,33 @@ class CreateBlocks extends Component {
                         Create blocks for both
                     </p>
                 </div>
+                {this.state.inProcess
+                ?<div className="loading-animation">
+                    <div className="loading-animation-inner">
+                        <div className="loading-animation-dot"></div>
+                        <div className="loading-animation-dot-2"></div>
+                    </div>
+                </div>
+                :''}
+            <h3>
+                {this.state.arbiterErr}
+            </h3>
+            <h3>
+                {this.state.hwrErr}
+            </h3>
+            {!this.state.arbiterBlocks[0].blockStartTime
+            ?''
+            :<div>
+                <h4>Created Arbiter Blocks for: </h4>
+                {arbiterBlockMap}
+            </div>}
+            {!this.state.horizonBlocks[0].blockStartTime
+            ?''
+            :<div>
+            <h4>Created Horizon Blocks for: </h4>
+            {horizonBlockMap}
+        </div>}
+            
     		</div>
     	);
     }

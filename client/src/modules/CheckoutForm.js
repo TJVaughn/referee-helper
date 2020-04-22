@@ -10,7 +10,7 @@ class CheckoutForm extends Component {
             monthly: false,
             annual: true,
             message: '',
-            loading: false,
+            inProcess: false,
             price: '77.97',
             email: '',
             name: '',
@@ -41,7 +41,7 @@ class CheckoutForm extends Component {
         const body = await response.json()
         console.log(body)
         if(body.success){
-            this.setState({message: "Order complete! Redirecting in 3 seconds"})
+            this.setState({message: "Order complete! Redirecting in 3 seconds", inProcess: false})
             setTimeout(() => {
                 this.setState({message: <Redirect to={'/profile/account'} />})
             }, 3000)
@@ -65,7 +65,7 @@ class CheckoutForm extends Component {
       }
     
     setErrorMessage(error){
-        this.setState({message: error.message, loading: false})
+        this.setState({message: error.message, inProcess: false})
     }
 
     handleNameChange(evt){
@@ -144,7 +144,7 @@ class CheckoutForm extends Component {
         }
     }
     async handleSubmit(event){
-        this.setState({loading: true})
+        this.setState({inProcess: true})
         event.preventDefault();
         const { stripe, elements } = this.props
 
@@ -170,7 +170,7 @@ class CheckoutForm extends Component {
         this.setState({monthly: false, annual: true, price: "77.97"})
     }
     handleLoading(){
-        this.setState({loading: true})
+        this.setState({inProcess: true})
     }
 
     render() {
@@ -193,12 +193,13 @@ class CheckoutForm extends Component {
                 </div>
                 <div>
                     {/* <label>Email for receipt: </label> */}
-                    <input className={`Stripe-checkout-info-section`} 
+                    <input required className={`Stripe-checkout-info-section`} 
                     type="email" placeholder="Email" value={this.state.email} onChange={this.handleEmailChange} />
                 </div>
                 <div>
                     {/* <label>Full Name: </label> */}
-                    <input className="Stripe-checkout-info-section" type="text" placeholder="Full Name" value={this.state.name} onChange={this.handleNameChange} />
+                    <input required className="Stripe-checkout-info-section" 
+                    type="text" placeholder="Full Name" value={this.state.name} onChange={this.handleNameChange} />
                 </div>
                 <div className="Stripe-checkout-card-section">
                     <CardSection />
@@ -215,6 +216,14 @@ class CheckoutForm extends Component {
                     {this.state.message}
                 </h3>
             </form>
+            {this.state.inProcess
+                ?<div className="loading-animation">
+                    <div className="loading-animation-inner">
+                        <div className="loading-animation-dot"></div>
+                        <div className="loading-animation-dot-2"></div>
+                    </div>
+                </div>
+                :''}
             </div>
         );
     }

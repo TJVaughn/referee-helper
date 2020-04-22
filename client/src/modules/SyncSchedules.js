@@ -91,6 +91,15 @@ class SyncSchedules extends Component {
                     {this.state.horizonError}
                 </p>
                 <h5>{this.state.syncTime}</h5>
+
+                {this.state.inProcess
+                ?<div className="loading-animation">
+                <div className="loading-animation-inner">
+                    <div className="loading-animation-dot"></div>
+                    <div className="loading-animation-dot-2"></div>
+                </div>
+            </div>
+            :''}
     		</div>
     	);
     }

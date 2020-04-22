@@ -28,7 +28,7 @@ class Stripe extends Component {
 			return
 		}
         if(response.customer.subscriptions.data[0].plan.active){
-			return this.setState({isUser: true})
+			// return this.setState({isUser: true})
 		}
 	}
 	componentDidMount(){

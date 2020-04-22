@@ -57,12 +57,6 @@ class Schedule extends Component {
     render(){
     	return(
     		<div>
-				<div className="loading-animation">
-					<div className="loading-animation-inner">
-						<div className="loading-animation-dot"></div>
-						<div className="loading-animation-dot-2"></div>
-					</div>
-				</div>
 				<div className="Schedule-schedule-header">
 					<p onClick={this.handleGameToggle} className="pointer">
 						Create New Game

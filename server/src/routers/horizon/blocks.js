@@ -77,6 +77,7 @@ const setBlocks = async (username, password, futureGames) => {
             await page.goto('https://www.horizonwebref.com/?pageID=1132')
             await page.waitFor(1000)
     
+            let blocksCreatedArr = []
             for(let x = 0; x < futureGames.length; x ++){
                 console.log(futureGames[x].dateTime.getDate())
                 let gameTime = futureGames[x].dateTime
@@ -130,7 +131,7 @@ const setBlocks = async (username, password, futureGames) => {
                 console.log("Block Start: " + blockStartTime)
                 console.log("Block End: " + blockEndTime)
                 console.log("Game Time: " + gameTime)
-    
+                
                 let forMonth = gameMonth.getMonth() - currentMonth.getMonth()
                 forMonth = forMonth.toString()
                 console.log(forMonth)
@@ -158,10 +159,19 @@ const setBlocks = async (username, password, futureGames) => {
                     await page.select(`#Time2-${date}`, blockEndTime)
                 }
                 await page.waitFor(1500)
+                gameTime = gameTime.setHours(gameTime.getHours() + 1);
+                gameTime = new Date(gameTime)
+                blocksCreatedArr.push({
+                    gameStartTime: gameTime,
+                    blockStartTime,
+                    blockEndTime,
+                    gameData: futureGames[x]
+                })
             }
             await page.waitFor(5000)
             await browser.close()
-            return futureGames
+
+            return blocksCreatedArr
     } catch (error) {
         return {error: "Error in blocks: " + error}
     }

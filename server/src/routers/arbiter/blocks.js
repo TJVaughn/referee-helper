@@ -124,10 +124,13 @@ const setBlocks = async (email, pass, futureGames) => {
 
         await page.click('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_btnRangeApply')
         await page.waitFor(1500)
+        gameStartTime = gameStartTime.setHours(gameStartTime.getHours() + 1)
+        gameStartTime = new Date(gameStartTime)
         blocksCreatedArr.push({
             gameStartTime,
             blockStartTime,
-            blockEndTime
+            blockEndTime,
+            gameData: futureGames[i]
         })
     }
 
