@@ -84,7 +84,7 @@ const parseGame = (html) => {
 const getArbiterSchedule = async (email, pass) => {
     let response = ''
     const browser = await puppeteer.launch({
-        headless: true,
+        headless: false,
         args: [
             '--window-size=1500,825'
         ]
@@ -107,16 +107,15 @@ const getArbiterSchedule = async (email, pass) => {
     }
     // await page.click('#mobileAlertStayLink')
     await page.goto('https://www1.arbitersports.com/Official/GameScheduleEdit.aspx')
-    await page.waitForNavigation()
-    await page.waitFor(1000)
+    await page.waitFor(2000)
     await page.click('tr.alternatingItems:nth-child(7)')
     await page.waitFor(500)
     await page.goto('https://www1.arbitersports.com/Official/GameScheduleEdit.aspx')
 
     await page.content()
-    // await page.select('#ddlDateFilter', '9')
-    // await page.click('#btnApplyFilter')
-    // await page.waitFor(5000)
+    await page.select('#ddlDateFilter', '9')
+    await page.click('#btnApplyFilter')
+    await page.waitFor(5000)
     
     response = await page.content()
     response = response.toString()
