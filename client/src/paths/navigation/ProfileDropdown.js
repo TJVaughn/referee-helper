@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom'
-import ProfileImg from '../images/grey-profile-img.png'
-import { setCookie } from '../utils/cookies';
+import ProfileImg from '../../images/grey-profile-img.png'
+import { setCookie } from '../../utils/cookies';
 
 class ProfileDropdown extends Component {
     constructor(props){

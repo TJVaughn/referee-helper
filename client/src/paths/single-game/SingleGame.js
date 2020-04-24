@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Link, Redirect } from "react-router-dom";
-import getRequest from '../utils/getRequest'
-import { toDateObj } from '../utils/toDateObj'
-import postRequest from '../utils/postRequest'
+import getRequest from '../../utils/getRequest'
+import { toDateObj } from '../../utils/toDateObj'
+import postRequest from '../../utils/postRequest'
 
 class SingleGame extends Component {
     constructor(props){

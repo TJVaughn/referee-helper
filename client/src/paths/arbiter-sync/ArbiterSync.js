@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import postRequest from '../utils/postRequest';
 import { Redirect, Link } from 'react-router-dom';
+import postRequest from '../../utils/postRequest';
 
 class ArbiterSync extends Component {
     constructor(props){

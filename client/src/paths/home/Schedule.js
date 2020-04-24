@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import CreateGame from '../modules/CreateGame'
-import AllGames from '../modules/AllGames'
-import SyncSchedules from '../modules/SyncSchedules'
-import AddArena from '../modules/AddArena'
-import CreateBlocks from '../modules/CreateBlocks';
-import { getCookie } from '../utils/cookies';
+import CreateGame from './modules/CreateGame'
+import AllGames from './modules/AllGames'
+import SyncSchedules from './modules/SyncSchedules'
+import AddArena from './modules/AddArena'
+import CreateBlocks from './modules/CreateBlocks';
+import { getCookie } from '../../utils/cookies'
 
 class Schedule extends Component {
 	constructor(props){

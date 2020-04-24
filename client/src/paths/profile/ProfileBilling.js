@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import formatNumber from '../utils/formatNumber';
-import postRequest from '../utils/postRequest';
-import getRequest from '../utils/getRequest';
+import formatNumber from '../../utils/formatNumber';
+import postRequest from '../../utils/postRequest';
+import getRequest from '../../utils/getRequest';
 
 class ProfileBilling extends Component {
     constructor(props){
@@ -60,7 +60,7 @@ class ProfileBilling extends Component {
             }
         })
         response = await response.json()
-        // console.log(response)
+        console.log(response)
         this.setState({stripeUser: response.customer, billingHistory: response.customerBillingHistory})
     }
     async callGetUser() {

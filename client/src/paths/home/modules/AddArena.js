@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import postRequest from '../utils/postRequest'
+import postRequest from '../../../utils/postRequest'
 
 class AddArena extends Component {
     constructor(props){

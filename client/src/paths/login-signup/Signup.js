@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import postRequest from '../utils/postRequest'
+import postRequest from '../../utils/postRequest'
 import { Redirect } from 'react-router-dom';
-import { setCookie } from '../utils/cookies'
+import { setCookie } from '../../utils/cookies'
 
-class Login extends Component {
+class Signup extends Component {
 	constructor(props){
 		super(props)
 		this.state = {
@@ -14,43 +14,46 @@ class Login extends Component {
 		this.handlePass = this.handlePass.bind(this)
 		this.handleSubmit = this.handleSubmit.bind(this)
 	}
+
+	handleName(evt){
+		this.setState({name: evt.target.value})
+	}
 	handleEmail(evt){
 		this.setState({email: evt.target.value})
 	}
 	handlePass(evt){
 		this.setState({password: evt.target.value})
 	}
-	async callLogin(){
+	async callSignup(){
 		const data = {
 			"email": this.state.email,
 			"password": this.state.password
 		}
-		const res = await postRequest('user/login', 'POST', { data })
+		const res = await postRequest('user', 'POST', { data })
 		console.log(res)
-		// if(res.message){
-		// 	return this.setState({error: res.message})
-		// }
-		if(res.error){
-			return this.setState({error: res.error})
+		if(res.message){
+			return this.setState({error: res.message})
 		}
-		setCookie('loggedIn', true)
-		this.setState({error: '', redirect: <Redirect to={'/'} />})
-		window.location.reload()
-
+		if(res.errmsg){
+			return this.setState({error: "Email already in use"})
+		}
+		setCookie("loggedIn", "true")
+		setCookie("InitialLoginFlow", true)
+		this.setState({error: '', redirect: <Redirect to={'/arbiter-sync'} />})
 	}
 
 	handleSubmit(evt){
 		evt.preventDefault()
-		this.callLogin()
+		this.callSignup()
 	}
     render(){
     	return(
     		<div>
-				<h1>Login</h1>
+				<h1>Sign Up</h1>
     			<form onSubmit={this.handleSubmit}>
 					<input type="email" placeholder="email" onChange={this.handleEmail} value={this.state.email} />
 					<input type="password" placeholder="password" onChange={this.handlePass} value={this.state.password} />
-					<button>Login</button>
+					<button>Sign Up</button>
 				</form>
 				{this.state.error}
 				{this.state.redirect}
@@ -58,5 +61,4 @@ class Login extends Component {
     	);
     }
 }
-
-export default Login ;
+export default Signup ;

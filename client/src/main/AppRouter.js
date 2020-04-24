@@ -1,82 +1,16 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import Schedule from '../paths/Schedule'
-import Login from '../paths/Login'
-import Signup from '../paths/Signup'
-import Profile from '../paths/Profile'
-import SingleGame from '../paths/SingleGame'
-import ArbiterSync from '../paths/ArbiterSync'
-import HorizonSync from '../paths/HorizonSync'
-import Landing from '../paths/Landing'
 import { getCookie } from '../utils/cookies'
-import Stripe from '../paths/Stripe';
-import ProfileDropdown from '../modules/ProfileDropdown';
+import ArbiterSyncRouter from '../paths/arbiter-sync/ArbiterSyncRouter';
+import HorizonSyncRouter from '../paths/horizon-sync/HorizonSyncRouter';
+import ProfileRouter from '../paths/profile/ProfileRouter';
+import IndexRouter from '../paths/home/IndexRouter';
+import ProfileDropdown from '../paths/navigation/ProfileDropdown';
+import SingleGameRouter from '../paths/single-game/SingleGameRouter';
+import LoginRouter from '../paths/login-signup/LoginRouter';
+import SignupRouter from '../paths/login-signup/SignupRouter';
+import SubscriptionRouter from '../paths/subscription/SubscriptionRouter';
 
-function IndexRouter(){
-    return (
-        <div>
-            {getCookie("loggedIn") === "true"
-            ? <Schedule />
-            :<Landing />}
-            
-        </div>
-    )
-}
-
-function ProfileRouter(props){
-    return(
-        <div>
-            <Profile path={props.location.pathname} />
-        </div>
-    )
-}
-
-function LoginRouter(){
-    return (
-        <div>
-            <Login />
-        </div>
-    )
-}
-
-function SignupRouter(){
-    return (
-        <div>
-            <Signup />
-        </div>
-    )
-}
-
-function ArbiterSyncRouter(){
-    return (
-        <div>
-            <ArbiterSync />
-        </div>
-    )
-}
-
-function HorizonSyncRouter(){
-    return (
-        <div>
-            <HorizonSync />
-        </div>
-    )
-}
-
-function SingleGameRouter(props){
-    return (
-        <div>
-            <SingleGame id={props.match.params.id} />
-        </div>
-    )
-}
-function SubscriptionRouter(){
-    return (
-        <div>
-            <Stripe />
-        </div>
-    )
-}
 class AppRouter extends Component {
     constructor(props){
         super(props);

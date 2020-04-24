@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import getRequest from '../utils/getRequest';
+import getRequest from '../../../utils/getRequest';
 
 class CreateBlocks extends Component {
     constructor(props){

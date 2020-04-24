@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 // import getRequest from '../utils/getRequest'
 // import { getCookie } from '../utils/cookies'
 import { Link } from 'react-router-dom';
-import ProfileAccount from '../modules/ProfileAccount';
-import ProfileBilling from '../modules/ProfileBilling';
+import ProfileAccount from './ProfileAccount';
+import ProfileBilling from './ProfileBilling';
 
 class Profile extends Component {
 	constructor(props){

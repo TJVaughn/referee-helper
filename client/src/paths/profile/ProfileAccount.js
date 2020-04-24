@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Redirect, Link } from 'react-router-dom'
-import getRequest from '../utils/getRequest';
-import { getCookie } from '../utils/cookies';
+import getRequest from '../../utils/getRequest';
+import { getCookie } from '../../utils/cookies';
 
 class ProfileAccount extends Component {
     constructor(props){

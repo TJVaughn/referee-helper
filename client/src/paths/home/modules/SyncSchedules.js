@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import getRequest from '../utils/getRequest'
-import { getCookie, setCookie } from '../utils/cookies'
+import getRequest from '../../../utils/getRequest'
+import { getCookie, setCookie } from '../../../utils/cookies'
 import { Redirect } from 'react-router-dom';
 
 class SyncSchedules extends Component {

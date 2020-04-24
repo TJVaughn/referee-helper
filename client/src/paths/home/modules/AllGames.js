@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import getRequest from '../utils/getRequest'
-import { toDateObj } from '../utils/toDateObj'
+import getRequest from '../../../utils/getRequest'
+import { toDateObj } from '../../../utils/toDateObj'
 import { BrowserRouter as Switch, Link} from "react-router-dom";
-import { setCookie } from '../utils/cookies';
-import formatNumber from '../utils/formatNumber';
+import { setCookie } from '../../../utils/cookies';
+import formatNumber from '../../../utils/formatNumber';
 
 const gamesHeader = <div className="All-games-game schedule-header">
     <p>Date</p>
