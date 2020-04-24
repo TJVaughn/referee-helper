@@ -24,11 +24,10 @@ class Stripe extends Component {
         })
         response = await response.json()
 		// console.log(response)
-		if(!response.customer){
+		if(response.customer.subscriptions.data[0] === undefined){
 			return
-		}
-        if(response.customer.subscriptions.data[0].plan.active){
-			// return this.setState({isUser: true})
+		} else if(response.customer.subscriptions.data[0].plan.active){
+			return this.setState({isUser: true})
 		}
 	}
 	componentDidMount(){
@@ -48,3 +47,4 @@ class Stripe extends Component {
     }
 }
 export default Stripe ;
+//49 LINES

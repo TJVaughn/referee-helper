@@ -14,9 +14,7 @@ import SubscriptionRouter from '../paths/subscription/SubscriptionRouter';
 class AppRouter extends Component {
     constructor(props){
         super(props);
-        this.state = {
-            loggedIn: false
-        }
+        this.state = {loggedIn: false}
     }
     isLoggedIn(){
         if(getCookie('loggedIn') === 'true'){
@@ -36,16 +34,10 @@ class AppRouter extends Component {
                 <div>
                     <Link id="Site-title" to={'/'} >Referee Helper</Link>
                 </div>
-                
                 {this.state.loggedIn
                 ? <div>
-                    {/* <div>
-                        <Link to={'/'} >Schedule</Link>
-                    </div> */}
                     <div>
                         <ProfileDropdown />
-                    
-    
                     </div>
                 </div>
                 :<div>
@@ -57,13 +49,9 @@ class AppRouter extends Component {
                     </div>
                 </div>
                 }
-                
-                
-                
             </div>
         )
     }
-
     render(){
     	return(
     		<div>
@@ -87,3 +75,4 @@ class AppRouter extends Component {
     }
 }
 export default AppRouter ;
+//90 LINES
