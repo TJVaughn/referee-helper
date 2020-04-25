@@ -109,7 +109,6 @@ function ProfileBilling(){
         </div>
             : <Link to={'/subscription'}>Renew Subscription</Link>}
                 
-            
             {alert
             ? CancelSubscription
             :''}

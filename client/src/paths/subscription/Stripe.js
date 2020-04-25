@@ -9,7 +9,6 @@ const stripePromise = loadStripe('pk_test_9WR0c2WUivrrh1lKGlJOTRNx009KCbgori')
 
 function Stripe(){
 	const [ isUser, setIsUser ] = useToggle(false)
-	
 	useEffect(() => {
 		const callStripeApi = async () => {
 			let response = await fetch(`/api/stripe/customer`, {
