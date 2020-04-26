@@ -1,25 +1,41 @@
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import getRequest from '../../../utils/getRequest'
 import { toDateObj } from '../../../utils/toDateObj'
 import { BrowserRouter as Switch, Link} from "react-router-dom";
 import { setCookie } from '../../../utils/cookies';
 import formatNumber from '../../../utils/formatNumber';
 
-const gamesHeader = <div className="All-games-game schedule-header">
-    <p>Date</p>
-    <p>Time</p>
-    <p>Location</p>
-    <p>Distance</p>
-    <p>Drive time</p>
-    <p>Fee</p>
-    <p>Level</p>
-    <p>Group</p>
-    <p>Status</p>
-    <p>Game ID</p>
-    <p>Platform</p>
-    <p>Paid</p>
-</div>
 
+function GamesHeader (){
+    const [ dataScroll, setDataScroll ] = useState('500')
+
+    useEffect(() => {
+        setInterval(() => {
+            // console.log(Math.round(window.pageYOffset))
+            if (Math.round(window.pageYOffset) > 400) {
+                setDataScroll(Math.round(window.pageYOffset).toString())
+            } else if(Math.round(window.pageYOffset) < 400){
+                setDataScroll('500')
+            }
+        },  250)
+    }, [setDataScroll])
+    return (
+        <div data-scroll={`${dataScroll}`} className="All-games-game schedule-header">
+            <p>Date</p>
+            <p>Time</p>
+            <p>Location</p>
+            <p>Distance</p>
+            <p>Drive time</p>
+            <p>Fee</p>
+            <p>Level</p>
+            <p>Paid</p>
+            <p>Group</p>
+            <p>Status</p>
+            <p>Game ID</p>
+            <p>Platform</p>
+        </div>
+    )
+}
 const months = [
     "January",
     "February",
@@ -103,6 +119,7 @@ class AllGames extends Component {
     }
     componentDidMount(){
         this.callGetAllGames()
+        // setDataScroll()
     }
     
     sumEarned(groupObj){
@@ -242,22 +259,24 @@ class AllGames extends Component {
                             {item.level}
                         </p>
                         <p>
-                            {item.refereeGroup}
-                        </p>
-                        <p>
-                            {item.status}
-                        </p>
-                        <p>
-                            {item.gameCode}
-                        </p>
-                        <p>
-                            {item.platform}
-                        </p>
-                        <p>
                             {item.paid 
                             ? 'paid'
                             : 'unpaid'}
                         </p>
+                        <p>
+                                {item.refereeGroup}
+                            </p>
+                            <p>
+                                {item.status}
+                            </p>
+                            <p>
+                                {item.gameCode}
+                            </p>
+                            <p>
+                                {item.platform}
+                            </p>
+                        
+                        
                         {/* <p>
                             <input value={this.state.paid} type="checkbox" />
                         </p> */}
@@ -312,8 +331,7 @@ class AllGames extends Component {
                     onClick={this.handleNextMonth}>
                     →
                 </button>
-                
-                {gamesHeader}
+                <GamesHeader />
     			{allGamesMap}
                 <h1>
                     {this.state.error}
