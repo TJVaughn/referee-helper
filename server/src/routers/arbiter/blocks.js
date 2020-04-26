@@ -141,19 +141,7 @@ const setBlocks = async (email, pass, futureGames) => {
 }
 
 router.get('/api/arbiter/blocks', auth, async (req, res) => {
-    // Gets all of your games in the database
-    // Checks if the game is today, or in the future -- adds to array
-    // If so, for every game in that array we will execute a block generation
-    // Go to AS
-    // Login
-    // Navigate to blocks page
-    // Iterate over array 
     try {
-        let customer = await stripe.customers.retrieve(req.user.stripeData.customer)
-        // console.log(customer.subscriptions.data[0].plan.active)
-        if(!customer.subscriptions.data[0].plan.active){
-            return res.send({error: "Unathorized to do that."})
-        }
         const games = await Game.find({owner: req.user._id})
         let futureGames = removePastGames(games)
         const asPass = decryptPlainText(req.user.asPassword)

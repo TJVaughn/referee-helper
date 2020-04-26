@@ -65,7 +65,7 @@ router.patch('/api/game/:id', auth, async (req, res) => {
     const _id = req.params.id
     const updates = Object.keys(req.body)
     const allowedUpdates = [
-        "dateTime", "completed", "fees", "status", "refereeGroup", "location", "platform", "level", "milage", "paid"
+        "dateTime", "completed", "fees", "status", "refereeGroup", "location", "platform", "level", "distance", "duration", "paid"
     ]
     const isValidUpdate = updates.every((update) => {
         return allowedUpdates.includes(update)
@@ -96,7 +96,7 @@ router.delete('/api/game/:id', auth, async (req, res) => {
         const game = await Game.findOneAndDelete({owner: user._id, _id})
         res.send(game)
     } catch (error) {
-        res.status(418).send(error)
+        res.status(500).send({error: 'Error in deleting game'})
     }
 })
 
@@ -110,6 +110,9 @@ router.get('/api/all-games', auth, async (req, res) => {
             return res.send(games)
         }
         games.sort((a, b) => {
+            //asc
+            return a.dateTime - b.dateTime
+            //desc
             return b.dateTime - a.dateTime
         })
 

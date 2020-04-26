@@ -15,30 +15,7 @@ class CreateGame extends Component {
             arenas: []
         }
         this.handleSubmit = this.handleSubmit.bind(this)
-        this.handleDate = this.handleDate.bind(this)
-        this.handleTime = this.handleTime.bind(this)
-        this.handleLocation = this.handleLocation.bind(this)
-        this.handleFees = this.handleFees.bind(this)
-        this.handleLevel = this.handleLevel.bind(this)
-        this.handleGroup = this.handleGroup.bind(this)
-    }
-    handleDate (evt) {
-        this.setState({date: evt.target.value})
-    }
-    handleTime (evt) {
-        this.setState({time: evt.target.value})
-    }
-    handleLocation (evt) {
-        this.setState({location: evt.target.value})
-    }
-    handleFees (evt) {
-        this.setState({fees: evt.target.value})
-    }
-    handleLevel (evt) {
-        this.setState({level: evt.target.value})
-    }
-    handleGroup (evt) {
-        this.setState({group: evt.target.value})
+        this.handleChange = this.handleChange.bind(this)
     }
     async getAllArenas(){
         let res = await getRequest('arena/all')
@@ -50,7 +27,6 @@ class CreateGame extends Component {
     componentDidMount(){
         this.getAllArenas()
     }
-
     async callCreateGame () {
         if(!this.state.date || !this.state.time || !this.state.location){
             return this.setState({error: "Date, time and location are required"})
@@ -71,7 +47,9 @@ class CreateGame extends Component {
             return this.setState({error: res._message})
         }
         window.location.reload()
-        
+    }
+    handleChange(evt){
+        this.setState({[evt.target.name]: evt.target.value})
     }
     handleSubmit (evt) {
         evt.preventDefault()
@@ -87,14 +65,15 @@ class CreateGame extends Component {
     		<div>
                 <h4>Add a new game: </h4>
     			<form className="Create-game-form" onSubmit={this.handleSubmit}>
-                    <input placeholder="Date" type="date" onChange={this.handleDate} value={this.state.date} />
-                    <input placeholder="Time" type="time" onChange={this.handleTime} value={this.state.time} />
-                    <select value={this.state.location} onChange={this.handleLocation}>
+                    <input placeholder="Date" name="date" type="date" onChange={this.handleChange} value={this.state.date} />
+                    <input placeholder="Time" name="time" type="time" onChange={this.handleChange} value={this.state.time} />
+                    <select name='location' value={this.state.location} onChange={this.handleChange}>
+                        <option >location</option>
                         {arenaMap}
                     </select>
-                    <input placeholder="Fees" type="text" onChange={this.handleFees} value={this.state.fees} />
-                    <input placeholder="Level" type="text" onChange={this.handleLevel} value={this.state.level} />
-                    <input placeholder="Ref Group" type="text" onChange={this.handleGroup} value={this.state.group} />
+                    <input placeholder="Fees" name="fees" type="text" onChange={this.handleChange} value={this.state.fees} />
+                    <input placeholder="Level" name='level' type="text" onChange={this.handleChange} value={this.state.level} />
+                    <input placeholder="Ref Group" name='group' type="text" onChange={this.handleChange} value={this.state.group} />
                     <button>Add Game</button>
                 </form>
                 {this.state.error}
@@ -103,3 +82,4 @@ class CreateGame extends Component {
     }
 }
 export default CreateGame ;
+//111 LINES!

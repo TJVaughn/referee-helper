@@ -1,16 +1,12 @@
 import React, { Component } from 'react';
 import getRequest from '../../../utils/getRequest';
 import { toDateObj } from '../../../utils/toDateObj';
+import updateGame from '../../../api/game/updateGame';
 
 class GameDetails extends Component {
     constructor(props){
         super(props)
         this.state = {
-            game: {},
-            edit: false,
-            settings: false,
-            delete: false,
-            redirect: '',
             date: '',
             time: '',
             location: '',
@@ -22,7 +18,9 @@ class GameDetails extends Component {
             status: '',
             duration: '',
             platform: '',
-            paid: false
+            gameCode: '',
+            paid: false,
+            message: ''
         }
         this.handleSubmit = this.handleSubmit.bind(this)
         this.handleChange = this.handleChange.bind(this)
@@ -32,8 +30,29 @@ class GameDetails extends Component {
     handlePaid(){
         return this.setState({paid: !this.state.paid})
     }
+    async callUpdateGame(){
+        const dateTime = `${this.state.date} ${this.state.time}`
+        const data = {
+            "dateTime": dateTime,
+            "location": this.state.location,
+            "distance": this.state.distance * 10,
+            "duration": this.state.duration,
+            "fees": this.state.fees * 100,
+            "level": this.state.level,
+            "refereeGroup": this.state.group,
+            "status": this.state.status,
+            "paid": this.state.paid
+        }
+        let game = await updateGame(this.props.id, { data })
+        console.log(game)
+        if(game.error){
+            return this.setState({message: 'Error in updating game: ' + game.error})
+        }
+        window.location.reload()
+    }
     handleSubmit(evt){
         evt.preventDefault()
+        this.callUpdateGame()
     }
     handleChange(evt){
         this.setState({[evt.target.name]: evt.target.value})
@@ -41,12 +60,11 @@ class GameDetails extends Component {
     async callGetGame(){
         const res = await getRequest(`game/${this.props.id}`)
         // console.log(res)
-        this.setState({game: res})
         this.setState({
             date: toDateObj(res.dateTime).toLocaleDateString(),
             time: toDateObj(res.dateTime).toLocaleTimeString(),
             location: res.location,
-            distance: res.distance,
+            distance: res.distance / 10,
             duration: res.duration,
             fees: res.fees / 100,
             group: res.refereeGroup,
@@ -54,6 +72,7 @@ class GameDetails extends Component {
             milage: res.milage,
             status: res.status,
             platform: res.platform,
+            gameCode: res.gameCode,
             paid: res.paid
         })
     }
@@ -61,9 +80,11 @@ class GameDetails extends Component {
         this.callGetGame()
     }
     render(){
+        const message = this.state.message
     	return(
     		<div>
     			<form className="Single-game" onSubmit={this.handleSubmit}>
+                    <button className="Single-game-update-btn">update</button>
                     <input name="date" placeholder="Date" type="text" onChange={this.handleChange} value={this.state.date} />
                     <input name="time" placeholder="Time" type="text" onChange={this.handleChange} value={this.state.time} />
                     <input name="location" placeholder="Location" type="text" onChange={this.handleChange} value={this.state.location} />
@@ -73,88 +94,14 @@ class GameDetails extends Component {
                     <input name="level" placeholder="Level" type="text" onChange={this.handleChange} value={this.state.level} />
                     <input name="group" placeholder="Ref Group" type="text" onChange={this.handleChange} value={this.state.group} />
                     <input name="status" placeholder="Status" type="text" onChange={this.handleChange} value={this.state.status} />
-                    <p>{this.state.game.gameCode}</p>
+                    <p>{this.state.gameCode}</p>
                     <p>{this.state.platform}</p>
                     <p id="Single-game-paid-btn" className={this.state.paid ? 'paid' : 'unpaid'} onClick={this.handlePaid}>{this.state.paid ? 'paid' : 'unpaid'}</p>
-                    <button>Update:</button>
                 </form>
+                {message}
     		</div>
     	);
     }
 }
 export default GameDetails;
-
-// import React, { useEffect, useState } from 'react'
-// import getRequest from '../../../utils/getRequest'
-// import useInput from '../../../hooks/useInput'
-// import useToggle from '../../../hooks/useToggle'
-// import formatNumber from '../../../utils/formatNumber'
-
-// function GameDetails(props){
-//     const [ gameState, setGameState ] = useState({})
-//     const [ loading, setLoading ] = useToggle(true)
-//     const [ paid, setPaid ] = useToggle(false)
-//     async function getGame(){
-//         const game = await getRequest(`game/${props.id}`)
-//         console.log(game)
-//         setLoading(false)
-//         setGameState(game)
-//         setPaid(game.paid)
-//     }
-    
-//     useEffect(() => {
-//         getGame()
-//     }, [])
-
-    
-//     const updateGame = async () => {
-//         console.log()
-//     }
-//     const [inputState, setInputState ] = useState({
-//         date: new Date(gameState.dateTime).toLocaleDateString(),
-//         time: 'hello'
-//     })
-//     // const { formInput, handleInputChange, handleSubmit } = useInput(updateGame) 
-//     function handleChange(evt){
-//         const value = evt.target.value
-//         setInputState({
-//             ...inputState,
-//             [evt.target.name]: value
-//         })
-//     }
-//     const handleSubmit = (evt) =>{
-//         evt.preventDefault()
-//     }
-    
-//     function Form(){
-//         return (
-//             <form onSubmit={handleSubmit}>
-//                 <input name="date" type="text" value={inputState.date} onChange={handleChange} />
-//                 <input name="time" type="text" value={inputState.time} onChange={handleChange} />
-//                 {/* <input name="location" type="text" value={formInput.location} onChange={handleInputChange} defaultValue={gameState.location} />
-//                 <input name="distance" type="text" value={formInput.distance} onChange={handleInputChange} defaultValue={`${formatNumber(gameState.distance * 10)}`} />
-//                 <input name="duration" type="text" value={formInput.duration} onChange={handleInputChange} defaultValue={gameState.duration} />
-//                 <input name="fees" type="text" value={formInput.fees} onChange={handleInputChange} defaultValue={gameState.fees} />
-//                 <input name="level" type="text" value={formInput.level} onChange={handleInputChange} defaultValue={gameState.level} />
-//                 <input name="group" type="text" value={formInput.group} onChange={handleInputChange} defaultValue={gameState.refereeGroup} />
-//                 <input name="status" type="text" value={formInput.status} onChange={handleInputChange} defaultValue={gameState.status} />
-//                 <p>{gameState.gameCode}</p>
-//                 <p>{gameState.platform}</p>
-//                 <p className={paid ? 'paid' : 'unpaid'} id="Single-game-paid-btn" onClick={() => {setPaid(!paid)}}>{paid ? 'paid' : 'unpaid'}</p> */}
-//                 <button>update</button>
-//             </form>
-//         )
-//     }
-
-//     return (
-//         <div>
-//             {loading
-//             ? 'loading game data'
-//             :<Form />}
-            
-//         </div>
-//     )
-// }
-
-// export default GameDetails
-
+//306 LINES!!! CRAZY!!!

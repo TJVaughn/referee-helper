@@ -1,8 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { Link, Redirect } from "react-router-dom";
-import getRequest from '../../utils/getRequest'
-import { toDateObj } from '../../utils/toDateObj'
-import postRequest from '../../utils/postRequest'
+import React from 'react';
 import TableHead from './modules/TableHead';
 import GameDetails from './modules/GameDetails';
 
@@ -11,7 +7,7 @@ function SingleGame(props){
     return (
         <div>
             <div className="Single-game-container">
-                <TableHead />
+                <TableHead id={props.id} />
                 <GameDetails id={props.id} />
             </div>
 
