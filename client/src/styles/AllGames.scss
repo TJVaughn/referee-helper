@@ -1,8 +1,8 @@
 .All-games-game {
     display: grid;
-    grid-template-columns: repeat(3, 9%) 5% 5% repeat(7, 9%);
+    grid-template-columns: repeat(3, 8%) 6% 6% repeat(7, 9%);
     border-bottom: 2px outset #000;
-    text-align: center;
+    text-align: right;
     color: #000;
     @media only screen and(max-width: 765px){
         overflow: scroll;

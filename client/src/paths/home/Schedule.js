@@ -22,6 +22,7 @@ class Schedule extends Component {
 	}
 
 	componentDidMount(){
+		console.log(this.props)
 		if(getCookie('InitialLoginFlow') === 'true'){
 			return this.setState({syncToggle: true})
 		}
@@ -83,8 +84,6 @@ class Schedule extends Component {
 					{this.state.blocksToggle
 					?<CreateBlocks />
 					:''}
-					
-    			<h2>Schedule</h2>
                 <AllGames />
     		</div>
     	);

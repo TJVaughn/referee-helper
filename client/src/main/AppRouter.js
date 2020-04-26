@@ -61,12 +61,12 @@ class AppRouter extends Component {
                     <Switch>
                         <Route exact path={'/'} component={IndexRouter} />
                         <Route path={'/profile'} component={ProfileRouter} />
-                        <Route path={'/game/:id'} component={SingleGameRouter} />
-                        <Route path={'/login'} component={LoginRouter} />
-                        <Route path={'/signup'} component={SignupRouter} />
-                        <Route path={'/subscription'} component={SubscriptionRouter} />
-                        <Route path={'/arbiter-sync'} component={ArbiterSyncRouter} />
-                        <Route path={'/horizon-sync'} component={HorizonSyncRouter} />
+                        <Route exact path={'/game/:id'} component={SingleGameRouter} />
+                        <Route exact path={'/login'} component={LoginRouter} />
+                        <Route exact path={'/signup'} component={SignupRouter} />
+                        <Route exact path={'/subscription'} component={SubscriptionRouter} />
+                        <Route exact path={'/arbiter-sync'} component={ArbiterSyncRouter} />
+                        <Route exact path={'/horizon-sync'} component={HorizonSyncRouter} />
                     </Switch>
                 </Router>
 
