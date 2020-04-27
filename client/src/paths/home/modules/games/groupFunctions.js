@@ -17,9 +17,9 @@ export const createGroupObject = (g) => {
 }
 
 export const calculateGroupData = (groups, games) => {
-    let total = 0
-    console.log(groups)
-
+    let totalEarned = 0
+    let totalDistance = 0
+    let totalDuration = 0
     for(let i = 0; i < games.length; i++){
         for(let x = 0; x < groups.length; x ++){
             if(games[i].refereeGroup === groups[x].name){
@@ -30,16 +30,15 @@ export const calculateGroupData = (groups, games) => {
                 }
             }
         }
-        total += games[i].fees
+        totalEarned += games[i].fees
+        totalDistance += games[i].distance * 10
+        totalDuration += games[i].duration
     }
-    console.log(groups)
-
     groups = groups.filter((group) => {
         if(group.earned === 0 && group.miles === 0){
             return false
         }
         return true
     })
-    console.log(groups)
-    return [total, groups]
+    return [totalEarned, groups, totalDistance, totalDuration]
 }

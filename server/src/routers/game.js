@@ -5,11 +5,22 @@ const Game = require('../models/Game')
 const multer = require('multer')
 const Arena = require('../models/Arena')
 
+const addRHGroup = (groups, newGroup) => {
+    for(let i = 0; i < groups.length; i++){
+        if(groups[i].group.name === newGroup){
+            return true
+        }
+    }
+    return false
+}
 // CREATE GAME
 router.post('/api/game', auth, async (req, res) => {
     try {
         let arena = await Arena.find({owner: req.user._id, name: req.body.location})
-        console.log(arena)
+        // console.log(arena)
+        if(!req.body.refereeGroup){
+            req.body.refereeGroup = 'Referee Helper'
+        }
         const game = new Game({
             ...req.body,
             distance: arena[0].distance,
@@ -18,6 +29,11 @@ router.post('/api/game', auth, async (req, res) => {
             status: "normal",
             paid: false
         })
+        console.log(req.user.groups)
+        const isRH = addRHGroup(req.user.groups, req.body.refereeGroup)
+        if(!isRH){
+            req.user.groups.push({group: {name: req.body.refereeGroup}})
+        }
         const owner = req.user._id
         const currentSchedule = await Game.find({owner})
         let duplicates = currentSchedule.filter((current) => {
@@ -33,6 +49,7 @@ router.post('/api/game', auth, async (req, res) => {
             return false
         })
         if(duplicates.length === 0){
+            await req.user.save()
             await game.save()
             res.send(game)
         } else {

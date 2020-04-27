@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import postRequest from '../../../utils/postRequest'
-import getRequest from '../../../utils/getRequest';
+import getRequest from '../../../utils/getRequest'
 
 class CreateGame extends Component {
     constructor(props){

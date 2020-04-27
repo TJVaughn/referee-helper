@@ -5,23 +5,27 @@ class AddArena extends Component {
     constructor(props){
         super(props);
         this.state = {
-            arena: ''
+            location: '',
+            distance: '',
+            duration: '',
+            message: ''
         }
-        this.handleArenaChange = this.handleArenaChange.bind(this)
+        this.handleChange = this.handleChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
     }
-    handleArenaChange(evt){
-        this.setState({arena: evt.target.value})
+    handleChange(evt){
+        this.setState({[evt.target.name]: evt.target.value})
     }
     async callCreateArena(){
         const data = {
-            "name": this.state.name
+            "location": this.state.location,
+            "distance": this.state.distance,
+            "duration": this.state.duration
         }
         const res = await postRequest('arena', 'POST', { data })
-        //I will input a search
-        //The backend will handle everything
-        //And return the rink details as well as distance and duration
         console.log(res)
+        if(res.error) return this.setState({message: 'invalid location, location may already exist'})
+        return this.setState({message: 'success!'})
     }
 
     handleSubmit(evt){
@@ -31,11 +35,14 @@ class AddArena extends Component {
     render(){
     	return(
     		<div>
-                <h4>Add a new arena: </h4>
+                <h4>Add a new location: </h4>
                 <form onSubmit={this.handleSubmit}>
-                    <input onChange={this.handleArenaChange} placeholder="location" value={this.state.arena} />
-                    <button>Add Arena</button>
+                    <input type='text' name="location" onChange={this.handleChange} placeholder="location" value={this.state.location} />
+                    <input type='text' name="distance" onChange={this.handleChange} placeholder="distance" value={this.state.distance} />
+                    <input type='text' name="duration" onChange={this.handleChange} placeholder="duration" value={this.state.duration} />
+                    <button>submit</button>
                 </form>
+                {this.state.message}
     		</div>
     	);
     }

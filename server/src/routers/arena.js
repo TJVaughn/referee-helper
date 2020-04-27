@@ -120,6 +120,8 @@ router.post('/api/arena', auth, async (req, res) => {
         
         const arena = new Arena({
             name: name,
+            distance: req.body.distance,
+            duration: req.body.duration,
             street: street,
             city: city,
             state: state,
@@ -145,13 +147,13 @@ router.post('/api/arena', auth, async (req, res) => {
         if(!isMatch(arena)){
             let arenas = []
             arenas.push(arena)
-            let distanceData = await calculateDistance(req.user, arenas)
-            let distance = distanceData.arenas[0].distance
-            let duration = distanceData.arenas[0].duration
+            // let distanceData = await calculateDistance(req.user, arenas)
+            // let distance = distanceData.arenas[0].distance
+            // let duration = distanceData.arenas[0].duration
 
-            arena.distance = distance
-            arena.duration = duration
-            req.user.hasCalledDistanceMatrixApi = distanceData.num
+            // arena.distance = distance
+            // arena.duration = duration
+            // req.user.hasCalledDistanceMatrixApi = distanceData.num
             await req.user.save()
             await arena.save()
             return res.send(arena)
@@ -159,7 +161,7 @@ router.post('/api/arena', auth, async (req, res) => {
         res.send({error: "Arena already exists"})
 
     } catch (error) {
-        res.status(500).send({err: "Error from MAIN: path='/api/arena': " + error})
+        res.status(500).send({error: "Error from MAIN: path='/api/arena': " + error})
     }
 })
 

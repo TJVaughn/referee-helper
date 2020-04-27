@@ -1,29 +1,14 @@
-import React, { useState, useEffect} from 'react';
+import React, { useEffect } from 'react';
 import GamesHeader from './GamesHeader'
-import getGames from '../../../../api/game/getGames';
 import { Switch, Link } from 'react-router-dom'
 import {toDateObj} from '../../../../utils/toDateObj'
 import formatNumber from '../../../../utils/formatNumber'
-import GroupData from './GroupData'
-import { createGroupObject, calculateGroupData } from './groupFunctions'
 
 export default function GamesByMonth(props){
-    const [ games, setGames ] = useState([])
-    const [ groups, setGroups ] = useState([])
-
-    async function callGetGames(){
-        let [resGames, resGroups] = await getGames(props.today.getMonth(), props.today.getFullYear())
-        await setGroups(resGroups)
-        await setGames(resGames)
-        await setGroups(createGroupObject(groups))
-        const [total, groupData ] = calculateGroupData(groups, games)
-        await setGroups(groupData)
-    }
     useEffect(() => {
-        callGetGames()
-    }, [setGames, setGroups, props])
+    }, [props])
     
-    const gamesMap = games.map(item => 
+    const gamesMap = props.games.map(item => 
         <div key={item._id}>
             <Switch />
             <Link to={`/game/${item._id}`}>
@@ -76,9 +61,6 @@ export default function GamesByMonth(props){
         )
     return (
         <div className='All-games-container'>
-            <div>
-                <GroupData groups={groups} />
-            </div>
             <GamesHeader />
             {gamesMap}
         </div>

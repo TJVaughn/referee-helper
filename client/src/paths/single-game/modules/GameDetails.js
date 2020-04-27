@@ -16,7 +16,6 @@ class GameDetails extends Component {
             distance: '',
             duration: '',
             status: '',
-            duration: '',
             platform: '',
             gameCode: '',
             paid: false,
