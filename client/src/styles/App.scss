@@ -28,6 +28,14 @@ a {
   top: 0;
   left: 0;
   margin: auto;
+  h2 {
+    background-color: #fff;
+    position: relative;
+    margin: 10px auto;
+    width: 200px;
+    text-align: center;
+    border-radius: 5px;
+  }
   .loading-animation-inner {
     position: relative;
     margin: 10% auto;

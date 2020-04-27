@@ -80,7 +80,7 @@ function CheckoutForm(props){
             </div>
             <div>
                 <input required className="Stripe-checkout-info-section" 
-                type="text" defaultValue="Johnny Hockey" 
+                type="text" defaultValue="Full Name" 
                 placeholder="Full Name" value={formInput.name} name='name' onChange={handleInputChange} />
             </div>
             <div className="Stripe-checkout-card-section">

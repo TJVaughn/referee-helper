@@ -52,4 +52,8 @@ function AllGames(props){
 }
 export default AllGames;
 //343 LINES!!!
+// 65% Rewrite!!!
+// OLD AllGames:                             11, 722 bytes
+// NEW AllGames plus referenced componenents: 6, 199 bytes!!!
+// 47.1% DECREASE!!!
 // ?month=${today.getMonth()}&year=${today.getFullYear()}

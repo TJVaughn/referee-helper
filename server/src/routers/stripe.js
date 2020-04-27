@@ -104,6 +104,7 @@ router.post('/api/stripe/order-complete', auth, async (req, res) => {
     }
 })
 
+//Get USER and USER BILLING HISTORY
 router.get('/api/stripe/customer', auth, async(req, res) => {
     try {
         let customer = await stripe.customers.retrieve(`${req.user.stripeData.customer}`)

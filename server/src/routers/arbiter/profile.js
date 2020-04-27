@@ -41,7 +41,7 @@ const parseSingle = (single) => {
         single = single.join('').replace(/\"/, "*").split("*").shift()
         return single
     } catch (error) {
-        return {error}
+        return {error: "Error in sync arbiter profile: " + error}
     }
 }
 

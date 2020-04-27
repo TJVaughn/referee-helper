@@ -1,16 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import formatNumber from '../../utils/formatNumber';
 import postRequest from '../../utils/postRequest';
-import getRequest from '../../utils/getRequest';
 import useToggle from '../../hooks/useToggle';
 import useInput from '../../hooks/useInput'
 import { Link } from 'react-router-dom';
 
-function ProfileBilling(){
+function ProfileBilling(props){
     const [ alert, setAlert ] = useToggle(false)
-    const [ user, setUser ] = useState({})
-    const [ stripeUser, setStripeUser ] = useState({subscriptions: {data: [{plan: ''}]}})
-    const [ billingHistory, setBillingHistory ] = useState([])
 
     const cancelSub = async () => {
         console.log('cancelled sub')
@@ -22,24 +18,8 @@ function ProfileBilling(){
         window.location.reload()
     }
     const { formInput, handleInputChange, handleSubmit } = useInput(cancelSub)
-    const getUser = async () => {
-        const req = await getRequest('user/me')
-        console.log(req)
-        setUser(req)
-    }
-    const getStripeUser = async () => {
-        const res = await getRequest('stripe/customer')
-        console.log(res)
-        setStripeUser(res.customer)
-        setBillingHistory(res.customerBillingHistory.data)
-    }
 
-    useEffect(() => {
-        getUser()
-        getStripeUser()
-    }, [])
-
-    const billingHistoryMap = billingHistory.map(item => 
+    const billingHistoryMap = props.billing.map(item => 
         <div key={item.id}>
             <p>
                 Date paid: {new Date(item.status_transitions.paid_at * 1000).toLocaleDateString()}
@@ -65,8 +45,8 @@ function ProfileBilling(){
             name='cancelEmail' onChange={handleInputChange} 
             type='email' value={formInput.cancelEmail} />
             <br />
-            <button disabled={formInput.cancelEmail !== user.email ? true : false} 
-                className={`Profile-cancel-button ${formInput.cancelEmail !== user.email ? 'disabled' : ''}`}>
+            <button disabled={formInput.cancelEmail !== props.user.email ? true : false} 
+                className={`Profile-cancel-button ${formInput.cancelEmail !== props.user.email ? 'disabled' : ''}`}>
                 CANCEL
             </button>
         </form>
@@ -81,7 +61,7 @@ function ProfileBilling(){
     return (
         <div>
             
-            {!stripeUser.subscriptions.data[0].plan.active === false
+            {props.stripeUser.subscriptions.data.length > 0
             ? <div>
             <h3>
                 Billing
@@ -89,20 +69,20 @@ function ProfileBilling(){
             <p>
                 Subscription start date:
                 <br />
-                {new Date(stripeUser.subscriptions.data[0].current_period_start * 1000).toLocaleDateString()}
+                {new Date(props.stripeUser.subscriptions.data[0].current_period_start * 1000).toLocaleDateString()}
             </p>
 
             <p>
-                Subscription status: {stripeUser.subscriptions.data[0].plan.active ? 'pro' : 'free'}
+                Subscription status: {props.stripeUser.subscriptions.data[0].plan.active ? 'pro' : 'free'}
             </p>
             <div>
-                {stripeUser.subscriptions.data[0].cancel_at_period_end
+                {props.stripeUser.subscriptions.data[0].cancel_at_period_end
                 ? <p>
-                    Will not renew on {new Date(stripeUser.subscriptions.data[0].current_period_end * 1000).toLocaleDateString()}
+                    Will not renew on {new Date(props.stripeUser.subscriptions.data[0].current_period_end * 1000).toLocaleDateString()}
                     </p>
                 : <p>
-                    Will renew on {new Date(stripeUser.subscriptions.data[0].current_period_end * 1000).toLocaleDateString()} 
-                    {' '}for ${formatNumber(stripeUser.subscriptions.data[0].plan.amount)}
+                    Will renew on {new Date(props.stripeUser.subscriptions.data[0].current_period_end * 1000).toLocaleDateString()} 
+                    {' '}for ${formatNumber(props.stripeUser.subscriptions.data[0].plan.amount)}
                 </p>}
             </div>
             <button onClick={() => {setAlert(!alert)}} className="Profile-cancel-button">Cancel Subscription</button>

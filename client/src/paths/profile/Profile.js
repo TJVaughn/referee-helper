@@ -1,66 +1,38 @@
-import React, { Component } from 'react';
-// import getRequest from '../utils/getRequest'
-// import { getCookie } from '../utils/cookies'
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ProfileAccount from './ProfileAccount';
 import ProfileBilling from './ProfileBilling';
+import getUser from '../../api/user/getUser';
+import getStripeUser from '../../api/user/stripe/getStripeUser';
 
-class Profile extends Component {
-	constructor(props){
-		super(props)
-		this.state = {
-			message: '',
-			redirect: '',
-			user: {
-				
-			}
-		}
-	}
-	
-	// async callGetUser() {
-	// 	const req = await getRequest('user/me')
-	// 	this.setState({user: req, message: ''})
-		
-	// 	console.log(this.state.user)
-	// }
-	// async componentDidMount(){
-	// 	this.callGetUser()
-	// 	if(getCookie('loggedIn') === 'false'){
-	// 		return this.setState({redirect: <Redirect to={'/'} />})
-	// 	}
-	// 	if(getCookie("InitialLoginFlow") === "true"){
-	// 		this.setState({message: "Syncing..."})
-	// 		// await this.callGetASProfile()
-	// 		await this.callGetUser()
-	// 		return this.setState({redirect: <Redirect to={'/'} />})
-	// 	}
-	// }
+export default function Profile(props){
+	const [ user, setUser ] = useState({})
+	const [ stripeUser, setStripeUser ] = useState({subscriptions: {data: []}})
+	const [ stripeBilling, setStripeBilling ] = useState([])
 
-	handleAccountClick(){
-		return this.setState({account: true, billing: false})
+	const callGetStripeUser = async () => {
+		let res = await getStripeUser()
+		setStripeUser(res.customer)
+		setStripeBilling(res.customerBillingHistory.data)
 	}
-	handleBillingClick(){
-		return this.setState({billing: true, account: false})
+	const callGetUser = async () => {
+		let res = await getUser()
+		setUser(res)
 	}
-    render(){
-    	return(
-    		<div>
-				<div className="Profile-navigation">
-					<Link to={'/profile/account'}><h2>Account</h2></Link>
-					<Link to={'/profile/billing'}><h2>Billing</h2></Link>
-				</div>
-				{this.props.path === '/profile/account' 
-				? <ProfileAccount />
-				:''}
-
-				{this.props.path === '/profile/billing' 
-				? <ProfileBilling />
-				:''}
-				
-				{this.state.redirect}
-				{/* {console.log(this.props.path)} */}
-    		</div>
-    	);
-    }
+	useEffect(() => {
+		callGetUser()
+		callGetStripeUser()
+	}, [props])
+	return (
+		<div>
+			<div className="Profile-navigation">
+				<Link to={'/profile/account'}><h2>Account</h2></Link>
+				<Link to={'/profile/billing'}><h2>Billing</h2></Link>
+			</div>
+			{props.path === '/profile/account' ? <ProfileAccount user={user} /> : ''}
+			{props.path === '/profile/billing' ? <ProfileBilling user={user} stripeUser={stripeUser} billing={stripeBilling} /> : ''}
+		</div>
+	)
 }
-export default Profile ;
+
+// //66 lines but could remove 18
