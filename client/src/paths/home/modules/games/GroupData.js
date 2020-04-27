@@ -2,6 +2,7 @@ import React from 'react';
 import formatNumber from '../../../../utils/formatNumber';
 
 export default function GroupData(props){
+    console.log(props.groups)
     const groupDataMap = props.groups.map(group => 
         <div key={group.id}>
             <h3>
@@ -23,7 +24,7 @@ export default function GroupData(props){
         )
 
     return (
-        <div>
+        <div className='All-games-stats'>
             {groupDataMap}
         </div>
     )

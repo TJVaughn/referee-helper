@@ -114,8 +114,9 @@ class AllGames extends Component {
         }
         this.sumEarned(groupObj)
         this.sumReceived(groupObj)
-        this.sumMiles(groupObj)
         this.sumRemaining(groupObj)
+        this.sumMiles(groupObj)
+
     }
     componentDidMount(){
         this.callGetAllGames()
