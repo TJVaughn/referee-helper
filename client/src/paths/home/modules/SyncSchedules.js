@@ -21,7 +21,8 @@ class SyncSchedules extends Component {
     async callGetASData(){  
         try {
             this.setState({message: "Grabbing Arbiter Schedule... please don't refresh"})
-            await getRequest('arbiter/schedule')
+            let res = await getRequest('arbiter/schedule')
+            console.log(res)
             this.setState({message: "Now getting payment data from Arbiter... please don't refresh"})
             await getRequest('arbiter/payments')
         } catch (error) {
