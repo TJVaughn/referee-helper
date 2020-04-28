@@ -3,7 +3,7 @@ const setCookie = (name, value, days) => {
     date.setTime(date.getTime() + (days * 1000 * 60 * 60 * 24));
     let expires = date.toUTCString();
     document.cookie = `${name}=${value};expires=${expires};path=/;`
-    console.log("set cookie: " + document.cookie)
+    // console.log("set cookie: " + document.cookie)
   }
   
 const getCookie = (cname) => {
