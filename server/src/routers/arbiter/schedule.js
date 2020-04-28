@@ -83,9 +83,8 @@ const parseGame = (html) => {
 
 const getArbiterSchedule = async (email, pass) => {
     try {
-        let response = ''
-    const browser = await puppeteer.launch({
-        headless: false,
+        const browser = await puppeteer.launch({
+        headless: true,
         args: [
             '--window-size=1500,825', '--no-sandbox'
         ]
@@ -119,7 +118,7 @@ const getArbiterSchedule = async (email, pass) => {
     await page.click('#btnApplyFilter')
     await page.waitFor(5000)
     
-    response = await page.content()
+    let response = await page.content()
     response = response.toString()
     response = response.split('ctl00_ContentHolder_pgeGameScheduleEdit_conGameScheduleEdit_dgGames')
     response = response.splice(2)
@@ -141,17 +140,19 @@ const htmlItemToJson = (item) => {
 
 
 router.get('/api/arbiter/schedule', auth, async (req, res) => {
-    const userEmail = req.user.asEmail
-    const userPass = decryptPlainText(req.user.asPassword)
-    const owner = req.user
-    
     try {
+        const userEmail = req.user.asEmail
+        const userPass = decryptPlainText(req.user.asPassword)
+        const owner = req.user
         const currentSchedule = await Game.find({owner})
         let startTime = Date.now()
         let htmlSchedule = await getArbiterSchedule(userEmail, userPass)
+        if(htmlSchedule.error){
+            return res.send({error: "Error: " + htmlSchedule.error})
+        }
         let endTime = Date.now()
         let secsElapsed = Math.floor((endTime - startTime) / 1000)
-        console.log("Getting Arbiter Schedule: " + secsElapsed)
+        console.log("Got Arbiter Schedule: " + secsElapsed)
         if(htmlSchedule.error){
             return res.send({error: "Invalid Login"})
         }
