@@ -5,7 +5,10 @@ const { decryptPlainText } = require('../../utils/crypto')
 const auth = require('../../middleware/auth')
 
 const getProfile = async (email, password) => {
-    const browser = await puppeteer.launch({headless: true})
+    const browser = await puppeteer.launch({headless: true,
+        args: [
+            '--window-size=1500,825', '--no-sandbox'
+        ]})
     const page = await browser.newPage()
     await page.setViewport({
         width: 2000,

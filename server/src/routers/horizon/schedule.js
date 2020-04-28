@@ -148,10 +148,10 @@ const findRefGroup = (html) => {
 const puppeteerFunction = async (username, password) => {
     try {
         const browser = await puppeteer.launch({
-            headless: false,
-            args: [
-                '--window-size=1500,825'
-            ]
+            headless: true,
+        args: [
+            '--window-size=1500,825', '--no-sandbox'
+        ]
         })
         const page = await browser.newPage()
         await page.setViewport({

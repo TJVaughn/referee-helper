@@ -21,9 +21,9 @@ const removePastGames = (games) => {
 
 const setBlocks = async (email, pass, futureGames) => {
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         args: [
-            '--window-size=1500,825'
+            '--window-size=1500,825','--no-sandbox'
         ]
     })
     const page = await browser.newPage()

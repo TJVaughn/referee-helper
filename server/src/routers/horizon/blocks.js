@@ -51,10 +51,10 @@ const formatAMTime = (time) => {
 const setBlocks = async (username, password, futureGames) => {
     try {
         const browser = await puppeteer.launch({
-            headless: false,
-            args: [
-                '--window-size=1500,825'
-            ]
+            headless: true,
+        args: [
+            '--window-size=1500,825', '--no-sandbox'
+        ]
         })
         const page = await browser.newPage()
         await page.setViewport({

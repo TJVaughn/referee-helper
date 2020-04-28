@@ -53,7 +53,7 @@ const getArbiterPaymentData = async (email, pass) => {
     const browser = await puppeteer.launch({
         headless: true,
         args: [
-            '--window-size=1500,825'
+            '--window-size=1500,825', '--no-sandbox'
         ]
     })
     const page = await browser.newPage()
