@@ -82,7 +82,8 @@ const parseGame = (html) => {
 }
 
 const getArbiterSchedule = async (email, pass) => {
-    let response = ''
+    try {
+        let response = ''
     const browser = await puppeteer.launch({
         headless: false,
         args: [
@@ -95,7 +96,8 @@ const getArbiterSchedule = async (email, pass) => {
         height: 825,
         deviceScaleFactor: 1
     })
-    await page.goto('https://www1.arbitersports.com/shared/signin/signin.aspx');
+    await page.goto('https://www1.arbitersports.com/shared/signin/signin.aspx')
+    await page.waitFor(2000)
     await page.click('#txtEmail')
     await page.keyboard.type(email)
     await page.click('#txtPassword')
@@ -125,6 +127,10 @@ const getArbiterSchedule = async (email, pass) => {
     response = response.splice(0, 1)
     await browser.close()
     return response
+    } catch (error) {
+        return ({error: `Error From puppeteer: ${error}`})
+    }
+    
 }
 
 const htmlItemToJson = (item) => {
