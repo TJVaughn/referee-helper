@@ -4,7 +4,7 @@ import AllGames from './modules/AllGames'
 import SyncSchedules from './modules/SyncSchedules'
 import AddArena from './modules/AddArena'
 import CreateBlocks from './modules/CreateBlocks';
-import { getCookie } from '../../utils/cookies'
+import { getCookie, setCookie } from '../../utils/cookies'
 import useToggle from '../../hooks/useToggle'
 
 export default function Schedule(){
@@ -15,9 +15,12 @@ export default function Schedule(){
 	
 	useEffect(() => {
 		if(getCookie('InitialLoginFlow') === 'true'){
-			return setSyncToggle(true)
+			setTimeout(() => {
+				setSyncToggle(true)
+			}, 500)
+			return setCookie('InitialLoginFlow', 'false')
 		}
-	}, [setSyncToggle])
+	}, [])
 	return (
 		<div>
 			<div className="Schedule-schedule-header">
