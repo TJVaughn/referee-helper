@@ -86,18 +86,18 @@ const getArbiterSchedule = async (email, pass) => {
         const browser = await puppeteer.launch({
         headless: true,
         args: [
-            '--window-size=1500,825', 
+            '--window-size=414,736', 
             '--no-sandbox'
         ]
     })
     const page = await browser.newPage()
     await page.setViewport({
-        width: 1500,
-        height: 825,
+        width: 414,
+        height: 736,
         deviceScaleFactor: 1
     })
     await page.goto('https://www1.arbitersports.com/shared/signin/signin.aspx')
-    await page.waitFor(1000)
+    await page.waitFor(750)
     await page.click('#txtEmail')
     await page.keyboard.type(email)
     await page.click('#txtPassword')
@@ -106,7 +106,7 @@ const getArbiterSchedule = async (email, pass) => {
     if(page.url() === 'https://www1.arbitersports.com/shared/signin/signin.aspx') {
         return { error: "Invalid Login"}
     }
-    await page.waitFor(1000)
+    await page.waitFor(750)
 
     await page.goto('https://www1.arbitersports.com/Official/GameScheduleEdit.aspx')
     await page.waitFor(750)
@@ -124,11 +124,6 @@ const getArbiterSchedule = async (email, pass) => {
     await page.screenshot({path: './screenshot.png'})
     
     let response = await page.content()
-    response = response.toString()
-    response = response.split('ctl00_ContentHolder_pgeGameScheduleEdit_conGameScheduleEdit_dgGames')
-    response = response.splice(2)
-    response = response.join('').split('ctl00_ContentHolder_pgeGameScheduleEdit_conGameScheduleEdit_lnkTrigger')
-    response = response.splice(0, 1)
     await browser.close()
     return response
     } catch (error) {
@@ -146,22 +141,40 @@ const htmlItemToJson = (item) => {
 
 router.get('/api/arbiter/schedule', auth, async (req, res) => {
     try {
+        let startTime = Date.now()
         const userEmail = req.user.asEmail
         const userPass = decryptPlainText(req.user.asPassword)
-        const owner = req.user
-        const currentSchedule = await Game.find({owner})
-        let startTime = Date.now()
         let htmlSchedule = await getArbiterSchedule(userEmail, userPass)
+        htmlSchedule = htmlSchedule.toString()
         if(htmlSchedule.error){
             return res.send({error: "Error: " + htmlSchedule.error})
         }
         let endTime = Date.now()
         let secsElapsed = Math.floor((endTime - startTime) / 1000)
         console.log("Got Arbiter Schedule: " + secsElapsed)
+        return res.send([htmlSchedule])
+
+    } catch (error) {
+        res.status(500).send({error: `Error in Arbiter/Schedule/MAIN: ${error}`})
+    }
+    
+})
+
+router.post('/api/arbiter/schedule/parse', auth, async (req, res) => {
+    try {
+        console.log("Starting parse")
+        let startTime = Date.now()
+        const owner = req.user
+        const currentSchedule = await Game.find({owner})
+        let [htmlSchedule] = req.body.schedule
+        htmlSchedule = htmlSchedule.split('ctl00_ContentHolder_pgeGameScheduleEdit_conGameScheduleEdit_dgGames')
+        htmlSchedule = htmlSchedule.splice(2)
+        htmlSchedule = htmlSchedule.join('').split('ctl00_ContentHolder_pgeGameScheduleEdit_conGameScheduleEdit_lnkTrigger')
+        htmlSchedule = htmlSchedule.splice(0, 1)
+
         if(htmlSchedule.error){
             return res.send({error: "Invalid Login"})
         }
-        startTime = Date.now()
         let allGamesHtmlArray = htmlSchedule.join('').split('<tr')
         let arbiterSchedule = []
         allGamesHtmlArray.map((item) => {
@@ -170,14 +183,13 @@ router.get('/api/arbiter/schedule', auth, async (req, res) => {
         })
 
         const newGamesToBeAdded = await addGamesFromArray(arbiterSchedule, "Arbiter Sports", owner, currentSchedule)
-        endTime = Date.now()
+        let endTime = Date.now()
         secsElapsed = Math.floor((endTime - startTime) / 1000)
         console.log("Parsing Time: " + secsElapsed)
         res.send(newGamesToBeAdded)
     } catch (error) {
-        res.status(418).send({error: `Error in Arbiter/Schedule/MAIN: ${error}`})
+        res.status(500).send({error: `Error in Arbiter/Schedule/parse: ${error}`})
     }
-    
 })
 
 module.exports = router
