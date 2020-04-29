@@ -110,7 +110,6 @@ const getArbiterSchedule = async (email, pass) => {
 
     await page.goto('https://www1.arbitersports.com/Official/GameScheduleEdit.aspx')
     await page.waitFor(750)
-    await page.screenshot({path: './screenshot.png'})
     await page.click('#mobileAlertStayLink')
     await page.waitFor(750)
 
@@ -121,7 +120,8 @@ const getArbiterSchedule = async (email, pass) => {
     await page.content()
     await page.select('#ddlDateFilter', '9')
     await page.click('#btnApplyFilter')
-    await page.waitFor(3000)
+    await page.waitFor(4000)
+    await page.screenshot({path: './screenshot.png'})
     
     let response = await page.content()
     response = response.toString()
