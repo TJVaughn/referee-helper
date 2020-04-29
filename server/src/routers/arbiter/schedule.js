@@ -91,11 +91,11 @@ const getArbiterSchedule = async (email, pass) => {
         ]
     })
     const page = await browser.newPage()
-    // await page.setViewport({
-    //     width: 1500,
-    //     height: 825,
-    //     deviceScaleFactor: 1
-    // })
+    await page.setViewport({
+        width: 1500,
+        height: 825,
+        deviceScaleFactor: 1
+    })
     await page.goto('https://www1.arbitersports.com/shared/signin/signin.aspx')
     await page.waitFor(2000)
     await page.click('#txtEmail')
