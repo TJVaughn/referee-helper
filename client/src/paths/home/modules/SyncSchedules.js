@@ -4,6 +4,7 @@ import { getCookie, setCookie } from '../../../utils/cookies'
 import { Redirect } from 'react-router-dom';
 import Loading from '../../../modules/Loading'
 import getArbiterSchedule from '../../../api/arbiter/getArbiterSchedule';
+import getArbiterPayments from '../../../api/arbiter/getArbiterPayments';
 
 export default function SyncSchedules(props) {
     const [ message, setMessage ] = useState("")
@@ -20,10 +21,21 @@ export default function SyncSchedules(props) {
         setMessage('complete')
         setInProcess(false)
     }
+    async function callASPayment(){
+        setInProcess(true)
+        setMessage('Getting Payment Data...please do not refresh')
+        let paymentsSuccess = await getArbiterPayments()
+        setInProcess(false)
+        if(!paymentsSuccess) {
+            return setMessage('Failure in getting payment data')
+        }
+        setMessage('Success!')
+    }
     return (
         <div>
             <h4>Sync your schedules: </h4>
-            <button onClick={callASSchedule} >Sync Arbiter Sports</button>
+            <button onClick={callASSchedule}>Sync Arbiter Sports Schedule</button>
+            <button onClick={callASPayment}>Sync Arbiter Sports Payment Data</button>
             {/* <button onClick={} >Sync Horizon Web Ref</button> */}
             {/* <button onClick={callSyncAllSchedules}>Sync All Schedules</button> */}
             <h1>

@@ -3,8 +3,7 @@ import { Redirect } from 'react-router-dom';
 import MonthYear from './games/MonthYear'
 import GamesByMonth from './games/GamesByMonth'
 import GroupData from './games/GroupData'
-import getGames from '../../../api/game/getGames'
-import { createGroupObject, calculateGroupData } from './games/groupFunctions'
+import { calculateGroupData } from './games/groupFunctions'
 import Totals from './games/Totals';
 
 let now = new Date()
@@ -29,13 +28,8 @@ function AllGames(props){
     
     useEffect(() => {
         function callGetGames(){
-            // let [resGames, resGroups] = await getGames()
-            // setGames(resGames)
-            // resGroups = createGroupObject(resGroups)
-            // const [earnedData, groupData, totalDistance, totalDuration ] = calculateGroupData(resGroups, resGames)
             let gamesByMonth = []
             let games = props.games
-            console.log(new Date(games[0].dateTime).getMonth())
             for(let x = 0; x < games.length; x ++){
                 if(new Date(games[x].dateTime).getMonth() === today.getMonth() && today.getFullYear() === new Date(games[x].dateTime).getFullYear()) {
                     gamesByMonth.push(games[x])
