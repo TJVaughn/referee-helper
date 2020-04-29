@@ -112,6 +112,7 @@ const getArbiterSchedule = async (email, pass) => {
 
     await page.goto('https://www1.arbitersports.com/Official/GameScheduleEdit.aspx')
     await page.waitFor(2000)
+    await page.screenshot('screenshot.png')
     await page.click('tr.alternatingItems:nth-child(7)')
     await page.waitFor(500)
     await page.goto('https://www1.arbitersports.com/Official/GameScheduleEdit.aspx')
