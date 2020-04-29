@@ -103,16 +103,17 @@ const getArbiterSchedule = async (email, pass) => {
     await page.click('#txtPassword')
     await page.keyboard.type(pass)
     await page.click('#ctl00_ContentHolder_pgeSignIn_conSignIn_btnSignIn')
-    await page.waitFor(500)
     if(page.url() === 'https://www1.arbitersports.com/shared/signin/signin.aspx') {
         return { error: "Invalid Login"}
     }
-    // await page.click('#mobileAlertStayLink')
     await page.waitFor(2000)
 
     await page.goto('https://www1.arbitersports.com/Official/GameScheduleEdit.aspx')
     await page.waitFor(2000)
-    await page.screenshot('screenshot.png')
+    await page.screenshot({path: './screenshot.png'})
+    await page.click('#mobileAlertStayLink')
+    await page.waitFor(2000)
+
     await page.click('tr.alternatingItems:nth-child(7)')
     await page.waitFor(500)
     await page.goto('https://www1.arbitersports.com/Official/GameScheduleEdit.aspx')
