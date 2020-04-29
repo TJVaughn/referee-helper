@@ -97,7 +97,7 @@ const getArbiterSchedule = async (email, pass) => {
         deviceScaleFactor: 1
     })
     await page.goto('https://www1.arbitersports.com/shared/signin/signin.aspx')
-    await page.waitFor(2000)
+    await page.waitFor(1000)
     await page.click('#txtEmail')
     await page.keyboard.type(email)
     await page.click('#txtPassword')
@@ -106,10 +106,10 @@ const getArbiterSchedule = async (email, pass) => {
     if(page.url() === 'https://www1.arbitersports.com/shared/signin/signin.aspx') {
         return { error: "Invalid Login"}
     }
-    await page.waitFor(2000)
+    await page.waitFor(1000)
 
     await page.goto('https://www1.arbitersports.com/Official/GameScheduleEdit.aspx')
-    await page.waitFor(2000)
+    await page.waitFor(1000)
     await page.screenshot({path: './screenshot.png'})
     await page.click('#mobileAlertStayLink')
     await page.waitFor(2000)
