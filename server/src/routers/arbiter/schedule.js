@@ -84,9 +84,9 @@ const parseGame = (html) => {
 const getArbiterSchedule = async (email, pass) => {
     try {
         const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         args: [
-            // '--window-size=1500,825', 
+            '--window-size=1500,825', 
             '--no-sandbox'
         ]
     })
