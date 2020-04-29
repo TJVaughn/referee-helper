@@ -7,7 +7,7 @@ import CreateBlocks from './modules/CreateBlocks';
 import { getCookie, setCookie } from '../../utils/cookies'
 import useToggle from '../../hooks/useToggle'
 
-export default function Schedule(){
+export default function Schedule(props){
 	const [gameToggle, setGameToggle ] = useToggle(false)
 	const [locToggle, setLocToggle ] = useToggle(false)
 	const [syncToggle, setSyncToggle ] = useToggle(false)
@@ -33,7 +33,7 @@ export default function Schedule(){
 			{locToggle ?<AddArena /> :''}
 			{syncToggle ? <SyncSchedules /> : ''}
 			{blocksToggle ? <CreateBlocks /> : ''}
-			<AllGames />
+			<AllGames games={props.games} groups={props.groups} />
 		</div>
 	)
 }

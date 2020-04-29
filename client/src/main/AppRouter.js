@@ -1,15 +1,43 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { getCookie } from '../utils/cookies'
 import ArbiterSyncRouter from '../paths/arbiter-sync/ArbiterSyncRouter';
 import HorizonSyncRouter from '../paths/horizon-sync/HorizonSyncRouter';
 import ProfileRouter from '../paths/profile/ProfileRouter';
-import IndexRouter from '../paths/home/IndexRouter';
+// import IndexRouter from '../paths/home/IndexRouter';
 import ProfileDropdown from '../paths/navigation/ProfileDropdown';
 import SingleGameRouter from '../paths/single-game/SingleGameRouter';
 import LoginRouter from '../paths/login-signup/LoginRouter';
 import SignupRouter from '../paths/login-signup/SignupRouter';
 import SubscriptionRouter from '../paths/subscription/SubscriptionRouter';
+import Schedule from '../paths/home/Schedule'
+import Landing from '../paths/landing-page/Landing'
+import { createGroupObject, calculateGroupData } from '../paths/home/modules/games/groupFunctions'
+import getGames from '../api/game/getGames';
+
+function IndexRouter(props){
+    const [ games, setGames ] = useState([{dateTime: '2020-01-01T12:00:00.000Z', status: ''}])
+    const [ groups, setGroups ] = useState([])
+    // const [ totalsData, setTotalsData ] = useState({})
+
+    useEffect(() => {
+        async function callGetGames(){
+            let [resGames, resGroups] = await getGames()
+            //returns all the groups and all the games
+            resGroups = createGroupObject(resGroups)
+            setGroups(resGroups)
+            setGames(resGames)
+        }
+        callGetGames()
+    }, [])
+    return (
+        <div>
+            {getCookie("loggedIn") === "true"
+            ? <Schedule games={games} groups={groups} props={props} />
+            :<Landing />}
+        </div>
+    )
+}
 
 class AppRouter extends Component {
     constructor(props){

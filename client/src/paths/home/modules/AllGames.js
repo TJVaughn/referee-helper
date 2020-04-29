@@ -12,9 +12,9 @@ let today = new Date(now.getFullYear(), now.getMonth(), 1, 12, 0)
 
 function AllGames(props){
     const [ params, setParams ] = useState(<Redirect to={`/`} />)
-    const [ games, setGames ] = useState([])
-    const [ groups, setGroups ] = useState([])
-    const [ totalsData, setTotalsData ] = useState({})
+    const [ moGames, setMoGames ] = useState([])
+    const [ totalsData, setTotalsData ] = useState({groupData: []})
+    
 
     const handleMonth = (num) => {
         if(num === 0){
@@ -28,25 +28,36 @@ function AllGames(props){
 
     
     useEffect(() => {
-        async function callGetGames(){
-            let [resGames, resGroups] = await getGames(today.getMonth(), today.getFullYear())
-            setGames(resGames)
-            resGroups = createGroupObject(resGroups)
-            const [earnedData, groupData, totalDistance, totalDuration ] = calculateGroupData(resGroups, resGames)
-            setTotalsData({earned: earnedData, distance: totalDistance, duration: totalDuration})
-            setGroups(groupData)
+        function callGetGames(){
+            // let [resGames, resGroups] = await getGames()
+            // setGames(resGames)
+            // resGroups = createGroupObject(resGroups)
+            // const [earnedData, groupData, totalDistance, totalDuration ] = calculateGroupData(resGroups, resGames)
+            let gamesByMonth = []
+            let games = props.games
+            console.log(new Date(games[0].dateTime).getMonth())
+            for(let x = 0; x < games.length; x ++){
+                if(new Date(games[x].dateTime).getMonth() === today.getMonth() && today.getFullYear() === new Date(games[x].dateTime).getFullYear()) {
+                    gamesByMonth.push(games[x])
+                }   
+            }
+            setMoGames(gamesByMonth)
+            const [earnedData, groupData, totalDistance, totalDuration ] = calculateGroupData(props.groups, gamesByMonth)
+            setTotalsData({earned: 0, distance: 0, duration: 0})
+            setTotalsData({earned: earnedData, distance: totalDistance, duration: totalDuration, groupData: groupData})
+            console.log(totalsData)
         }
         callGetGames()
-    }, [props, setParams, setGames, setGroups, params, setTotalsData])
+    }, [props, setMoGames, setTotalsData, setParams, params])
     return (
         <div>
-            {params}
+            {/* {params} */}
             <MonthYear today={today} />
             <button onClick={() => {handleMonth(0)}}>←</button>
             <button onClick={() => {handleMonth(1)}}>→</button>
-            <GroupData groups={groups} />
+            <GroupData groups={totalsData.groupData} />
             <Totals totals={totalsData} />
-            <GamesByMonth games={games} />
+            <GamesByMonth games={moGames} />
         </div>
     )
 }

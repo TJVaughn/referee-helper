@@ -142,14 +142,15 @@ router.get('/api/all-games', auth, async (req, res) => {
             let year = req.query.year;
             monthYear = new Date(year, month, 1, 12, 0, 0)
             // console.log(monthYear)
+            for(let x = 0; x < games.length; x ++){
+                if(games[x].dateTime.getMonth() === monthYear.getMonth() && monthYear.getFullYear() === games[x].dateTime.getFullYear()) {
+                    gamesByMonth.push(games[x])
+                }   
+            }
+            res.send([gamesByMonth, req.user.groups])
         }
-        for(let x = 0; x < games.length; x ++){
-            if(games[x].dateTime.getMonth() === monthYear.getMonth() && monthYear.getFullYear() === games[x].dateTime.getFullYear()) {
-                gamesByMonth.push(games[x])
-            }   
-        }
+        res.send([games, req.user.groups])
         
-        res.send([gamesByMonth, req.user.groups])
     } catch (error) {
         res.status(500).send({error: "Error from get all games: " + error})
     }

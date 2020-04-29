@@ -20,6 +20,11 @@ export const calculateGroupData = (groups, games) => {
     let totalEarned = 0
     let totalDistance = 0
     let totalDuration = 0
+    groups.forEach(g => {
+        g.miles = 0
+        g.earned = 0
+        g.received = 0
+    })
     for(let i = 0; i < games.length; i++){
         for(let x = 0; x < groups.length; x ++){
             if(games[i].refereeGroup === groups[x].name){
