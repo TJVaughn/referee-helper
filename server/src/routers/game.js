@@ -121,6 +121,7 @@ router.delete('/api/game/:id', auth, async (req, res) => {
 // GET ALL GAMES WITH SORTING FEATURES
 router.get('/api/all-games', auth, async (req, res) => {
     try {
+        console.log(JSON.stringify(req.headers))
         const games = await Game.find({ owner: req.user._id })
         if(!games){
             games = []
