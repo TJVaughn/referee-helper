@@ -42,7 +42,7 @@ const parseEachGame = (html, group) => {
         time.splice(2, 0, ' ')
         time = time.join('').split('').reverse().join('')
         time = time.toLowerCase()
-        game.dateTime = new Date(`${date} ${time}`)
+        game.dateTime = new Date(`${date} ${time}`).toUTCString()
         
         if(time.includes('t ba')){
             game.dateTime = new Date(`${date} 12:00 AM`)
