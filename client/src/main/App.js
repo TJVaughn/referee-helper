@@ -8,6 +8,7 @@ import '../styles/Navbar.scss'
 import '../styles/Schedule.scss'
 import '../styles/CreateBlocks.scss'
 import '../styles/Profile.scss'
+import '../styles/SyncSchedules.scss'
 import AppRouter from '../main/AppRouter'
 
 function App() {

@@ -233,15 +233,15 @@ router.get('/api/horizon/schedule', auth, async (req, res) => {
         let horizonSchedule = await puppeteerFunction(username, password)
         let endTime = Date.now()
         let secsElapsed = Math.floor((endTime - startTime) / 1000)
-        console.log("Getting Horizon Schedule: " + secsElapsed)
+        console.log("Got Horizon Schedule: " + secsElapsed)
 
         // res.send(horizonSchedule)
         startTime = Date.now()
-        let newGamesToBeAdded = await addGamesFromArray(horizonSchedule, "Horizon Web Ref", owner, currentSchedule)
+        let [newGamesToBeAdded, gamesTBUpdated] = await addGamesFromArray(horizonSchedule, "Horizon Web Ref", owner, currentSchedule)
         endTime = Date.now()
         secsElapsed = Math.floor((endTime - startTime) / 1000)
         console.log("Parsing, checking DB and adding arenas: " + secsElapsed)
-        res.send(newGamesToBeAdded)
+        res.send([newGamesToBeAdded, gamesTBUpdated])
     } catch (error) {
         res.status(418).send({error: `Error in Horizon/Schedule/MAIN: ${error}`})
     }

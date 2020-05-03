@@ -39,7 +39,7 @@ function AllGames(props){
             const [earnedData, groupData, totalDistance, totalDuration ] = calculateGroupData(props.groups, gamesByMonth)
             setTotalsData({earned: 0, distance: 0, duration: 0})
             setTotalsData({earned: earnedData, distance: totalDistance, duration: totalDuration, groupData: groupData})
-            console.log(totalsData)
+            // console.log(totalsData)
         }
         callGetGames()
     }, [props, setMoGames, setTotalsData, setParams, params])

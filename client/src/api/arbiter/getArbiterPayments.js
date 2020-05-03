@@ -1,10 +1,11 @@
+import axios from 'axios'
+
 export default async function getArbiterPayments() {
     let value
-    let payments = await fetch('api/arbiter/payments', {
+    let payments = await axios({
+        url: '/api/arbiter/payments',
         method: 'get',
-        headers: {
-            "Content-Type": "application/json"
-        }
+        responseType: 'json'
     })
     payments = await payments.json()
     if(payments.error) return value = false
