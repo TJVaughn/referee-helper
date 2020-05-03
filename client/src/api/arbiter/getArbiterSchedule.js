@@ -1,35 +1,34 @@
+import axios from 'axios'
+
 const asSchedule = async () => {
-    let schedule = await fetch('/api/arbiter/schedule', {
+    let res = await axios({
+        url: "/api/arbiter/schedule",
         method: 'get',
-        headers: {
-            "Content-Type": "application/json"
+        responseType: 'json'
+    })
+    return res.data
+}
+const importAndUpdateGames = async (schedule) => {
+    let response = await axios({
+        url: '/api/games/add-many',
+        method: 'POST',
+        responseType: 'json',
+        data: {
+            schedule: schedule,
+            platform: "Arbiter Sports"
         }
     })
-    schedule = await schedule.json()
-    // console.log(schedule)
-    return schedule
+    console.log(response)
+    const [ newGames, gamesTBUpdated ] = response.data
+    console.log([ newGames, gamesTBUpdated ])
+    return [ newGames, gamesTBUpdated ]
 }
 
-const parsedSchedule = async (schedule) => {
-    let data = {
-        "schedule": schedule
-    }
-    let parsed = await fetch('/api/arbiter/schedule/parse', {
-        method: "post",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    })
-    parsed = await parsed.json()
-    // console.log(parsed)
-    return parsed
-}
 const getArbiterSchedule = async () => {
     console.log("starting get arbiter schedule")
-    const schedule = await asSchedule()
-    const parsed = await parsedSchedule(schedule)
-    return parsed
+    const newSchedule = await asSchedule()
+    const [ newGames, gamesTBUpdated ] = await importAndUpdateGames(newSchedule)
+    return [ newGames, gamesTBUpdated ]
 }
 
 export default getArbiterSchedule

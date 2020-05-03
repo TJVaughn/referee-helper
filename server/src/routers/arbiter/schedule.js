@@ -1,142 +1,12 @@
 const express = require('express')
 const router = new express.Router()
-const puppeteer = require('puppeteer')
 const Game = require('../../models/Game')
 const auth = require('../../middleware/auth')
 const addGamesFromArray = require('../../utils/addGamesFromArray')
 const { decryptPlainText } = require('../../utils/crypto')
+const getArbiterSchedule = require('./functions/getArbiterSchedule')
+const parseSchedule = require('./functions/parseSchedule')
 
-
-const parseGame = (html) => {
-    if(!html[0].includes("</a>")){
-        html = html.splice(1)
-    }
-    let game = {
-        gameId: html[0],
-        group: {
-            title: html[2],
-            value: html[2],
-        },
-        position: html[3],
-        dateTime: html[4],
-        level: html[5],
-        location: html[6],
-        home: html[7],
-        away: html[8],
-        fees: html[9],
-        status: html[10]
-    }
-    game.gameId = game.gameId.split('</a').shift()
-    game.gameId = game.gameId.split('').reverse().splice(0, 8)
-    game.gameId = game.gameId.reverse().join('').split('>').pop()
-
-    game.group.value = game.group.value.split('</span>').shift()
-    game.group.value = game.group.value.split('').reverse().join('').split('>').shift()
-    game.group.value = game.group.value.split('').reverse().join('')
-
-    game.group.title = game.group.title.split('title').splice(1, 1)
-    game.group.title = game.group.title.join('').split(/\"/).splice(1, 1)
-    game.group.title = game.group.title[0].trim()
-    // game.group.title = game.group.title.split(/\"/).splice(7, 1)
-    // game.group.title = game.group.title[0].trim()
-
-    game.position = game.position.split('</span>').shift()
-    game.position = game.position.split('').reverse().join('').split('>').shift()
-    game.position = game.position.split('').reverse().join('')
-
-    game.dateTime = game.dateTime.split('</span').shift()
-    game.dateTime = game.dateTime.replace('<br>', '')
-    game.dateTime = game.dateTime.split('').reverse().join('').split('>').shift()
-    game.dateTime = game.dateTime.split('').reverse().join('').toLowerCase().replace(/sat|sun|mon|tue|wed|thu|fri/, '')
-    game.dateTime = new Date(game.dateTime)
-
-    game.level = game.level.split('evel').pop()
-    game.level = game.level.split('</span').shift()
-    game.level = game.level.split('>').pop()
-    
-    game.location = game.location.split('</a>').shift()
-    game.location = game.location.split('').reverse().join('').split('>').shift()
-    game.location = game.location.split('').reverse().join('')
-    
-    game.home = game.home.split('</a>').shift()
-    game.home = game.home.split('').reverse().join('').split('>').shift()
-    game.home = game.home.split('').reverse().join('')
-
-    game.away = game.away.split('</span>').shift()
-    game.away = game.away.split('').reverse().join('').split('>').shift()
-    game.away = game.away.split('').reverse().join('')
-    
-    game.fees = game.fees.split('</span>').shift()
-    game.fees = game.fees.split('').reverse().join('').split('>').shift()
-    game.fees = game.fees.split('').reverse().join('').replace('$', '').replace('.', '')
-
-    if(game.status){
-        game.status = game.status.split('</span>').shift()
-        game.status = game.status.split('').reverse().join('').split('>').shift()
-        game.status = game.status.split('').reverse().join('')
-    }
-    if(!game.status){
-        game.status = "normal"
-    }
-    return game
-}
-
-const getArbiterSchedule = async (email, pass) => {
-    try {
-        const browser = await puppeteer.launch({
-        headless: true,
-        args: [
-            '--window-size=414,736', 
-            '--no-sandbox'
-        ]
-    })
-    const page = await browser.newPage()
-    await page.setViewport({
-        width: 414,
-        height: 736,
-        deviceScaleFactor: 1
-    })
-    await page.goto('https://www1.arbitersports.com/shared/signin/signin.aspx')
-    await page.waitFor(750)
-    await page.click('#txtEmail')
-    await page.keyboard.type(email)
-    await page.click('#txtPassword')
-    await page.keyboard.type(pass)
-    await page.click('#ctl00_ContentHolder_pgeSignIn_conSignIn_btnSignIn')
-    if(page.url() === 'https://www1.arbitersports.com/shared/signin/signin.aspx') {
-        return { error: "Invalid Login"}
-    }
-    await page.waitFor(750)
-
-    await page.goto('https://www1.arbitersports.com/Official/GameScheduleEdit.aspx')
-    await page.waitFor(750)
-    await page.click('#mobileAlertStayLink')
-    await page.waitFor(750)
-
-    await page.click('tr.alternatingItems:nth-child(7)')
-    await page.waitFor(500)
-    await page.goto('https://www1.arbitersports.com/Official/GameScheduleEdit.aspx')
-
-    await page.content()
-    await page.select('#ddlDateFilter', '9')
-    await page.click('#btnApplyFilter')
-    await page.waitFor(4000)
-    await page.screenshot({path: './screenshot.png'})
-    
-    let response = await page.content()
-    await browser.close()
-    return response
-    } catch (error) {
-        return ({error: `Error From puppeteer: ${error}`})
-    }
-    
-}
-
-const htmlItemToJson = (item) => {
-    item = item.split('<td')
-    item = parseGame(item)
-    return item
-}
 
 
 router.get('/api/arbiter/schedule', auth, async (req, res) => {
@@ -145,14 +15,14 @@ router.get('/api/arbiter/schedule', auth, async (req, res) => {
         const userEmail = req.user.asEmail
         const userPass = decryptPlainText(req.user.asPassword)
         let htmlSchedule = await getArbiterSchedule(userEmail, userPass)
-        htmlSchedule = htmlSchedule.toString()
         if(htmlSchedule.error){
             return res.send({error: "Error: " + htmlSchedule.error})
         }
+        const parsedSchedule = await parseSchedule(htmlSchedule)
         let endTime = Date.now()
         let secsElapsed = Math.floor((endTime - startTime) / 1000)
         console.log("Got Arbiter Schedule: " + secsElapsed)
-        return res.send([htmlSchedule])
+        return res.send(parsedSchedule)
 
     } catch (error) {
         res.status(500).send({error: `Error in Arbiter/Schedule/MAIN: ${error}`})
@@ -160,7 +30,7 @@ router.get('/api/arbiter/schedule', auth, async (req, res) => {
     
 })
 
-router.post('/api/arbiter/schedule/parse', auth, async (req, res) => {
+router.post('/api/arbiter/schedule/', auth, async (req, res) => {
     try {
         console.log("Starting parse")
         let startTime = Date.now()

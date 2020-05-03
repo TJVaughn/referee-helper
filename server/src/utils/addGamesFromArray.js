@@ -1,17 +1,10 @@
-const superagent = require('superagent')
-
 const Game = require('../models/Game')
-
-const formatGameLocation = require('./formatGameLocation')
 
 const updateRefGroup = (games, groups) => {
     for(let i = 0; i < games.length; i ++){
         for(let x = 0; x < groups.length; x++){
-            // console.log("Games i group: " + games[i].group)
-            // console.log("Group x group number: " + groups[x].group.number)
             if(games[i].group.title === groups[x].group.number || games[i].group.value === groups[x].group.number){
                 games[i].group.title = groups[x].group.name
-                // console.log("MATCH! games i group is: " + games[i].group)
             }
         }
     }
@@ -59,7 +52,7 @@ const addGamesfromArray = async (schedule, platform, user, currentSchedule) => {
         })
 
         //FIrst we format all of the new games locations
-        newGamesToBeAdded = await formatGameLocation(newGamesToBeAdded, user.state)
+        // newGamesToBeAdded = await formatGameLocation(newGamesToBeAdded, user.state)
         // newGamesToBeAdded = formattedHorizonSchedule
 
         newGamesToBeAdded = await updateRefGroup(newGamesToBeAdded, user.groups)
@@ -82,8 +75,8 @@ const addGamesfromArray = async (schedule, platform, user, currentSchedule) => {
                 owner: user._id,
                 status: item.status,
                 paid: item.paid,
-                distance: item.distance,
-                duration: item.duration
+                distance: 0,
+                duration: 0
             })
 
             game.save()
@@ -96,7 +89,7 @@ const addGamesfromArray = async (schedule, platform, user, currentSchedule) => {
         // The software didn't recognize it as a duplicate because I haven't thought of that edge case
         // It added a new game even though it doesn't exist
         
-        return {newGamesToBeAdded, gamesToBeUpdated}
+        return [newGamesToBeAdded, gamesToBeUpdated]
     } catch (error) {
         return `Error in add games from Array: ${error}`
     }   

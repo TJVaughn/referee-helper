@@ -4,6 +4,7 @@ const auth = require('../middleware/auth')
 const Game = require('../models/Game')
 const multer = require('multer')
 const Arena = require('../models/Arena')
+const addGamesFromArray = require('../utils/addGamesFromArray')
 
 const addRHGroup = (groups, newGroup) => {
     for(let i = 0; i < groups.length; i++){
@@ -121,7 +122,7 @@ router.delete('/api/game/:id', auth, async (req, res) => {
 // GET ALL GAMES WITH SORTING FEATURES
 router.get('/api/all-games', auth, async (req, res) => {
     try {
-        console.log(JSON.stringify(req.headers))
+        // console.log(JSON.stringify(req.headers))
         const games = await Game.find({ owner: req.user._id })
         if(!games){
             games = []
@@ -154,6 +155,20 @@ router.get('/api/all-games', auth, async (req, res) => {
         
     } catch (error) {
         res.status(500).send({error: "Error from get all games: " + error})
+    }
+})
+
+//import many games
+router.post('/api/games/add-many', auth, async (req, res) => {
+    try {
+        let startTime = Date.now()
+        const currentSchedule = await Game.find({owner: req.user._id})
+        const [ newGames, gamesTBUpdated ] = await addGamesFromArray(req.body.schedule, req.body.platform, req.user, currentSchedule)
+        let secsElapsed = Math.floor((Date.now() - startTime) / 100)
+        console.log(secsElapsed)
+        res.send([ newGames, gamesTBUpdated ])
+    } catch (error) {
+        res.status(500).send({error: "Error from add-many games: " + error})
     }
 })
 

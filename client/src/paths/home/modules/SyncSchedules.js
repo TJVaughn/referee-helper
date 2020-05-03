@@ -16,10 +16,15 @@ export default function SyncSchedules(props) {
     async function callASSchedule(){
         setInProcess(true)
         setMessage('Getting Arbiter Schedule...please do not refresh')
+        let secs = 0
+        setInterval(() => {
+            console.log(secs += 1)
+        }, 1000)
         let schedule = await getArbiterSchedule()
         console.log(schedule)
         setMessage('complete')
         setInProcess(false)
+        window.location.reload()
     }
     async function callASPayment(){
         setInProcess(true)
@@ -35,6 +40,7 @@ export default function SyncSchedules(props) {
         <div>
             <h4>Sync your schedules: </h4>
             <button onClick={callASSchedule}>Sync Arbiter Sports Schedule</button>
+            <br />
             <button onClick={callASPayment}>Sync Arbiter Sports Payment Data</button>
             {/* <button onClick={} >Sync Horizon Web Ref</button> */}
             {/* <button onClick={callSyncAllSchedules}>Sync All Schedules</button> */}
