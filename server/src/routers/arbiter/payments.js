@@ -50,97 +50,102 @@ const trimHtmlData = async (html) => {
 }
 
 const getArbiterPaymentData = async (email, pass) => {
-    const browser = await puppeteer.launch({
-        headless: true,
-        args: [
-            '--window-size=1500,825', '--no-sandbox'
-        ]
-    })
-    const page = await browser.newPage()
-    await page.setViewport({
-        width: 1500,
-        height: 825,
-        deviceScaleFactor: 1
-    })
-    await page.goto('https://www1.arbitersports.com/shared/signin/signin.aspx');
-    await page.click('#txtEmail')
-    await page.keyboard.type(email)
-    await page.click('#txtPassword')
-    await page.keyboard.type(pass)
-    await page.click('#ctl00_ContentHolder_pgeSignIn_conSignIn_btnSignIn')
-    await page.waitFor(500)
-    if(page.url() === 'https://www1.arbitersports.com/shared/signin/signin.aspx') {
-        return { error: "Invalid Login"}
-    }
-    await page.waitFor(500)
-    await page.click('#mobileAlertStayLink')
-    await page.waitFor(500)
-    // await page.screenshot({path: './screenshotb4.png'})
-
-    await page.waitFor(500)
-    await page.click('#ctl00_ContentHolder_pgeDefault_conDefault_dgAccounts_ctl02_lblType2')
-    await page.waitFor(500)
-    await page.goto('https://www1.arbitersports.com/arbiterone/arbiterpay/dashboard')
-    await page.waitFor(500)
-    await page.goto('https://www1.arbitersports.com/ArbiterOne/ArbiterPay/AccountHistory')
-    await page.waitFor(500)
-    // await page.screenshot({path: './screenshotb4.png'})
-    await page.click('.as_pageSizer > button:nth-child(1)')
-    await page.waitFor(750)
-    await page.click('.as_pageSizer > ul:nth-child(2) > li:nth-child(6) > a:nth-child(1)')
-    await page.waitFor(500)
-
-    // SET TIME FRAME
-    await page.click('#filter-startdate')
-    await page.waitFor(300)
-    await page.click('.ui-icon-circle-triangle-w')
-    await page.click('.ui-icon-circle-triangle-w')
-    await page.click('.ui-icon-circle-triangle-w')
-    await page.click('.ui-icon-circle-triangle-w')
-    await page.click('.ui-icon-circle-triangle-w')
-    await page.click('.ui-icon-circle-triangle-w')
-    await page.click('.ui-icon-circle-triangle-w')
-    await page.click('.ui-icon-circle-triangle-w')
-    await page.click('.ui-icon-circle-triangle-w')
-    await page.click('.ui-icon-circle-triangle-w')
-    await page.click('.ui-icon-circle-triangle-w')
-    await page.click('.ui-icon-circle-triangle-w')
-    await page.waitFor(500)
-    await page.click('.ui-datepicker-calendar > tbody:nth-child(2) > tr:nth-child(1) > td:nth-child(7) > a:nth-child(1)')
-    await page.click('button.large.dark')
-    await page.waitFor(500)
-
-    let response = await page.content()
-    let trimmedData = await trimHtmlData(response)
-    
-    // DATA BECOMES AN ARRAY OF OBJECTS
-    let data = await parseHTML(trimmedData)
-
-    let nextPage;
-    let nxtPageTrimmed;
-    let nxtPageData;
-    let btnChild = 2
-    while(data.length % 50 === 0){
-        // SECOND PAGE
-        await page.click(`.as_pager > button:nth-child(${btnChild})`)
+    try {
+        const browser = await puppeteer.launch({
+            headless: true,
+            args: [
+                '--no-sandbox'
+            ]
+        })
+        const page = await browser.newPage()
+        await page.setViewport({
+            width: 1500,
+            height: 825,
+            deviceScaleFactor: 1
+        })
+        await page.goto('https://www1.arbitersports.com/shared/signin/signin.aspx');
+        await page.click('#txtEmail')
+        await page.keyboard.type(email)
+        await page.click('#txtPassword')
+        await page.keyboard.type(pass)
+        await page.click('#ctl00_ContentHolder_pgeSignIn_conSignIn_btnSignIn')
         await page.waitFor(500)
-        nextPage = await page.content()
-        nxtPageTrimmed = await trimHtmlData(nextPage)
-        nxtPageData = await parseHTML(nxtPageTrimmed)
-
-        for(let i = 0; i < nxtPageData.length; i++){
-            data.push(nxtPageData[i])
+        if(page.url() === 'https://www1.arbitersports.com/shared/signin/signin.aspx') {
+            return { error: "Invalid Login"}
         }
-        btnChild += 1;
-    }
-    data = data.filter((game) => {
-        if(!game.amount.includes('-')){
-            return game
-        }
-    })
+        await page.waitFor(500)
+        await page.click('#mobileAlertStayLink')
+        await page.waitFor(500)
+        // await page.screenshot({path: './screenshotb4.png'})
     
-    await browser.close()
-    return data
+        await page.waitFor(500)
+        await page.click('#ctl00_ContentHolder_pgeDefault_conDefault_dgAccounts_ctl02_lblType2')
+        await page.waitFor(500)
+        await page.goto('https://www1.arbitersports.com/arbiterone/arbiterpay/dashboard')
+        await page.waitFor(500)
+        await page.goto('https://www1.arbitersports.com/ArbiterOne/ArbiterPay/AccountHistory')
+        await page.waitFor(500)
+        // await page.screenshot({path: './screenshotb4.png'})
+        await page.click('.as_pageSizer > button:nth-child(1)')
+        await page.waitFor(750)
+        await page.click('.as_pageSizer > ul:nth-child(2) > li:nth-child(6) > a:nth-child(1)')
+        await page.waitFor(500)
+    
+        // SET TIME FRAME
+        await page.click('#filter-startdate')
+        await page.waitFor(300)
+        await page.click('.ui-icon-circle-triangle-w')
+        await page.click('.ui-icon-circle-triangle-w')
+        await page.click('.ui-icon-circle-triangle-w')
+        await page.click('.ui-icon-circle-triangle-w')
+        await page.click('.ui-icon-circle-triangle-w')
+        await page.click('.ui-icon-circle-triangle-w')
+        await page.click('.ui-icon-circle-triangle-w')
+        await page.click('.ui-icon-circle-triangle-w')
+        await page.click('.ui-icon-circle-triangle-w')
+        await page.click('.ui-icon-circle-triangle-w')
+        await page.click('.ui-icon-circle-triangle-w')
+        await page.click('.ui-icon-circle-triangle-w')
+        await page.waitFor(500)
+        await page.click('.ui-datepicker-calendar > tbody:nth-child(2) > tr:nth-child(1) > td:nth-child(7) > a:nth-child(1)')
+        await page.click('button.large.dark')
+        await page.waitFor(500)
+    
+        let response = await page.content()
+        let trimmedData = await trimHtmlData(response)
+        
+        // DATA BECOMES AN ARRAY OF OBJECTS
+        let data = await parseHTML(trimmedData)
+    
+        let nextPage;
+        let nxtPageTrimmed;
+        let nxtPageData;
+        let btnChild = 2
+        while(data.length % 50 === 0){
+            // SECOND PAGE
+            await page.click(`.as_pager > button:nth-child(${btnChild})`)
+            await page.waitFor(500)
+            nextPage = await page.content()
+            nxtPageTrimmed = await trimHtmlData(nextPage)
+            nxtPageData = await parseHTML(nxtPageTrimmed)
+    
+            for(let i = 0; i < nxtPageData.length; i++){
+                data.push(nxtPageData[i])
+            }
+            btnChild += 1;
+        }
+        data = data.filter((game) => {
+            if(!game.amount.includes('-')){
+                return game
+            }
+        })
+        
+        await browser.close()
+        return data
+    } catch (error) {
+        return {error: "Error in puppeteer function 'get arbiter payment data' " + error}
+    }
+    
 }
 const findGameIdMatch = async (currentSchedule, paymentData) => {
     let matchedGames = []
@@ -169,12 +174,13 @@ router.get('/api/arbiter/payments', auth, async (req, res) => {
         const password = decryptPlainText(req.user.asPassword)
         const currentSchedule = await Game.find({owner})
         const paymentData = await getArbiterPaymentData(email, password)
-        //currently returns all the payment data of games paid to me (PAGE 1 ONLY)
+        if(paymentData.error) return res.status(500).send({error: "Error: " + paymentData.error})
+        // console.log(paymentData)
         let matchedGames = await findGameIdMatch(currentSchedule, paymentData)
 
-        matchedGames.map((game) => {
+        matchedGames.map(async (game) => {
             game.paid = true
-            game.save()
+            await game.save()
         })
         // console.log(matchedGames.length)
         res.send(matchedGames)

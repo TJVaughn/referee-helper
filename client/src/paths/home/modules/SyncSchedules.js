@@ -15,6 +15,7 @@ export default function SyncSchedules(props) {
     const [ inProcess, setInProcess ] = useState(false)
     const timer = () => {
         let secs = 0
+        setSyncTime(secs)
         function updateTimer(){
             setSyncTime(secs += 1)
         }
@@ -41,6 +42,7 @@ export default function SyncSchedules(props) {
             return setMessage('Failure in getting payment data')
         }
         setMessage('Success!')
+        window.location.reload()
     }
     async function callGetHWRData(){
         setInProcess(true)

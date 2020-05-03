@@ -40,7 +40,11 @@ const parseGame = (html) => {
     game.dateTime = game.dateTime.replace('<br>', '')
     game.dateTime = game.dateTime.split('').reverse().join('').split('>').shift()
     game.dateTime = game.dateTime.split('').reverse().join('').toLowerCase().replace(/sat|sun|mon|tue|wed|thu|fri/, '')
-    game.dateTime = new Date(game.dateTime)
+    console.log("original " + game.dateTime)
+    console.log("new date to utc string" + new Date(game.dateTime).toUTCString())
+    // console.log("new date " + new Date(game.dateTime))
+
+    game.dateTime = new Date(game.dateTime).toUTCString()
 
     game.level = game.level.split('evel').pop()
     game.level = game.level.split('</span').shift()

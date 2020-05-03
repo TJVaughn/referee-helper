@@ -7,7 +7,7 @@ export default async function getArbiterPayments() {
         method: 'get',
         responseType: 'json'
     })
-    payments = await payments.json()
+    console.log(payments)
     if(payments.error) return value = false
     return value = true
 } 
