@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import GamesHeader from './GamesHeader'
 import { Switch, Link } from 'react-router-dom'
-import {toDateObj} from '../../../../utils/toDateObj'
 import formatNumber from '../../../../utils/formatNumber'
+import moment from 'moment'
 
 export default function GamesByMonth(props){
     useEffect(() => {
@@ -18,10 +18,10 @@ export default function GamesByMonth(props){
                     ${item.gameCode === 'Event' ? 'All-games-event': ''}
                 `} >
                     <p>
-                        {toDateObj(item.dateTime).toDateString()}
+                        {new Date(item.dateTime).toDateString()}
                     </p>
                     <p>
-                        {toDateObj(item.dateTime).toTimeString()}
+                        {moment(item.dateTime).format('h:mm A')}
                     </p>
                     <p>
                         {item.location}

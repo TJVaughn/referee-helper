@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import getRequest from '../../../utils/getRequest';
-import { toDateObj } from '../../../utils/toDateObj';
 import updateGame from '../../../api/game/updateGame';
 
 class GameDetails extends Component {
@@ -60,8 +59,8 @@ class GameDetails extends Component {
         const res = await getRequest(`game/${this.props.id}`)
         // console.log(res)
         this.setState({
-            date: toDateObj(res.dateTime).toDateString(),
-            time: toDateObj(res.dateTime).toTimeString(),
+            date: new Date(res.dateTime).toUTCString(),
+            time: new Date(res.dateTime).toTimeString(),
             location: res.location,
             distance: res.distance / 10,
             duration: res.duration,
