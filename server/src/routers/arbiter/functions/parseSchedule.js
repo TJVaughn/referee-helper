@@ -40,11 +40,22 @@ const parseGame = (html) => {
     game.dateTime = game.dateTime.replace('<br>', '')
     game.dateTime = game.dateTime.split('').reverse().join('').split('>').shift()
     game.dateTime = game.dateTime.split('').reverse().join('').toLowerCase().replace(/sat|sun|mon|tue|wed|thu|fri/, '')
+    if(process.NODE_ENV === 'production'){
+        //the time is considered already in UTC
+        let offset = new Date(game.dateTime).getTimezoneOffset()
+        console.log(offset)
+        game.dateTime = new Date(game.dateTime)
+        console.log(game.dateTime)
+        game.dateTime = new Date(game.dateTime).setHours((game.dateTime).getHours() + (offset / 60))
+        console.log(game.dateTime)
+    } else {
+        game.dateTime = new Date(game.dateTime)
+    }
     console.log("original " + game.dateTime)
     console.log("new date to utc string" + new Date(game.dateTime).toUTCString())
     // console.log("new date " + new Date(game.dateTime))
 
-    game.dateTime = new Date(game.dateTime).toUTCString()
+    console.log("to locale string " + new Date(game.dateTime).toLocaleString())
 
     game.level = game.level.split('evel').pop()
     game.level = game.level.split('</span').shift()
