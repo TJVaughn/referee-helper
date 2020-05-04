@@ -46,10 +46,10 @@ const parseGame = (html) => {
         // let offset = new Date(game.dateTime) - new Date(game.dateTime).toLocaleString()
         // console.log("offset: " + offset)
         game.dateTime = new Date(game.dateTime)
-        console.log("Moment: " + moment().format(game.dateTime))
+        // console.log("Moment: " + moment().format(game.dateTime))
         console.log(new Date(game.dateTime))
-        game.dateTime = new Date(game.dateTime).setHours((game.dateTime).getHours() + (offset))
-        console.log(new Date(game.dateTime))
+        // game.dateTime = new Date(game.dateTime).setHours((game.dateTime).getHours() + (offset))
+        // console.log(new Date(game.dateTime))
     } else {
         game.dateTime = new Date(game.dateTime)
     }
