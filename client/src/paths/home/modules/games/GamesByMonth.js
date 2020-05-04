@@ -21,7 +21,7 @@ export default function GamesByMonth(props){
                         {toDateObj(item.dateTime).toDateString()}
                     </p>
                     <p>
-                        {toDateObj(item.dateTime).toLocaleTimeString()}
+                        {toDateObj(item.dateTime).toTimeString()}
                     </p>
                     <p>
                         {item.location}

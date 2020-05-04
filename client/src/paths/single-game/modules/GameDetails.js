@@ -60,8 +60,8 @@ class GameDetails extends Component {
         const res = await getRequest(`game/${this.props.id}`)
         // console.log(res)
         this.setState({
-            date: toDateObj(res.dateTime).toLocaleDateString(),
-            time: toDateObj(res.dateTime).toLocaleTimeString(),
+            date: toDateObj(res.dateTime).toDateString(),
+            time: toDateObj(res.dateTime).toTimeString(),
             location: res.location,
             distance: res.distance / 10,
             duration: res.duration,
