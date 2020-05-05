@@ -138,6 +138,7 @@ router.get('/api/all-games', auth, async (req, res) => {
         // let monthYear = new Date()
         // monthYear = monthYear.setHours(0, 0, 0, 0)
         // monthYear = new Date(monthYear)
+        
         let gamesByMonth = []
         if(req.query.month){
             let month = req.query.month

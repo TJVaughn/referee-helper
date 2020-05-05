@@ -21,7 +21,9 @@ export default function GamesByMonth(props){
                         {new Date(item.dateTime).toDateString()}
                     </p>
                     <p>
+                        {/* {(moment(new Date(item.dateTime)).toISOString().split('T').pop())} */}
                         {moment(new Date(item.dateTime)).format('h:mm A')}
+                        {/* {new Date(item.dateTime).toUTCString()} */}
                     </p>
                     <p>
                         {item.location}
