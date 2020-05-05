@@ -21,7 +21,7 @@ export default function GamesByMonth(props){
                         {new Date(item.dateTime).toDateString()}
                     </p>
                     <p>
-                        {moment(new Date(item.dateTime).toUTCString()).format('h:mm A')}
+                        {moment(new Date(item.dateTime)).format('h:mm A')}
                     </p>
                     <p>
                         {item.location}

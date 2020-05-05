@@ -40,7 +40,6 @@ const getArbiterSchedule = async (email, pass) => {
     await page.select('#ddlDateFilter', '9')
     await page.click('#btnApplyFilter')
     await page.waitFor(4000)
-    await page.screenshot({path: './screenshot.png'})
     
     let response = await page.content()
     await browser.close()

@@ -30,6 +30,7 @@ function AllGames(props){
         function callGetGames(){
             let gamesByMonth = []
             let games = props.games
+
             for(let x = 0; x < games.length; x ++){
                 if(new Date(games[x].dateTime).getMonth() === today.getMonth() && today.getFullYear() === new Date(games[x].dateTime).getFullYear()) {
                     gamesByMonth.push(games[x])
