@@ -1,10 +1,23 @@
 import axios from 'axios'
 
-const asSchedule = async () => {
+const asLogin = async () => {
     let res = await axios({
-        url: "/api/arbiter/schedule",
+        url: "/api/arbiter/schedule/login",
         method: 'get',
         responseType: 'json'
+    })
+    console.log(res.data)
+    return res.data.browserWSEndpoint
+}
+
+const asSchedule = async (browserWSEndpoint) => {
+    let res = await axios({
+        url: "/api/arbiter/schedule/schedule",
+        method: 'post',
+        responseType: 'json',
+        data: {
+            browserWSEndpoint
+        }
     })
     return res.data
 }
@@ -26,7 +39,8 @@ const importAndUpdateGames = async (schedule) => {
 
 const getArbiterSchedule = async () => {
     console.log("starting get arbiter schedule")
-    const newSchedule = await asSchedule()
+    const browserWSEndpoint = await asLogin()
+    const newSchedule = await asSchedule(browserWSEndpoint)
     const [ newGames, gamesTBUpdated ] = await importAndUpdateGames(newSchedule)
     return [ newGames, gamesTBUpdated ]
 }

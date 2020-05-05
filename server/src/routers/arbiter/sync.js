@@ -29,9 +29,9 @@ const loginToAS = async (asEmail, asPassword) => {
         return false
     }
     const groupNames = await page.content()
-
+    const cookies = await page._client.send('Network.getAllCookies')
     await browser.close()
-    return [true, groupNames]
+    return [true, groupNames, cookies]
 }
 
 const findGroups = (html) => {
@@ -63,19 +63,20 @@ router.post('/api/arbiter/sync', auth, async (req, res) => {
         const asPassword = req.body.asPassword
         const user = await User.findById(req.user._id)
         let tryLogin = await loginToAS(asEmail, asPassword)
-        if(!tryLogin){
+        const [success, groupNamesTL, cookies] = tryLogin
+        if(!success){
             return res.send({error: "Invalid Login!"})
         }
         user.asEmail = asEmail
         user.asPassword = encryptPlainText(asPassword)
 
-
-        tryLogin = tryLogin.toString().split("ctl00_MiniAccounts1_MsgLabel").splice(1)
-        tryLogin = tryLogin.join('').split('dgAccounts').shift()
-        tryLogin = tryLogin.replace('<div>', '***')
-        tryLogin = tryLogin.split('***').pop()
-        tryLogin = tryLogin.split('</div>')
-        let groups = findGroups(tryLogin)
+        let groupNames = groupNamesTL
+        groupNames = groupNames.toString().split("ctl00_MiniAccounts1_MsgLabel").splice(1)
+        groupNames = groupNames.join('').split('dgAccounts').shift()
+        groupNames = groupNames.replace('<div>', '***')
+        groupNames = groupNames.split('***').pop()
+        groupNames = groupNames.split('</div>')
+        let groups = findGroups(groupNames)
 
         for(let x = 0; x < groups.length; x ++){
             let name = groups[x].name
@@ -86,6 +87,8 @@ router.post('/api/arbiter/sync', auth, async (req, res) => {
         // user.groups = groups.map((group) => {
         //     user.groups.concat({group})
         // })
+        console.log(cookies.cookies)
+        //NEED to add data to user model, allow the storage of Arbiter cookies, this way I will be able to login, and get to the schedule page faster!
         await user.save()
         res.send(user)
     } catch (error) {
