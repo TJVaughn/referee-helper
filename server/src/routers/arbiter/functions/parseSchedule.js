@@ -41,6 +41,7 @@ const parseGame = (html) => {
     game.dateTime = game.dateTime.replace('<br>', '')
     game.dateTime = game.dateTime.split('').reverse().join('').split('>').shift()
     game.dateTime = game.dateTime.split('').reverse().join('').toLowerCase().replace(/sat|sun|mon|tue|wed|thu|fri/, '')
+    
     if(process.env.NODE_ENV === 'production'){
         //the time is considered already in UTC
         // let offset = new Date(game.dateTime) - new Date(game.dateTime).toLocaleString()

@@ -57,6 +57,7 @@ class GameDetails extends Component {
     }
     async callGetGame(){
         const res = await getRequest(`game/${this.props.id}`)
+        console.log((new Date(res.dateTime).getUTCHours()) - (new Date(res.dateTime).getHours()))
         // console.log(res)
         this.setState({
             date: new Date(res.dateTime).toUTCString(),
