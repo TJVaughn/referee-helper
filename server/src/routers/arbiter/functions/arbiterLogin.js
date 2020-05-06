@@ -24,12 +24,11 @@ const arbiterLogin = async (asEmail, asPassword) => {
             return false
         }
         await page.goto('https://www1.arbitersports.com/Official/GameScheduleEdit.aspx')
-            await page.waitFor(750)
-            await page.click('#mobileAlertStayLink')
-            await page.waitFor(750)
-    
-            await page.click('tr.alternatingItems:nth-child(7)')
-            await page.waitFor(500)
+        await page.waitFor(750)
+        await page.click('#mobileAlertStayLink')
+        await page.waitFor(750)
+        await page.click('tr.alternatingItems:nth-child(7)')
+        await page.waitFor(500)
         const browserWSEndpoint = browser.wsEndpoint()
         const groupNames = await page.content()
         const cookies = await page._client.send('Network.getAllCookies')
