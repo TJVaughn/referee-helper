@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer')
+
 const arbiterLogin = async (asEmail, asPassword) => {
     try {
         const browser = await puppeteer.launch({

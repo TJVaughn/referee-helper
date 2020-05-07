@@ -4,22 +4,31 @@ const Game = require('../../models/Game')
 const auth = require('../../middleware/auth')
 const addGamesFromArray = require('../../utils/addGamesFromArray')
 const { decryptPlainText } = require('../../utils/crypto')
-const getArbiterSchedule = require('./functions/getArbiterSchedule')
+const  { arbiterScheduleLogin, arbiterScheduleSetAllGames, getArbiterSchedule } = require('./functions/getArbiterSchedule')
 const parseSchedule = require('./functions/parseSchedule')
 const superagent = require('superagent')
-const arbiterLogin = require('./functions/arbiterLogin')
+// const arbiterLogin = require('./functions/arbiterLogin')
 
 router.get('/api/arbiter/schedule/login', auth, async (req, res) => {
     try {
         const userEmail = req.user.asEmail
         const userPass = decryptPlainText(req.user.asPassword)
-        const [ isLoggedIn, groupNames, cookies, browserWSEndpoint ] = await arbiterLogin(userEmail, userPass)
+        const browserWSEndpoint = await arbiterScheduleLogin(userEmail, userPass)
         return res.send({browserWSEndpoint})
         
     } catch (error) {
-        res.status(500).send({error: `Error in Arbiter/Schedule/MAIN: ${error}`})
+        res.status(500).send({error: `Error in Arbiter/Schedule/login: ${error}`})
     }
     
+})
+router.post('/api/arbiter/schedule/set-schedule', auth, async (req, res) => {
+    try {   
+        const browserWSEndpoint = req.body.browserWSEndpoint
+        await arbiterScheduleSetAllGames(browserWSEndpoint)
+        return res.send({browserWSEndpoint})
+    } catch (error) {
+        res.status(500).send({error: `Error in Arbiter/Schedule/setSchedule: ${error}`})
+    }
 })
 router.post('/api/arbiter/schedule/schedule', auth, async (req, res) => {
     try {
@@ -34,7 +43,7 @@ router.post('/api/arbiter/schedule/schedule', auth, async (req, res) => {
         console.log("Got Arbiter Schedule: " + secsElapsed)
         res.send(parsedSchedule)
     } catch (error) {
-        res.status(500).send({error: `Error in Arbiter/Schedule/MAIN: ${error}`})
+        res.status(500).send({error: `Error in Arbiter/Schedule/schedule: ${error}`})
     }
 
 })

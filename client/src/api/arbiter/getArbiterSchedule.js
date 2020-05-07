@@ -9,6 +9,18 @@ const asLogin = async () => {
     console.log(res.data)
     return res.data.browserWSEndpoint
 }
+const setSchedule = async (browserWSEndpoint) => {
+    let res = await axios({
+        url: '/api/arbiter/schedule/set-schedule',
+        method: 'POST',
+        responseType: 'json',
+        data: {
+            browserWSEndpoint
+        }
+    })
+    console.log(res.data)
+    return res.data.browserWSEndpoint
+}
 
 const asSchedule = async (browserWSEndpoint) => {
     let res = await axios({
@@ -40,6 +52,7 @@ const importAndUpdateGames = async (schedule) => {
 const getArbiterSchedule = async () => {
     console.log("starting get arbiter schedule")
     const browserWSEndpoint = await asLogin()
+    await setSchedule(browserWSEndpoint)
     const newSchedule = await asSchedule(browserWSEndpoint)
     const [ newGames, gamesTBUpdated ] = await importAndUpdateGames(newSchedule)
     return [ newGames, gamesTBUpdated ]
