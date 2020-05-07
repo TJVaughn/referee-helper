@@ -7,8 +7,20 @@ import moment from 'moment'
 export default function GamesByMonth(props){
     useEffect(() => {
     }, [props])
-    
-    const gamesMap = props.games.map(item => 
+    let updatedGamesArr = props.games
+    const updateGames = (games) => {
+        for(let i = 0; i < games.length; i ++){
+            let d = games[i].dateTime
+            d = new Date(d).toISOString()
+            let h = new Date(d).getUTCHours()
+            let m = new Date(d).getUTCMinutes()
+            console.log(h)
+            let dhm = new Date(new Date(d).getFullYear(), new Date(d).getMonth(), new Date(d).getDate(), h, m)
+            games[i].dateTimeTime = moment(dhm).format('h:mm A')
+        }
+    }
+    updateGames(updatedGamesArr)
+    const gamesMap = updatedGamesArr.map(item => 
         <div key={item._id}>
             <Switch />
             <Link to={`/game/${item._id}`}>
@@ -21,8 +33,9 @@ export default function GamesByMonth(props){
                         {new Date(item.dateTime).toDateString()}
                     </p>
                     <p>
+                        {item.dateTimeTime}
                         {/* {(moment(new Date(item.dateTime)).toISOString().split('T').pop())} */}
-                        {moment(new Date(item.dateTime)).format('h:mm A')}
+                        {/* {moment(new Date(item.dateTime)).format('h:mm A')} */}
                         {/* {new Date(item.dateTime).toUTCString()} */}
                     </p>
                     <p>
