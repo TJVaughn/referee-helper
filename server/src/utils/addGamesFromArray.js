@@ -22,6 +22,16 @@ const addGamesfromArray = async (schedule, platform, user, currentSchedule) => {
         }
         const findMatchInDb = (object) => {
             for(let num = 0; num < currentSchedule.length; num++){
+
+                if(object.gameId.toString().toLowerCase() === 'event'){
+                    // console.log("Is event: " + object.dateTime.toString())
+                    // console.log('Same time: Curr Event: ' + currentSchedule[num].dateTime.toString())
+                    if(new Date(object.dateTime).toISOString() === new Date(currentSchedule[num].dateTime).toISOString()){
+                        // console.log("same time: new event: " + object.dateTime)
+                        // console.log('Same time: Curr Event: ' + currentSchedule[num].dateTime.toString())
+                        return num
+                    }
+                }
                 if(object.gameId.toString().toLowerCase() === 'event' && object.dateTime.toString() === currentSchedule[num].dateTime.toString() && object.location === currentSchedule[num].location){
                     return num
                 }

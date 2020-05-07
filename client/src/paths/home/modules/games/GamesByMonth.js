@@ -14,7 +14,6 @@ export default function GamesByMonth(props){
             d = new Date(d).toISOString()
             let h = new Date(d).getUTCHours()
             let m = new Date(d).getUTCMinutes()
-            console.log(h)
             let dhm = new Date(new Date(d).getFullYear(), new Date(d).getMonth(), new Date(d).getDate(), h, m)
             games[i].dateTimeTime = moment(dhm).format('h:mm A')
         }
