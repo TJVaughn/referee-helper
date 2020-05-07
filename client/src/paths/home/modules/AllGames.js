@@ -13,7 +13,17 @@ function AllGames(props){
     const [ params, setParams ] = useState(<Redirect to={`/`} />)
     const [ moGames, setMoGames ] = useState([])
     const [ totalsData, setTotalsData ] = useState({groupData: []})
-    
+
+    const handleKeyPress = (evt) => {
+        if(evt.keyCode === 37){
+            today = today.setMonth(today.getMonth() - 1)
+        }
+        if(evt.keyCode === 39){
+            today = today.setMonth(today.getMonth() + 1)
+        }
+        today = new Date(today)
+        setParams(<Redirect to={`/`} />)
+    }
 
     const handleMonth = (num) => {
         if(num === 0){
@@ -48,11 +58,14 @@ function AllGames(props){
         <div>
             {/* {params} */}
             <MonthYear today={today} />
-            <button onClick={() => {handleMonth(0)}}>←</button>
-            <button onClick={() => {handleMonth(1)}}>→</button>
+            <button onKeyDown={handleKeyPress} onClick={() => {handleMonth(0)}}>←</button>
+            <button onKeyDown={handleKeyPress} onClick={() => {handleMonth(1)}}>→</button>
             <GroupData groups={totalsData.groupData} />
             <Totals totals={totalsData} />
             <GamesByMonth games={moGames} />
+            <div tabIndex="0" style={{position: 'absolute'}} id="handle-left-right" onLoadedData={(e) => {handleKeyPress(e)}}></div>
+            {/* <HandleKeys /> */}
+            {/* <div id="handle-left-right" style={{position: 'absolute'}} onKeyDown={(e) => {handleKeyPress(e)}} tabIndex="0" ></div> */}
         </div>
     )
 }

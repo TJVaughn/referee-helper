@@ -70,3 +70,12 @@
         width: 150px;
     }
 }
+#handle-left-right {
+    // position: fixed;
+    // background-color: #0001;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: -5000;
+}
