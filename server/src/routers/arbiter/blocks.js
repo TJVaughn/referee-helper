@@ -3,8 +3,9 @@ const router = new express.Router()
 const puppeteer = require('puppeteer')
 const Game = require('../../models/Game')
 const auth = require('../../middleware/auth')
-const stripe = require('stripe')(process.env.TEST_STRIPE_SECRET)
+// const stripe = require('stripe')(process.env.TEST_STRIPE_SECRET)
 const { decryptPlainText } = require('../../utils/crypto')
+const cheerio = require('cheerio')
 
 const removePastGames = (games) => {
     const today = new Date()
@@ -21,7 +22,7 @@ const removePastGames = (games) => {
 
 const setBlocks = async (email, pass, futureGames) => {
     const browser = await puppeteer.launch({
-        headless: true,
+        headless: false,
         args: [
             '--window-size=1500,825','--no-sandbox'
         ]
@@ -46,7 +47,10 @@ const setBlocks = async (email, pass, futureGames) => {
     // }
     await page.goto('https://www1.arbitersports.com/Official/GameScheduleEdit.aspx')
     await page.waitFor(1000)
-    await page.click('tr.alternatingItems:nth-child(7)')
+    // const $ = cheerio.load('<body>')
+    // console.log($('tr', 'td').data())
+    // await page.click('#ctl00_ContentHolder_pgeDefault_conDefault_dgAccounts > tbody > tr:nth-child(6) > td:nth-child(2)')
+    await page.click('#ctl00_ContentHolder_pgeDefault_conDefault_dgAccounts > tbody > tr:nth-child(2) > td:nth-child(1)')
     await page.waitFor(500)
     await page.goto('https://www1.arbitersports.com/Official/BlockDates.aspx')
     await page.waitFor(500)
@@ -145,7 +149,6 @@ router.get('/api/arbiter/blocks', auth, async (req, res) => {
         const games = await Game.find({owner: req.user._id})
         let futureGames = removePastGames(games)
         const asPass = decryptPlainText(req.user.asPassword)
-        console.log(asPass)
         let response = await setBlocks(req.user.asEmail, asPass, futureGames)
         res.send(response)
     } catch (error) {

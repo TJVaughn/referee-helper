@@ -6,3 +6,4 @@ mongoose.connect(process.env.MONGO_URL, {
     useUnifiedTopology: true,
     useFindAndModify: false
 })
+

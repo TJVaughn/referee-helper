@@ -16,7 +16,7 @@ const arbiterSyncRouter = require('../src/routers/arbiter/sync')
 
 const horizonSyncRouter = require('../src/routers/horizon/sync')
 const horizonScheduleRouter = require('../src/routers/horizon/schedule')
-const horizonBlocksRouter = require('../src/routers/horizon/blocks')
+const horizonBlocksRouter = require('../src/routers/horizon/blocks/main')
 //  ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 // app.use(express.json())
 app.use(express.json({limit: '50mb'}));

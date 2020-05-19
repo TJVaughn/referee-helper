@@ -8,13 +8,43 @@ const  { arbiterScheduleLogin, arbiterScheduleSetAllGames, getArbiterSchedule } 
 const parseSchedule = require('./functions/parseSchedule')
 const superagent = require('superagent')
 // const arbiterLogin = require('./functions/arbiterLogin')
+const agenda = require('../../jobs/agenda')
+
+//first call the api
+//then start the job
+//then send a confirmation that the job was started
+
+router.get('/api/arbiter/schedule', auth, async (req, res) => {
+    try {
+        await agenda.start()
+        await agenda.schedule('2 seconds', 'arbiter schedule', {user: req.user._id})
+        res.send({message: "Starting to get the arbiter schedule in the background"})
+    } catch (error) {
+        res.status(500).send({error: `Error in Arbiter/Schedule: ${error}`})
+    }
+})
+
+router.get('/api/arbiter/schedule-progress', auth, async (req, res) => {
+    try {
+        
+    } catch (error) {
+        res.status(500).send({error: `Error in Arbiter/Schedule-progress: ${error}`})
+    }
+})
+
+
+
+
 
 router.get('/api/arbiter/schedule/login', auth, async (req, res) => {
     try {
-        const userEmail = req.user.asEmail
-        const userPass = decryptPlainText(req.user.asPassword)
-        const browserWSEndpoint = await arbiterScheduleLogin(userEmail, userPass)
-        return res.send({browserWSEndpoint})
+        await agenda.start()
+        await agenda.schedule('3 seconds', 'say hello')
+        res.send("I said hello")
+        // const userEmail = req.user.asEmail
+        // const userPass = decryptPlainText(req.user.asPassword)
+        // const browserWSEndpoint = await arbiterScheduleLogin(userEmail, userPass)
+        // return res.send({browserWSEndpoint})
         
     } catch (error) {
         res.status(500).send({error: `Error in Arbiter/Schedule/login: ${error}`})

@@ -1,6 +1,6 @@
 import React, { Component, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import { getCookie } from '../utils/cookies'
+import { getCookie, setCookie } from '../utils/cookies'
 import ArbiterSyncRouter from '../paths/arbiter-sync/ArbiterSyncRouter';
 import HorizonSyncRouter from '../paths/horizon-sync/HorizonSyncRouter';
 import ProfileRouter from '../paths/profile/ProfileRouter';
@@ -20,7 +20,11 @@ function IndexRouter(props){
 
     useEffect(() => {
         async function callGetGames(){
-            let [resGames, resGroups] = await getGames()
+            let res = await getGames()
+            if(res.error === 'Please Authenticate'){
+                return setCookie("loggedIn", 'false', 0)
+            }
+            let [resGames, resGroups] = res
             //returns all the groups and all the games
             resGroups = createGroupObject(resGroups)
             setGroups(resGroups)
