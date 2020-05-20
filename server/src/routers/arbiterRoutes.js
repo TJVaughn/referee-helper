@@ -32,13 +32,25 @@ router.get('/api/arbiter/sync-status', auth, async (req, res) => {
     }
 })
 
+router.get('/api/arbiter/groups', auth, async(req, res) => {
+    try {
+        await agenda.start()
+        await agenda.schedule('2 seconds', 'arbiter groups', {userID: req.user._id})
+        req.user.jobs.asGroupStatus = 'processing'
+        req.user.save()
+        res.send({message: "processing"})
+    } catch (error) {
+        res.status(500).send({error: `Error in Arbiter/groups: ${error}`})
+    }
+})
+
 router.get('/api/arbiter/schedule', auth, async (req, res) => {
     try {
         await agenda.start()
-        await agenda.schedule('2 seconds', 'arbiter schedule', { user: req.user._id, status: 'start' })
+        await agenda.schedule('2 seconds', 'arbiter schedule', { user: req.user._id })
         req.user.jobs.asScheduleStatus = 'processing'
         req.user.save()
-        res.send({message: "Starting to get the arbiter schedule in the background"})
+        res.send({message: "processing"})
     } catch (error) {
         res.status(500).send({error: `Error in Arbiter/Schedule: ${error}`})
     }

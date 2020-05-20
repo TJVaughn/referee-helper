@@ -18,7 +18,7 @@ function Stripe(){
 				}
 			})
 			response = await response.json()
-			if(response.customer.subscriptions.data[0] === undefined){
+			if(response.customer === undefined){
 				return
 			} else if(response.customer.subscriptions.data[0].plan.active){
 				setIsUser(true)

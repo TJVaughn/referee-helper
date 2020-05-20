@@ -50,12 +50,19 @@ const importAndUpdateGames = async (schedule) => {
 }
 
 const getArbiterSchedule = async () => {
-    console.log("starting get arbiter schedule")
-    const browserWSEndpoint = await asLogin()
-    await setSchedule(browserWSEndpoint)
-    const newSchedule = await asSchedule(browserWSEndpoint)
-    const [ newGames, gamesTBUpdated ] = await importAndUpdateGames(newSchedule)
-    return [ newGames, gamesTBUpdated ]
+    let res = await axios({
+        url: "/api/arbiter/schedule",
+        method: 'get',
+        responseType: 'json'
+    })
+    console.log(res.data)
+    // return res.data.browserWSEndpoint
+    // console.log("starting get arbiter schedule")
+    // const browserWSEndpoint = await asLogin()
+    // await setSchedule(browserWSEndpoint)
+    // const newSchedule = await asSchedule(browserWSEndpoint)
+    // const [ newGames, gamesTBUpdated ] = await importAndUpdateGames(newSchedule)
+    // return [ newGames, gamesTBUpdated ]
 }
 
 export default getArbiterSchedule

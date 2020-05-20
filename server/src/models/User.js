@@ -73,6 +73,9 @@ const userSchema = new mongoose.Schema({
         },
         asScheduleStatus: {
             type: String
+        },
+        asGroupStatus: {
+            type: String
         }
     },
     street: {
