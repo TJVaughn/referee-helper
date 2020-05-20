@@ -5,18 +5,21 @@ const app = express();
 const userRouter = require('./routers/user')
 const gameRouter = require('./routers/game')
 const arenaRouter = require('./routers/arena')
-
 const stripePaymentsRouter = require('./routers/stripe')
 
-const arbiterScheduleRouter = require('./routers/arbiter/schedule')
-const arbiterProfileRouter = require('../src/routers/arbiter/profile')
-const arbiterPaymentsRouter = require('../src/routers/arbiter/payments')
-const arbiterBlocksRouter = require('../src/routers/arbiter/blocks')
-const arbiterSyncRouter = require('../src/routers/arbiter/sync')
+const arbiterRouter = require('./routers/arbiterRoutes')
+const horizonRouter = require('./routers/horizonRoutes')
 
-const horizonSyncRouter = require('../src/routers/horizon/sync')
-const horizonScheduleRouter = require('../src/routers/horizon/schedule')
-const horizonBlocksRouter = require('../src/routers/horizon/blocks/main')
+// const arbiterScheduleRouter = require('./routers/arbiter/schedule')
+// const arbiterProfileRouter = require('../src/routers/arbiter/profile')
+// const arbiterPaymentsRouter = require('../src/routers/arbiter/payments')
+// const arbiterBlocksRouter = require('../src/routers/arbiter/blocks')
+// const arbiterSyncRouter = require('../src/routers/arbiter/sync')
+
+
+// const horizonSyncRouter = require('../src/routers/horizon/sync')
+// const horizonScheduleRouter = require('../src/routers/horizon/schedule')
+// const horizonBlocksRouter = require('../src/routers/horizon/blocks/main')
 //  ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 // app.use(express.json())
 app.use(express.json({limit: '50mb'}));
@@ -28,15 +31,17 @@ app.use(arenaRouter)
 
 app.use(stripePaymentsRouter)
 
-app.use(arbiterScheduleRouter)
-app.use(arbiterProfileRouter)
-app.use(arbiterPaymentsRouter)
-app.use(arbiterBlocksRouter)
-app.use(arbiterSyncRouter)
+app.use(arbiterRouter)
+app.use(horizonRouter)
 
-app.use(horizonScheduleRouter)
-app.use(horizonSyncRouter)
-app.use(horizonBlocksRouter)
+// app.use(arbiterProfileRouter)
+// app.use(arbiterPaymentsRouter)
+// app.use(arbiterBlocksRouter)
+// app.use(arbiterSyncRouter)
+
+// app.use(horizonScheduleRouter)
+// app.use(horizonSyncRouter)
+// app.use(horizonBlocksRouter)
 //   ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
 module.exports = app

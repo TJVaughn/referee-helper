@@ -1,33 +1,19 @@
 const Agenda = require('agenda')
-const asScheduleJob = require('../routers/arbiter/jobs/asScheduleJob')
 
 const agenda = new Agenda({ 
     db: { 
         address: process.env.MONGO_URL
     }, 
     collection: 'jobs', 
-    processEvery: '30 seconds'
+    processEvery: '30 seconds',
+    useUnifiedTopology: true
 })
 
-agenda.define('arbiter schedule', async (job, done) => {
-    const { user } = job.attrs.data
-    const addedSchedule = await asScheduleJob(user)
-    if(addedSchedule.error){
+let jobTypes = ['asScheduleJob', 'asSyncJob']
 
-    }
-    // console.log(addedSchedule)
-    done()
+jobTypes.forEach(type => {
+    require('./jobs_list/' + type)(agenda)
 })
-
-// let jobTypes = ['scrapeData']
-
-// jobTypes.forEach(type => {
-//     require('./jobs_list/' + type)(agenda)
-// })
-
-// if(jobTypes.length){
-//     agenda.on('ready', async () => await agenda.start())
-// }
 
 let graceful = () => {
     agenda.stop(() => process.exit(0))

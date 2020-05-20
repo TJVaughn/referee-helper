@@ -64,6 +64,17 @@ const userSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    jobs: {
+        asSyncStatus: {
+            type: String
+        },
+        asBlocksStatus: {
+            type: String
+        },
+        asScheduleStatus: {
+            type: String
+        }
+    },
     street: {
         type: String,
         trim: true
