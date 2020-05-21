@@ -24,13 +24,12 @@ router.post('/api/game', auth, async (req, res) => {
         }
         const game = new Game({
             ...req.body,
-            distance: arena[0].distance,
-            duration: arena[0].duration,
+            distance: 0,
+            duration: 0,
             owner: req.user._id,
             status: "normal",
             paid: false
         })
-        console.log(req.user.groups)
         const isRH = addRHGroup(req.user.groups, req.body.refereeGroup)
         if(!isRH){
             req.user.groups.push({group: {name: req.body.refereeGroup}})
@@ -52,28 +51,29 @@ router.post('/api/game', auth, async (req, res) => {
         if(duplicates.length === 0){
             await req.user.save()
             await game.save()
-            res.send(game)
+            return res.status(201).send(game)
         } else {
-            res.send({_message: "Game already exists"})
+            return res.send({_message: "Game already exists"})
         }
 
     } catch (error) {
-        res.status(418).send({error: "Error from create game: " + error})
+        return res.status(418).send({error: "Error from create game: " + error})
     }
 })
 
 // READ SINGLE GAME BY ID
 router.get('/api/game/:id', auth, async (req, res) => {
-    const _id = req.params.id
-    const user = req.user
     try {
-        const game = await Game.findOne({owner: user._id, _id})
+        const user = req.user
+        console.log(req.params.id)
+        const game = await Game.findOne({_id: req.params.id, owner: user._id})
+
         if(!game){
-            res.status(404).send({error: "Game not found"})
+            return res.status(404).send({error: "Game not found"})
         }
-        res.send(game)
+        return res.send(game)
     } catch (error) {
-        res.status(418).send(error)
+        return res.status(500).send({error: "Error in read single game by ID: " + error})
     }
 })
 
@@ -100,9 +100,9 @@ router.patch('/api/game/:id', auth, async (req, res) => {
             game[update] = req.body[update]
         })
         await game.save()
-        res.send(game)
+        return res.send(game)
     } catch (error) {
-        res.status(500).send(error)
+        return res.status(500).send(error)
     }
 })
 

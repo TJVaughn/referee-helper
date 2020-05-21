@@ -32,9 +32,12 @@ router.post(`/api/user/login`, async (req, res) => {
         user.token = token
         const cookieExpires = setExpireTime(14)
         let secure = ''
+        if(process.env.NODE_ENV === 'production'){
+            secure = 'secure;'
+        }
         await user.save()
         res.setHeader('Set-Cookie', `AuthToken=${token};HttpOnly;expires=${cookieExpires};path=/;${secure}`)
-        res.send(user)
+        res.send({user, token})
     } catch (error) {
         res.status(401).send({error: "Unable to login"})
     }

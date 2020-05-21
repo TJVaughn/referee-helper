@@ -27,6 +27,9 @@ const getArbiterSchedule = async (browserWSEndpoint) => {
         return response
         
     } catch (error) {
+        if(error instanceof puppeteer.errors.TimeoutError){
+            return ({error: "Timeout Error"})
+        }
         return ({error: `Error From puppeteer: ${error}`})
     }
 }
@@ -44,29 +47,32 @@ const asScheduleJobFunction = async (userID) => {
         const games = await addGamesFromArray(parsedSchedule, "Arbiter Sports", user, currentSchedule)
         return games
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         return {error: "Error is as schedule job: " + error}
     }
+}
+
+const agendaFunction = (agenda) => {
+    
 }
 
 
 module.exports = (agenda) => {
     agenda.define('arbiter schedule', async (job, done) => {
-        let { user } = job.attrs.data
-        await asScheduleJobFunction(user)
+        let { userID } = job.attrs.data
+        await asScheduleJobFunction(userID)
         done()
     })
     agenda.on('success:arbiter schedule', async job => {
-        let user = await User.findOne({_id: job.attrs.data.user})
-        user.jobs.asScheduleStatus = 'success'
-        user.save()
-        job.save()
-        console.log(`Successfully added schedule for user: ${job.attrs.data.user}`)
+        let user = await User.findOne({_id: job.attrs.data.userID})
+        user.jobs.asScheduleStatus = 'complete'
+        await user.save()
+        await job.remove()
     })
     agenda.on('fail:arbiter schedule', async job => {
         let user = await User.findOne({_id: job.attrs.data.user})
         user.jobs.asScheduleStatus = 'fail'
         await user.save()
-        await job.save()
+        await job.remove()
     })
 }

@@ -1,0 +1,11 @@
+{
+    "name": "refereehelper",
+    "version": "0.1.0",
+    "scripts": {
+        "test": "env-cmd -f ./config/test.env jest --watch --runInBand"
+    },
+    "dependencies": {
+        "env-cmd": "^10.1.0",
+        "jest": "^26.0.1"
+    }
+}

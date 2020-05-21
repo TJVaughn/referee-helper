@@ -2,11 +2,12 @@ const Agenda = require('agenda')
 
 const agenda = new Agenda({ 
     db: { 
-        address: process.env.MONGO_URL
+        address: process.env.MONGO_URL,
+        useUnifiedTopology: true
     }, 
     collection: 'jobs', 
     processEvery: '30 seconds',
-    useUnifiedTopology: true
+    
 })
 
 let jobTypes = ['asScheduleJob', 'asSyncJob']

@@ -18,8 +18,8 @@ router.post('/api/arbiter/sync', auth, async (req, res) => {
 router.get('/api/arbiter/sync-status', auth, async (req, res) => {
     try {
         let status = req.user.jobs.asSyncStatus
-        if(status === 'success'){
-            return res.send({message: 'success'})
+        if(status === 'complete'){
+            return res.send({message: 'complete'})
         } else if(status === 'fail'){
             return res.send({message: 'fail'})
         } else if(status === 'invalid login'){
@@ -47,7 +47,7 @@ router.get('/api/arbiter/groups', auth, async(req, res) => {
 router.get('/api/arbiter/schedule', auth, async (req, res) => {
     try {
         await agenda.start()
-        await agenda.schedule('2 seconds', 'arbiter schedule', { user: req.user._id })
+        await agenda.schedule('2 seconds', 'arbiter schedule', { userID: req.user._id })
         req.user.jobs.asScheduleStatus = 'processing'
         req.user.save()
         res.send({message: "processing"})
@@ -58,12 +58,16 @@ router.get('/api/arbiter/schedule', auth, async (req, res) => {
 
 router.get('/api/arbiter/schedule-status', auth, async (req, res) => {
     try {
-        if(req.user.jobs.asScheduleStatus === 'success'){
-            return res.send({message: 'success'})
-        } else if(req.user.jobs.asScheduleStatus === 'fail'){
+        let status = req.user.jobs.asScheduleStatus
+        if(status === 'complete'){
+            return res.send({message: 'complete'})
+        } else if(status === 'fail'){
             return res.send({message: 'fail'})
+        } else if(status === 'invalid login'){
+            return res.send({message: 'invalid login'})
+        } else {
+            res.send({message: "processing"})
         }
-        res.send({message: "processing"})
     } catch (error) {
         res.status(500).send({error: `Error in Arbiter/Schedule-status: ${error}`})
     }

@@ -89,17 +89,21 @@ const htmlToJson = (item) => {
     return item
 }
 const parseArbiterSchedule = async (htmlSchedule) => {
-    htmlSchedule = htmlSchedule.toString()
-    htmlSchedule = htmlSchedule.split('ctl00_ContentHolder_pgeGameScheduleEdit_conGameScheduleEdit_dgGames')
-    htmlSchedule = htmlSchedule.splice(2)
-    htmlSchedule = htmlSchedule.join('').split('ctl00_ContentHolder_pgeGameScheduleEdit_conGameScheduleEdit_lnkTrigger')
-    htmlSchedule = htmlSchedule.splice(0, 1)
-    let allGamesHtmlArray = htmlSchedule.join('').split('<tr')
-    let arbiterSchedule = []
-    allGamesHtmlArray.map((item) => {
-        item = htmlToJson(item)
-        arbiterSchedule.push(item)
-    })
-    return arbiterSchedule
+    try {
+        htmlSchedule = htmlSchedule.toString()
+        htmlSchedule = htmlSchedule.split('ctl00_ContentHolder_pgeGameScheduleEdit_conGameScheduleEdit_dgGames')
+        htmlSchedule = htmlSchedule.splice(2)
+        htmlSchedule = htmlSchedule.join('').split('ctl00_ContentHolder_pgeGameScheduleEdit_conGameScheduleEdit_lnkTrigger')
+        htmlSchedule = htmlSchedule.splice(0, 1)
+        let allGamesHtmlArray = htmlSchedule.join('').split('<tr')
+        let arbiterSchedule = []
+        allGamesHtmlArray.map((item) => {
+            item = htmlToJson(item)
+            arbiterSchedule.push(item)
+        })
+        return arbiterSchedule
+    } catch (error) {
+        return {error: "Error in parse arbiter schedule: " + error}
+    }
 }
 module.exports = parseArbiterSchedule
