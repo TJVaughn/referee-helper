@@ -32,22 +32,12 @@ router.get('/api/arbiter/sync-status', auth, async (req, res) => {
     }
 })
 
-router.get('/api/arbiter/groups', auth, async(req, res) => {
-    try {
-        await agenda.start()
-        await agenda.schedule('2 seconds', 'arbiter groups', {userID: req.user._id})
-        req.user.jobs.asGroupStatus = 'processing'
-        req.user.save()
-        res.send({message: "processing"})
-    } catch (error) {
-        res.status(500).send({error: `Error in Arbiter/groups: ${error}`})
-    }
-})
-
 router.get('/api/arbiter/schedule', auth, async (req, res) => {
     try {
         await agenda.start()
-        await agenda.schedule('2 seconds', 'arbiter schedule', { userID: req.user._id })
+        await agenda.schedule('2 seconds', 'arbiter schedule', { userID: req.user._id, status: "processing" })
+        const jobs = await agenda.jobs()
+        console.log(jobs.attrs)
         req.user.jobs.asScheduleStatus = 'processing'
         req.user.save()
         res.send({message: "processing"})
@@ -58,6 +48,9 @@ router.get('/api/arbiter/schedule', auth, async (req, res) => {
 
 router.get('/api/arbiter/schedule-status', auth, async (req, res) => {
     try {
+        await agenda.start()
+        const jobs = await agenda.jobs()
+        console.log(jobs[0].attrs.data)
         let status = req.user.jobs.asScheduleStatus
         if(status === 'complete'){
             return res.send({message: 'complete'})
@@ -81,6 +74,18 @@ router.get('/api/arbiter/blocks', auth, async (req, res) => {
         res.status(500).send({error: `Error in Arbiter/blocks: ${error}`})
     }
 })
+
+// router.get('/api/arbiter/groups', auth, async(req, res) => {
+//     try {
+//         await agenda.start()
+//         await agenda.schedule('2 seconds', 'arbiter groups', {userID: req.user._id})
+//         req.user.jobs.asGroupStatus = 'processing'
+//         req.user.save()
+//         res.send({message: "processing"})
+//     } catch (error) {
+//         res.status(500).send({error: `Error in Arbiter/groups: ${error}`})
+//     }
+// })
 
 // router.get('/api/arbiter/payments', auth, async (req, res) => {
 

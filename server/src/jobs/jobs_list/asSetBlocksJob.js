@@ -1,25 +1,3 @@
-const express = require('express')
-const router = new express.Router()
-const puppeteer = require('puppeteer')
-const Game = require('../../models/Game')
-const auth = require('../../middleware/auth')
-// const stripe = require('stripe')(process.env.TEST_STRIPE_SECRET)
-const { decryptPlainText } = require('../../utils/crypto')
-const cheerio = require('cheerio')
-
-const removePastGames = (games) => {
-    const today = new Date()
-    let futureGames = []
-
-    for(let i = 0; i < games.length; i++){
-        // console.log("Game: ", games[i].dateTime)
-        if(games[i].dateTime > today){
-            futureGames.push(games[i])
-        }
-    }
-    return futureGames;
-}
-
 const setBlocks = async (email, pass, futureGames) => {
     const browser = await puppeteer.launch({
         headless: false,
@@ -143,18 +121,3 @@ const setBlocks = async (email, pass, futureGames) => {
 
     return blocksCreatedArr
 }
-
-router.get('/api/arbiter/blocks', auth, async (req, res) => {
-    try {
-        const games = await Game.find({owner: req.user._id})
-        let futureGames = removePastGames(games)
-        const asPass = decryptPlainText(req.user.asPassword)
-        let response = await setBlocks(req.user.asEmail, asPass, futureGames)
-        res.send(response)
-    } catch (error) {
-        res.status(418).send({error: `Error from api/arbiter/blocks: ${error}`})
-    }
-    
-})
-
-module.exports = router;

@@ -52,27 +52,23 @@ const asScheduleJobFunction = async (userID) => {
     }
 }
 
-const agendaFunction = (agenda) => {
-    
-}
-
-
 module.exports = (agenda) => {
     agenda.define('arbiter schedule', async (job, done) => {
         let { userID } = job.attrs.data
         await asScheduleJobFunction(userID)
         done()
     })
-    agenda.on('success:arbiter schedule', async job => {
+    agenda.on('complete:arbiter schedule', async job => {
         let user = await User.findOne({_id: job.attrs.data.userID})
         user.jobs.asScheduleStatus = 'complete'
         await user.save()
         await job.remove()
+        // await job.save()
     })
     agenda.on('fail:arbiter schedule', async job => {
-        let user = await User.findOne({_id: job.attrs.data.user})
-        user.jobs.asScheduleStatus = 'fail'
-        await user.save()
+        // let user = await User.findOne({_id: job.attrs.data.user})
+        // user.jobs.asScheduleStatus = 'fail'
+        // await user.save()
         await job.remove()
     })
 }
