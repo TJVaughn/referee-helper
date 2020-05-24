@@ -4,6 +4,13 @@ const auth = require('../middleware/auth')
 const agenda = require('../jobs/agenda')
 const { encryptPlainText } = require('../utils/crypto')
 
+//start login sync
+//login sync status
+
+//start schedule sync -- schedule sync status
+
+//start blocks == blocks status
+
 router.post('/api/arbiter/sync', auth, async (req, res) => {
     const asEmail = req.body.asEmail
     let asPassword = req.body.asPassword

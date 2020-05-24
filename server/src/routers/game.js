@@ -6,6 +6,16 @@ const multer = require('multer')
 const Arena = require('../models/Arena')
 const addGamesFromArray = require('../utils/addGamesFromArray')
 
+//Create Event
+
+//Read Single Event by ID
+
+//Update Event
+
+//Delete Event
+
+//Get all Events
+
 const addRHGroup = (groups, newGroup) => {
     for(let i = 0; i < groups.length; i++){
         if(groups[i].group.name === newGroup){
