@@ -1,8 +1,7 @@
 const request = require('supertest')
 const app = require('../src/app')
 const User = require('../src/models/User')
-const { user1, user2, game1, game2, game3, game4, setupDB } = require('./fixtures/db')
-
+const {user1, user2, event1, event2, event3, event4, setupDB} = require('./fixtures/db')
 
 beforeEach(setupDB)
 

@@ -8,5 +8,7 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true, useUnifiedTopology: 
         return console.log("ERROR!\n", error)
     }
     const db = client.db(dbName)
-    console.log(db)
+    // console.log(db)
+    
 })
+// module.exports = MongoClient

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken');
-const Game = require('./Game')
+const Event = require('./Event')
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -176,8 +176,8 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 })
 
-userSchema.virtual('games', {
-    ref: 'Game',
+userSchema.virtual('events', {
+    ref: 'Event',
     localField: '_id',
     foreignField: 'owner'
 })
@@ -215,7 +215,7 @@ userSchema.pre('save', async function(next) {
 
 userSchema.pre('remove', async function(next) {
     const user = this
-    await Game.deleteMany({ owner: user._id })
+    await Event.deleteMany({ owner: user._id })
     next()
 })
 

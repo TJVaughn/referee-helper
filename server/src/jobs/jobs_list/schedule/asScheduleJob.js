@@ -1,10 +1,12 @@
 const puppeteer = require('puppeteer')
-const parseArbiterSchedule = require('../jobs_helpers/parseArbiterSchedule')
-const addGamesFromArray = require('../../utils/addGamesFromArray')
-const Game = require('../../models/Game')
-const User = require('../../models/User')
-const { decryptPlainText } = require('../../utils/crypto')
-const asLogin = require('../jobs_helpers/asLogin')
+const User = require('../../../models/User')
+const Event = require('../../../models/Event')
+
+const parseArbiterSchedule = require('../../jobsHelpers/arbiter/parseArbiterSchedule')
+const addEventsFromArray = require('../../../utils/addEventsFromArray')
+const removePastGames = require('../../jobsHelpers/removePastGames')
+const asLogin = require('../../jobsHelpers/arbiter/asLogin')
+const { decryptPlainText } = require('../../../utils/crypto')
 
 const getArbiterSchedule = async (browserWSEndpoint) => {
     try {
@@ -37,14 +39,15 @@ const getArbiterSchedule = async (browserWSEndpoint) => {
 
 const asScheduleJobFunction = async (userID) => {
     try {
-        const user = await User.findOne({_id: userID})
+        const user = await User.findById(userID)
         const email = user.asEmail
         const pass = decryptPlainText(user.asPassword)
         const browserEndpoint = await asLogin(email, pass)
         const rawSchedule = await getArbiterSchedule(browserEndpoint)
         const parsedSchedule = await parseArbiterSchedule(rawSchedule)
-        const currentSchedule = Game.find({owner: userID})
-        const games = await addGamesFromArray(parsedSchedule, "Arbiter Sports", user, currentSchedule)
+        const futureGames = removePastGames(parsedSchedule)
+        const newUniqueEvents = findUniqueEvents(futureGames)
+        const games = await addEventsFromArray(newUniqueEvents, "Arbiter Sports")
         return games
     } catch (error) {
         // console.log(error)
@@ -53,19 +56,19 @@ const asScheduleJobFunction = async (userID) => {
 }
 
 module.exports = (agenda) => {
-    agenda.define('arbiter schedule', async (job, done) => {
+    agenda.define('asScheduleJob', async (job, done) => {
         let { userID } = job.attrs.data
         await asScheduleJobFunction(userID)
         done()
     })
-    agenda.on('complete:arbiter schedule', async job => {
+    agenda.on('complete:asScheduleJob', async job => {
         let user = await User.findOne({_id: job.attrs.data.userID})
         user.jobs.asScheduleStatus = 'complete'
         await user.save()
         await job.remove()
         // await job.save()
     })
-    agenda.on('fail:arbiter schedule', async job => {
+    agenda.on('fail:asScheduleJob', async job => {
         // let user = await User.findOne({_id: job.attrs.data.user})
         // user.jobs.asScheduleStatus = 'fail'
         // await user.save()

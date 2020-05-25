@@ -121,3 +121,9 @@ const setBlocks = async (email, pass, futureGames) => {
 
     return blocksCreatedArr
 }
+
+module.exports = (agenda) => {
+    agenda.define('asSetBlocksJob', async (job, done) => {
+        done()
+    })
+}

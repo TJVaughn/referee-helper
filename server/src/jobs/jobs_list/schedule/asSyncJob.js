@@ -1,9 +1,9 @@
-const User = require('../../models/User')
-const { decryptPlainText, encryptPlainText } = require('../../utils/crypto')
-const asLogin = require('../jobs_helpers/asLogin')
+const User = require('../../../models/User')
+const { decryptPlainText, encryptPlainText } = require('../../../utils/crypto')
+const asLogin = require('../../jobsHelpers/arbiter/asLogin')
 
 module.exports = (agenda) => {
-    agenda.define('arbiter sync', {priority: 20}, async (job, done) => {
+    agenda.define('asSyncJob', {priority: 20}, async (job, done) => {
         let { asEmail, asPassword, userID } = job.attrs.data
         let user = await User.findById(userID)
         asPassword = decryptPlainText(asPassword)

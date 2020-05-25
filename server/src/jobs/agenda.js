@@ -9,10 +9,10 @@ const agenda = new Agenda({
     processEvery: '30 seconds',
 })
 
-let jobTypes = ['asScheduleJob', 'asSyncJob']
+let scheduleJobTypes = ['asScheduleJob', 'asSyncJob', 'asSetBlocksJob', 'asVerifyBlocksJob', 'hwrSyncJob', 'hwrScheduleJob', 'hwrSetBlocksJob', 'hwrVerifyBlocksJob']
 
-jobTypes.forEach(type => {
-    require('./jobs_list/' + type)(agenda)
+scheduleJobTypes.forEach(type => {
+    require('./jobs_list/schedule/' + type)(agenda)
 })
 
 let graceful = () => {

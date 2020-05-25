@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 const User = require('../../src/models/User')
-const Game = require('../../src/models/Game')
+const Event = require('../../src/models/Event')
 
 const user1ID = new mongoose.Types.ObjectId()
 const user1 = {
@@ -25,31 +25,49 @@ const user2 = {
     }]
 }
 
-const game1 = {
+const event1 = {
     _id: new mongoose.Types.ObjectId(),
     dateTime: "4/15/20 9:45:00 PM",
     location: "Stamford Twin Rinks",
     fees: 5000,
     owner: user1._id
 }
-const game2 = {
+const event2 = {
     _id: new mongoose.Types.ObjectId(),
     dateTime: "5/15/20 9:45:00 PM",
     location: "Stamford Twin Rinks",
     fees: 5000,
     owner: user1._id
 }
-const game3 = {
+const event3 = {
     _id: new mongoose.Types.ObjectId(),
     dateTime: "4/15/20 9:45:00 PM",
     location: "Stamford Twin Rinks",
+    gameCode: "45567",
     fees: 5000,
     owner: user2._id
 }
-const game4 = {
+const event4 = {
     _id: new mongoose.Types.ObjectId(),
-    dateTime: "5/15/20 9:45:00 PM",
+    dateTime: "5/26/20 9:45:00 PM",
     location: "Stamford Twin Rinks",
+    gameCode: "45567",
+    fees: 5000,
+    owner: user2._id
+}
+const newEvent1 = {
+    _id: new mongoose.Types.ObjectId(),
+    dateTime: "5/27/20 9:45:00 PM",
+    location: "Stamford Twin Rinks",
+    gameCode: "2346",
+    fees: 5000,
+    owner: user2._id
+}
+const newEvent2 = {
+    _id: new mongoose.Types.ObjectId(),
+    dateTime: "5/26/20 9:45:00 PM",
+    location: "Stamford Twin Rinks",
+    gameCode: "45567",
     fees: 5000,
     owner: user2._id
 }
@@ -58,12 +76,12 @@ const setupDB = async () => {
     await User.deleteMany()
     await new User(user1).save()
     await new User(user2).save()
-    await Game.deleteMany({})
+    await Event.deleteMany({})
 
-    await new Game(game1).save()
-    await new Game(game2).save()
-    await new Game(game3).save()
-    await new Game(game4).save()
+    await new Event(event1).save()
+    await new Event(event2).save()
+    await new Event(event3).save()
+    await new Event(event4).save()
 }
 
-module.exports = {user1, user2, game1, game2, game3, game4, setupDB}
+module.exports = {user1, user2, event1, event2, event3, event4, newEvent1, newEvent2, setupDB}
