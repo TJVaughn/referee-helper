@@ -68,7 +68,7 @@ const userSchema = new mongoose.Schema({
         asSyncStatus: {
             type: String
         },
-        asBlocksStatus: {
+        asBlockStatus: {
             type: String
         },
         asScheduleStatus: {

@@ -43,7 +43,7 @@ const event3 = {
     _id: new mongoose.Types.ObjectId(),
     dateTime: "4/15/20 9:45:00 PM",
     location: "Stamford Twin Rinks",
-    gameCode: "45567",
+    gameCode: "8256",
     fees: 5000,
     owner: user2._id
 }
@@ -72,6 +72,14 @@ const newEvent2 = {
     owner: user2._id
 }
 
+const newEvent3 = {
+    _id: new mongoose.Types.ObjectId(),
+    dateTime: "5/27/20 12:45:00 PM",
+    location: "Stamford Twin Rinks",
+    gameCode: "30946",
+    fees: 5000,
+    owner: user2._id
+}
 const setupDB = async () => {
     await User.deleteMany()
     await new User(user1).save()
@@ -84,4 +92,4 @@ const setupDB = async () => {
     await new Event(event4).save()
 }
 
-module.exports = {user1, user2, event1, event2, event3, event4, newEvent1, newEvent2, setupDB}
+module.exports = {user1, user2, event1, event2, event3, event4, newEvent1, newEvent2, newEvent3, setupDB}

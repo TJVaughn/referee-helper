@@ -41,42 +41,34 @@ router.get('/api/arbiter/sync-status', auth, async (req, res) => {
 
 router.get('/api/arbiter/schedule', auth, async (req, res) => {
     try {
+        let status = req.user.jobs.asScheduleStatus;
+        if(status === 'processing'){
+            return res.send({message: "processing"})
+        }
         await agenda.start()
-        await agenda.schedule('2 seconds', 'arbiter schedule', { userID: req.user._id, status: "processing" })
-        const jobs = await agenda.jobs()
-        console.log(jobs.attrs)
+        await agenda.schedule('2 seconds', 'asScheduleJob', { userID: req.user._id })
+        // const jobs = await agenda.jobs()
+        // console.log(jobs.attrs)
         req.user.jobs.asScheduleStatus = 'processing'
-        req.user.save()
-        res.send({message: "processing"})
+        await req.user.save()
+        return res.send({message: "processing"})
     } catch (error) {
-        res.status(500).send({error: `Error in Arbiter/Schedule: ${error}`})
+        return res.status(500).send({error: `Error in Arbiter/Schedule: ${error}`})
     }
 })
 
-router.get('/api/arbiter/schedule-status', auth, async (req, res) => {
-    try {
-        await agenda.start()
-        const jobs = await agenda.jobs()
-        console.log(jobs[0].attrs.data)
-        let status = req.user.jobs.asScheduleStatus
-        if(status === 'complete'){
-            return res.send({message: 'complete'})
-        } else if(status === 'fail'){
-            return res.send({message: 'fail'})
-        } else if(status === 'invalid login'){
-            return res.send({message: 'invalid login'})
-        } else {
-            res.send({message: "processing"})
-        }
-    } catch (error) {
-        res.status(500).send({error: `Error in Arbiter/Schedule-status: ${error}`})
-    }
-})
 
 router.get('/api/arbiter/blocks', auth, async (req, res) => {
     try {
+        let status = req.user.jobs.asBlockStatus
+        // if(status === 'processing'){
+        //     return res.send({message: "processing"})
+        // }
         await agenda.start()
-        await agenda.schedule('2 seconds', 'arbiter blocks', { user: req.user._id})
+        await agenda.schedule('2 seconds', 'asSetBlocksJob', { userID: req.user._id })
+        req.user.jobs.asBlockStatus = 'processing'
+        await req.user.save()
+        return res.send({message: "processing"})
     } catch (error) {
         res.status(500).send({error: `Error in Arbiter/blocks: ${error}`})
     }

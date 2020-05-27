@@ -1,11 +1,11 @@
 const puppeteer = require('puppeteer')
 const User = require('../../../models/User')
-const Event = require('../../../models/Event')
 
 const parseArbiterSchedule = require('../../jobsHelpers/arbiter/parseArbiterSchedule')
-const addEventsFromArray = require('../../../utils/addEventsFromArray')
-const removePastGames = require('../../jobsHelpers/removePastGames')
+const addEventsFromArray = require('../../jobsHelpers/addEventsFromArray')
+const removePastEvents = require('../../jobsHelpers/removePastEvents')
 const asLogin = require('../../jobsHelpers/arbiter/asLogin')
+const findUniqueEvents = require('../../jobsHelpers/findUniqueEvents')
 const { decryptPlainText } = require('../../../utils/crypto')
 
 const getArbiterSchedule = async (browserWSEndpoint) => {
@@ -42,23 +42,25 @@ const asScheduleJobFunction = async (userID) => {
         const user = await User.findById(userID)
         const email = user.asEmail
         const pass = decryptPlainText(user.asPassword)
-        const browserEndpoint = await asLogin(email, pass)
-        const rawSchedule = await getArbiterSchedule(browserEndpoint)
+        const browserWSEndpoint = await asLogin(email, pass)
+        const rawSchedule = await getArbiterSchedule(browserWSEndpoint)
         const parsedSchedule = await parseArbiterSchedule(rawSchedule)
-        const futureGames = removePastGames(parsedSchedule)
-        const newUniqueEvents = findUniqueEvents(futureGames)
-        const games = await addEventsFromArray(newUniqueEvents, "Arbiter Sports")
+        const futureGames = removePastEvents(parsedSchedule)
+        const newUniqueEvents = await findUniqueEvents(futureGames)
+        const games = await addEventsFromArray(newUniqueEvents, "Arbiter Sports", userID)
         return games
     } catch (error) {
-        // console.log(error)
         return {error: "Error is as schedule job: " + error}
     }
 }
 
 module.exports = (agenda) => {
-    agenda.define('asScheduleJob', async (job, done) => {
+    agenda.define('asScheduleJob', {priority: 20}, async (job, done) => {
         let { userID } = job.attrs.data
-        await asScheduleJobFunction(userID)
+        const res = await asScheduleJobFunction(userID)
+        if(res.error){
+            console.log(res.error)
+        }
         done()
     })
     agenda.on('complete:asScheduleJob', async job => {
@@ -67,11 +69,5 @@ module.exports = (agenda) => {
         await user.save()
         await job.remove()
         // await job.save()
-    })
-    agenda.on('fail:asScheduleJob', async job => {
-        // let user = await User.findOne({_id: job.attrs.data.user})
-        // user.jobs.asScheduleStatus = 'fail'
-        // await user.save()
-        await job.remove()
     })
 }

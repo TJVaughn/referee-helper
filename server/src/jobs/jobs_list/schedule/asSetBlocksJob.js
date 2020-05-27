@@ -1,33 +1,19 @@
-const setBlocks = async (email, pass, futureGames) => {
-    const browser = await puppeteer.launch({
-        headless: false,
-        args: [
-            '--window-size=1500,825','--no-sandbox'
-        ]
-    })
+const puppeteer = require('puppeteer')
+const User = require('../../../models/User')
+const Event = require('../../../models/Event')
+const asLogin = require('../../jobsHelpers/arbiter/asLogin')
+const  { decryptPlainText } = require('../../../utils/crypto')
+
+const setBlocks = async (browserWSEndpoint, futureGames) => {
+    const browser = await puppeteer.connect({browserWSEndpoint})
     const page = await browser.newPage()
     await page.setViewport({
         height: 825,
         width: 1500
     })
-    await page.goto('https://www1.arbitersports.com/shared/signin/signin.aspx');
-    await page.click('#txtEmail')
-    await page.keyboard.type(email)
-    await page.click('#txtPassword')
-    await page.keyboard.type(pass)
-    await page.click('#ctl00_ContentHolder_pgeSignIn_conSignIn_btnSignIn')
     await page.waitFor(1000)
-    if(page.url() === 'https://www1.arbitersports.com/shared/signin/signin.aspx') {
-        return { error: "Invalid Login"}
-    }
-    // if(page.click('#mobileAlertStayLink')){
-    //     await page.click('#mobileAlertStayLink')
-    // }
     await page.goto('https://www1.arbitersports.com/Official/GameScheduleEdit.aspx')
     await page.waitFor(1000)
-    // const $ = cheerio.load('<body>')
-    // console.log($('tr', 'td').data())
-    // await page.click('#ctl00_ContentHolder_pgeDefault_conDefault_dgAccounts > tbody > tr:nth-child(6) > td:nth-child(2)')
     await page.click('#ctl00_ContentHolder_pgeDefault_conDefault_dgAccounts > tbody > tr:nth-child(2) > td:nth-child(1)')
     await page.waitFor(500)
     await page.goto('https://www1.arbitersports.com/Official/BlockDates.aspx')
@@ -44,8 +30,9 @@ const setBlocks = async (email, pass, futureGames) => {
 
     let blocksCreatedArr = []
     // iterate over the current games array and set appropriate blocks
+    console.log(futureGames[0].dateTime)
     for(let i = 0; i < futureGames.length; i++){
-        let blockStartDate = futureGames[i].dateTime.toLocaleDateString()
+        let blockStartDate = new Date(futureGames[i].dateTime).toLocaleDateString()
         console.log("Block Start Date: ", blockStartDate)
         await page.click('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_txtFromDay')
         for(let x = 0; x < 10; x++){
@@ -124,6 +111,16 @@ const setBlocks = async (email, pass, futureGames) => {
 
 module.exports = (agenda) => {
     agenda.define('asSetBlocksJob', async (job, done) => {
+        const user = await User.findById(job.attrs.data.userID)
+        if(!user){
+            console.log("error user not found")
+            await job.remove()
+            return done()
+        }
+        const browserWSEndpoint = await asLogin(user.asEmail, decryptPlainText(user.asPassword))
+        const futureGames = await Event.find({owner: user._id})
+        console.log(futureGames)
+        const blocks = await setBlocks(browserWSEndpoint, futureGames)
         done()
     })
 }

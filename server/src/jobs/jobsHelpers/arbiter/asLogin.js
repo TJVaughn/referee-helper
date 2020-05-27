@@ -3,7 +3,7 @@ const puppeteer = require('puppeteer')
 const asLogin = async (asEmail, asPassword, sync = false) => {
     try {
         const browser = await puppeteer.launch({
-            headless: true,
+            headless: false,
             args: [
                 '--window-size=1500,825', '--no-sandbox'
             ]
@@ -24,15 +24,15 @@ const asLogin = async (asEmail, asPassword, sync = false) => {
             await browser.close()
             return false
         }
-        await page.click('#mobileAlertStayLink')
+        // await page.click('#mobileAlertStayLink')
         await page.waitFor(750)
         if(sync){
             await browser.close()
             return true
         }
-        const browserEndpoint = browser.wsEndpoint()
-        await browser.disconnect()
-        return browserEndpoint
+        const browserWSEndpoint = browser.wsEndpoint()
+        browser.disconnect()
+        return browserWSEndpoint
     } catch (error) {
         return {error: "Error in group sync" + error}
     }
