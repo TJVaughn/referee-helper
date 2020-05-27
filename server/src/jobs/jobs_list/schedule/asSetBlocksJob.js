@@ -3,6 +3,7 @@ const User = require('../../../models/User')
 const Event = require('../../../models/Event')
 const asLogin = require('../../jobsHelpers/arbiter/asLogin')
 const  { decryptPlainText } = require('../../../utils/crypto')
+// const $ = require('cheerio')
 
 const setBlocks = async (browserWSEndpoint, futureGames) => {
     const browser = await puppeteer.connect({browserWSEndpoint})
@@ -12,12 +13,29 @@ const setBlocks = async (browserWSEndpoint, futureGames) => {
         width: 1500
     })
     await page.waitFor(1000)
-    await page.goto('https://www1.arbitersports.com/Official/GameScheduleEdit.aspx')
-    await page.waitFor(1000)
-    await page.click('#ctl00_ContentHolder_pgeDefault_conDefault_dgAccounts > tbody > tr:nth-child(2) > td:nth-child(1)')
+    await page.goto('https://www1.arbitersports.com/generic/default.aspx')
+    await page.waitFor(1500)
+
+    //for each group, we need to try to access the block set page
+    //if we are unable to set blocks, we need to try the next one until we find one that works
+    //once we find one that works, we need to persist that in the db
+    //then we will always 
+
+    // await page.click('#ctl00_ContentHolder_pgeDefault_conDefault_dgAccounts > tbody > tr:nth-child(2) > td:nth-child(1)')
+    await page.click('tr.alternatingItems:nth-child(7)')
     await page.waitFor(500)
     await page.goto('https://www1.arbitersports.com/Official/BlockDates.aspx')
     await page.waitFor(500)
+    if(page.url() !== 'https://www1.arbitersports.com/Official/BlockDates.aspx'){
+        // await page.goto('https://www1.arbitersports.com/generic/default.aspx')
+        await page.waitFor(1000)
+        await page.click('#switchviews')
+        await page.waitFor(1000)
+        await page.click('#roleMenu > div > ul > div.switchViews > ul:nth-child(2) > li > a')
+        await page.click('#roleMenu > div > ul > div.switchViews > ul:nth-child(4) > li > a')
+                        '#roleMenu > div > ul > div.switchViews > ul:nth-child(6) > li:nth-child(1) > a'
+                        '#roleMenu > div > ul > div.switchViews > ul:nth-child(6) > li:nth-child(2) > a'
+    }
     await page.click('#ctl00_ContentHolder_pgeBlockDates_sbrAction_rbtPartDay')
     await page.waitFor(2000)
     await page.click('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_chkSun')

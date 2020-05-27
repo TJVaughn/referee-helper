@@ -56,6 +56,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    asBestGroup: {
+        type: String
+    },
     hwrUsername: {
         type: String,
         trim: true,
