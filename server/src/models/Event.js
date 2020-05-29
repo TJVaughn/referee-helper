@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const eventSchema = new mongoose.Schema({
     dateTime: {
-        type: String,
+        type: mongoose.Schema.Types.Date,
         required: true
     },
     type: {

@@ -2,10 +2,68 @@ const puppeteer = require('puppeteer')
 const User = require('../../../models/User')
 const Event = require('../../../models/Event')
 const asLogin = require('../../jobsHelpers/arbiter/asLogin')
-const  { decryptPlainText } = require('../../../utils/crypto')
-// const $ = require('cheerio')
+const { decryptPlainText } = require('../../../utils/crypto')
+const removePastEvents = require('../../jobsHelpers/removePastEvents')
+
+const setBlockDates = async (game, page) => {
+    let blockDate = '06/01/2020'
+    const deleteText = async () => {
+        for(let x = 0; x < 10; x++){
+            await page.keyboard.down('Backspace')
+            await page.keyboard.down('Delete')
+        }
+    }
+    await page.click('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_txtFromDay')
+    await deleteText()
+    await page.keyboard.type(blockDate)
+    await page.click('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_txtToDay')
+    await deleteText()
+    await page.keyboard.type(blockDate)
+}
+const formatTime = (time) => {
+    let hours = ''
+    let minutes = ''
+    let ampm = ''
+
+    time = new Date(time)
+    hours = time.getHours()
+    minutes = time.getMinutes()
+    if(hours > 12){
+        ampm = 'PM'
+        hours = hours - 12
+    } else if (hours === 12){
+        ampm = 'PM'
+    } else {
+        ampm = 'AM'
+    }
+    if(minutes < 10){
+        minutes = `0${minutes}`
+    }
+
+    time = `${hours}:${minutes} ${ampm}`
+    console.log(time)
+
+    return time
+}
+
+const setBlockTimes = async (game, page) => {
+    //12:00 AM to 11:45 PM 
+    let blockStartTime = formatTime(game.dateTime)
+    let blockEndTime = new Date(game.dateTime)
+    if(blockEndTime.getHours() > 21){
+        blockEndTime = '11:45 PM'
+    } else {
+        blockEndTime = blockEndTime.setHours(blockEndTime.getHours() + 2)
+        blockEndTime = formatTime(blockEndTime)
+    }
+    await page.select('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_ddlFromTime', blockStartTime)
+    await page.select('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_ddlToTime', blockEndTime)
+}
 
 const setBlocks = async (browserWSEndpoint, futureGames) => {
+    if(futureGames.length < 1){
+        return {error: 'No future games'}
+    }
     const browser = await puppeteer.connect({browserWSEndpoint})
     const page = await browser.newPage()
     await page.setViewport({
@@ -13,29 +71,26 @@ const setBlocks = async (browserWSEndpoint, futureGames) => {
         width: 1500
     })
     await page.waitFor(1000)
-    await page.goto('https://www1.arbitersports.com/generic/default.aspx')
+    await page.goto('https://www1.arbitersports.com/Official/BlockDates.aspx')
     await page.waitFor(1500)
 
-    //for each group, we need to try to access the block set page
-    //if we are unable to set blocks, we need to try the next one until we find one that works
-    //once we find one that works, we need to persist that in the db
-    //then we will always 
-
-    // await page.click('#ctl00_ContentHolder_pgeDefault_conDefault_dgAccounts > tbody > tr:nth-child(2) > td:nth-child(1)')
-    await page.click('tr.alternatingItems:nth-child(7)')
-    await page.waitFor(500)
-    await page.goto('https://www1.arbitersports.com/Official/BlockDates.aspx')
-    await page.waitFor(500)
-    if(page.url() !== 'https://www1.arbitersports.com/Official/BlockDates.aspx'){
-        // await page.goto('https://www1.arbitersports.com/generic/default.aspx')
-        await page.waitFor(1000)
-        await page.click('#switchviews')
-        await page.waitFor(1000)
-        await page.click('#roleMenu > div > ul > div.switchViews > ul:nth-child(2) > li > a')
-        await page.click('#roleMenu > div > ul > div.switchViews > ul:nth-child(4) > li > a')
-                        '#roleMenu > div > ul > div.switchViews > ul:nth-child(6) > li:nth-child(1) > a'
-                        '#roleMenu > div > ul > div.switchViews > ul:nth-child(6) > li:nth-child(2) > a'
+    const tryOne = async () => {
+        for(let i = 2; i < 20;){
+            if(page.url() !== 'https://www1.arbitersports.com/Official/BlockDates.aspx'){
+                await page.click('#switchviews')
+                await page.waitFor(1000)
+                await page.click(`#roleMenu > div > ul > div.switchViews > ul:nth-child(${i}) > li > a`)
+                await page.waitFor(1000)
+                await page.goto('https://www1.arbitersports.com/Official/BlockDates.aspx')
+                await page.waitFor(1000)
+                i += 2
+            } else {
+                return 
+            }
+        }
+        
     }
+    await tryOne()
     await page.click('#ctl00_ContentHolder_pgeBlockDates_sbrAction_rbtPartDay')
     await page.waitFor(2000)
     await page.click('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_chkSun')
@@ -46,85 +101,15 @@ const setBlocks = async (browserWSEndpoint, futureGames) => {
     await page.click('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_chkFri')
     await page.click('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_chkSat')
 
-    let blocksCreatedArr = []
-    // iterate over the current games array and set appropriate blocks
-    console.log(futureGames[0].dateTime)
     for(let i = 0; i < futureGames.length; i++){
-        let blockStartDate = new Date(futureGames[i].dateTime).toLocaleDateString()
-        console.log("Block Start Date: ", blockStartDate)
-        await page.click('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_txtFromDay')
-        for(let x = 0; x < 10; x++){
-            await page.keyboard.down('Backspace')
-            await page.keyboard.down('Delete')
-        }
-        await page.keyboard.type(blockStartDate)
-        await page.click('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_txtToDay')
-        for(let x = 0; x < 10; x++){
-            await page.keyboard.down('Backspace')
-            await page.keyboard.down('Delete')
-        }
-        await page.keyboard.type(blockStartDate)
-
-        let gameStartTime = futureGames[i].dateTime
-        // console.log("Game Start: ", gameStartTime.toLocaleTimeString())
-
-        let blockStart = gameStartTime.setHours(gameStartTime.getHours() - 1)
-        blockStart = new Date(blockStart)
-
-        if(blockStart.getMinutes() !== (15 || 30 || 45)){
-            let blockMins = blockStart.getMinutes();
-            if(blockMins >= 45 && blockMins < 59){
-                blockStart.setMinutes(45)
-            } else if(blockMins >= 30){
-                blockStart.setMinutes(30)
-            } else if(blockMins >= 15){
-                blockStart.setMinutes(15)
-            } else {
-                blockStart.setMinutes(0)
-            }
-            blockStart = new Date(blockStart)
-        }
-
-        let blockStartTime = blockStart;
-        let blockEndTime = blockStart;
-
-        blockStartTime = blockStartTime.toLocaleTimeString().split('').reverse()
-        blockStartTime.splice(3, 3)
-        blockStartTime = blockStartTime.join('').split('').reverse().join('')
-        
-        // console.log("Block Start: ", blockStartTime)
-        await page.select('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_ddlFromTime', blockStartTime)
-        await page.waitFor(500)
-
-        blockEndTime = blockEndTime.setHours(blockEndTime.getHours() + 3)
-        blockEndTime = new Date(blockEndTime)
-
-        blockEndTime = blockEndTime.toLocaleTimeString()
-        blockEndTime = blockEndTime.split('').reverse()
-        blockEndTime.splice(3, 3)
-        blockEndTime = blockEndTime.join('').split('').reverse().join('')
-        
-        // console.log("Block End Time", blockEndTime)
-        // await page.click('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_ddlToTime')
-        await page.select('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_ddlToTime', blockEndTime)
-        await page.waitFor(500)
-
+        await setBlockDates(futureGames[i], page)
+        await setBlockTimes(futureGames[i], page)
         await page.click('#ctl00_ContentHolder_pgeBlockDates_conBlockDates_btnRangeApply')
         await page.waitFor(1500)
-        gameStartTime = gameStartTime.setHours(gameStartTime.getHours() + 1)
-        gameStartTime = new Date(gameStartTime)
-        blocksCreatedArr.push({
-            gameStartTime,
-            blockStartTime,
-            blockEndTime,
-            gameData: futureGames[i]
-        })
     }
 
-    await page.content()
     await browser.close()
-
-    return blocksCreatedArr
+    return
 }
 
 module.exports = (agenda) => {
@@ -136,9 +121,13 @@ module.exports = (agenda) => {
             return done()
         }
         const browserWSEndpoint = await asLogin(user.asEmail, decryptPlainText(user.asPassword))
-        const futureGames = await Event.find({owner: user._id})
+        let futureGames = await Event.find({owner: user._id})
+        futureGames = removePastEvents(futureGames)
+        console.log('future games')
         console.log(futureGames)
         const blocks = await setBlocks(browserWSEndpoint, futureGames)
+        user.jobs.asBlockStatus = 'complete'
+        await user.save()
         done()
     })
 }
