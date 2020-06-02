@@ -74,6 +74,18 @@ router.get('/api/arbiter/blocks', auth, async (req, res) => {
     }
 })
 
+router.get('/api/arbiter/verify-blocks', auth, async (req, res) => {
+    try {
+        await agenda.start()
+        await agenda.schedule('2 seconds', 'asVerifyBlocksJob', { userID: req.user._id })
+        req.user.jobs.asVerifyBlockStatus = 'processing'
+        await req.user.save()
+        return res.send({message: "processing"})
+    } catch (error) {
+        return res.status(500).send({error: `Error in Arbiter/Verify blocks: ${error}`})
+    }
+})
+
 // router.get('/api/arbiter/groups', auth, async(req, res) => {
 //     try {
 //         await agenda.start()

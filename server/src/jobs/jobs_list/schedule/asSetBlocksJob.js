@@ -6,7 +6,8 @@ const { decryptPlainText } = require('../../../utils/crypto')
 const removePastEvents = require('../../jobsHelpers/removePastEvents')
 
 const setBlockDates = async (game, page) => {
-    let blockDate = '06/01/2020'
+    // let blockDate = '06/01/2020'
+    let blockDate = new Date(game.dateTime).toLocaleDateString()
     const deleteText = async () => {
         for(let x = 0; x < 10; x++){
             await page.keyboard.down('Backspace')

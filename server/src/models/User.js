@@ -79,6 +79,9 @@ const userSchema = new mongoose.Schema({
         },
         asGroupStatus: {
             type: String
+        },
+        asVerifyBlockStatus: {
+            type: String
         }
     },
     street: {
