@@ -6,6 +6,8 @@ const removeDuplicates = require('../src/jobs/jobsHelpers/removeDuplicates')
 const findUniqueEvents = require('../src/jobs/jobsHelpers/findUniqueEvents')
 const addEventsFromArray = require('../src/jobs/jobsHelpers/addEventsFromArray')
 const removePastEvents = require('../src/jobs/jobsHelpers/removePastEvents')
+const parseBlocks = require('../src/jobs/jobsHelpers/arbiter/parseBlocks')
+
 beforeEach(setupDB)
 
 //test to find unique events -- give it two new events, 1 of which already has duplicate data in the db, expect there to be 1 unique event
@@ -44,4 +46,23 @@ test('Should add game to events', async() => {
     //Issue with the test -- when i expect the new events length to be 4 opposed to 2, it still shows up as only 2
     //but when I look at the test db, the games are actually added, so the functions are actually working correctly but the test still fails
 
+})
+
+test('should parse txt file to get each block and time', async () => {
+    let txt = `Calendar
+    Trevor Hauck,June 2020
+    Jun 15,Jun 20
+    109773,BLOCKED,12:00 PM,2:00 PM,,109773,BLOCKED,12:00 PM,2:00 PM,
+    102876,BLOCKED,12:00 PM,2:00 PM,,102876,BLOCKED,12:00 PM,2:00 PM,
+    108720,BLOCKED,12:00 PM,2:00 PM,,108720,BLOCKED,12:00 PM,2:00 PM,
+    109822,BLOCKED,12:00 PM,2:00 PM,,109822,BLOCKED,12:00 PM,2:00 PM,
+    Jun 17
+    109822,BLOCKED,8:00 AM,5:00 PM,
+    108720,BLOCKED,8:00 AM,5:00 PM,
+    102876,BLOCKED,8:00 AM,5:00 PM,
+    109773,BLOCKED,8:00 AM,5:00 PM,
+    "Tuesday, June 02, 2020, 12:28 PM",Created by ArbiterSports.com,Page 1 of,1`
+
+    let blocks = await parseBlocks(txt)
+    console.log(blocks)
 })

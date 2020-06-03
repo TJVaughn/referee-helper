@@ -1,7 +1,9 @@
 const puppeteer = require('puppeteer')
 const User = require('../../../models/User')
 const asLogin = require('../../jobsHelpers/arbiter/asLogin')
+const parseBlocks = require('../../jobsHelpers/arbiter/parseBlocks')
 const { decryptPlainText } = require('../../../utils/crypto')
+
 
 const verifyBlocks = async (browserWSEndpoint) => {
     const browser = await puppeteer.connect({browserWSEndpoint})
@@ -48,6 +50,7 @@ const verifyBlocks = async (browserWSEndpoint) => {
     return response
 }
 
+
 module.exports = (agenda) => {
     agenda.define('asVerifyBlocksJob', async (job, done) => {
         const user = await User.findById(job.attrs.data.userID)
@@ -57,7 +60,8 @@ module.exports = (agenda) => {
             return done()
         }
         const browserWSEndpoint = await asLogin(user.asEmail, decryptPlainText(user.asPassword))
-        const blocks = await verifyBlocks(browserWSEndpoint)
+        const rawBlocks = await verifyBlocks(browserWSEndpoint)
+        const blocks = await parseBlocks(rawBlocks)
         console.log(blocks)
         done()
     })
