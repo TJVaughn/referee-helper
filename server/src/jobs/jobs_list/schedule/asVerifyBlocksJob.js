@@ -42,6 +42,9 @@ const verifyBlocks = async (browserWSEndpoint) => {
         await page.goto(target.url())
 
         response = await page.content()
+        if(response.includes('Server Error')){
+            //do it again
+        }
         return
     })
     await page.click('#ctl00_ContentHolder_pgeBlockDates_navBlockDates_btnBeginPrint')
